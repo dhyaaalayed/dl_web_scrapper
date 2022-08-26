@@ -1,0 +1,146 @@
+Readme:
+
+
+
+
+Time plane:
+
+	Started:
+		11.08.2022
+	Now:
+		18.08.200
+
+	Achievments over Days:
+
+
+		17.08.2020
+			Store in jsons
+		18.08.2020
+			Read from jsons
+
+	Number of days
+
+		Using Selinum for the first time
+			Research how to use it
+			because of telekom animation
+
+			Explain why
+
+
+How to use:
+	python load_from_web.py
+		1- Generate the json files and overwrite them if they are existed
+		2- Generate ansprech_partner files and overwrite them if they are existed
+		3- For Montage_liste and Master_liste, Compare and add the new addresses :)
+
+	python load_from_json.py
+		1- Load the data from json
+		2- Generate ansprech_partner files and overwrite them if they are existed
+		3- For Montage_liste and Master_liste, Compare and add the new addresses :)
+
+
+	python update_from_web.py
+		1- Load the json files into classes
+		2- Get the information from the web in parallel classes
+		3- Update the excel files according to the new changes
+		4- 
+
+
+ATTENTION: If telekom changed their web elements ids, then the Navigator will not work.
+
+
+______________________________
+Currently:
+	1- Load current stored data
+	2- Update excel files of Montage liste / Master liste! and also generate new generated_ansprech_partner excel files!
+
+
+
+
+
+
+Later:
+	1- Load current stored data in classes
+	2- Scrap new Telekom data in parallel classes
+	3- Compare
+	4- Take action regarding the new data:
+		1- Load it to the excel files
+		2- Notify our employees by sending emails :)
+
+___________________
+
+
+
+
+TODO:
+	/1- Fix Navigator to get the completed address with the charachter
+	/2- Fix City to get all kls, even if they have different ids
+		/1- rename city_nvt_dict to nvt_list and make it list
+    /3- kls class:
+        /1- key must be in it not in address
+            /1- Change the class
+            /2- Change the navigator to modify that
+            /3- And also other classes!
+    /4- Address
+        /Move the kls id to kls class
+        /1- Add new attribute: House_char
+        /2- Modify the navigator to get it
+        /3- Set it empty string instead of null ig it's not existed
+    5- Check out exporting json of each class/ subclass
+        str function!
+        city
+            /nvt
+                /kls
+                    address
+                    person
+                    owner
+
+    6- Try pickling the classes!?
+        No
+        Run the etl
+            Just see what is the correct way to jsonify
+
+Later:
+    1- Complete the updating MontageList code
+        1- Continue previous example
+        2- Create updater main or a different class name!
+
+
+
+
+Last Step:
+	Getting the new addresses for montage_liste :)
+Next:
+	Write them to their excel files :)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
