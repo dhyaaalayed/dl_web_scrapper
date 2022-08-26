@@ -104,13 +104,17 @@ class Navigator:
             return next_page_button[0]
         return None
 
+
+
     def navigate_to_next_page(self, index):
         next_page_button = self.get_next_page_button(index)
         if next_page_button == None:
             return False
         else:
-            self.browser.execute_script("arguments[0].click();", next_page_button);
-            time.sleep(5)
+            self.browser.execute_script("arguments[0].click();", next_page_button)
+            log("Waiting after pressing next page button")
+            WebDriverWait(self.browser, 100).until(
+                EC.presence_of_element_located((By.XPATH, '//a[@class="ui-paginator-page ui-state-default ui-corner-all ui-state-active" and @aria-label="Page {}"]'.format(str(index)) )))
             return True
 
     def log_number_of_eyes_of_current_page(self, i):
