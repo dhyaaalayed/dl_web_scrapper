@@ -76,12 +76,12 @@ class NVT:
         montage_path = Path(self.path) / montage_file
         return MontageExcelParser(montage_path, self.get_address_list())
 
-    def generate_montage_list_files(self):
+    def generate_montage_excel(self):
         # self.get_new_address_for_montage_list()
         montage_excel_parser = self.get_montage_list_parser()
         montage_excel_parser.generate_new_address_list_file()
 
-    def update_montage_list_files(self):
+    def update_montage_excel(self):
         montage_excel_parser = self.get_montage_list_parser()
         montage_excel_parser.update_current_montage_list_file()
 
@@ -114,26 +114,11 @@ class NVT:
         nvt_json["kls_list"] = [kls.export_to_json() for kls in self.kls_list]
         print("nvt_json: ", nvt_json)
         return nvt_json
-        # return {
-        #     "nvt_number": self.nvt_number,
-        #     "path": str(self.path),
-        #     "city": self.city,
-        #     "nvt_telekom_list": self.nvt_telekom_list,
-        #     "kls_list": self.kls_list,
-        # }
 
     def import_from_json(self, kls_json):
-        # self.nvt_number = kls_json["nvt_number"]
-        # self.path = kls_json["path"]
-        # self.city = kls_json["city"]
         self.nvt_telekom_list = kls_json["nvt_telekom_list"]
         self.kls_list = []
-
-        # To be deleted self.kls_dicts = kls_json["kls_dicts"]
         for kls_json_obj in kls_json["kls_list"]:
-            # print(str(kls_json["kls_dicts"]))
-            # print(str(kls_json_obj))
-            # print(type(kls_json_obj))
             kls_json_obj = json.loads(kls_json_obj)
             kls = Kls(
                 kls_json_obj["id"],
@@ -150,7 +135,6 @@ class NVT:
         Path(store_path).mkdir(parents=True, exist_ok=True)
         with open(store_path / 'nvt_telekom_data.json', 'w') as f:
             json.dump(json_obj, f)
-
         log("Storing nvt json at: " + str(store_path / 'nvt_telekom_data.json'))
 
     def read_from_json(self):
@@ -160,8 +144,6 @@ class NVT:
         with open(json_path) as json_file:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
-
-    # def add_new_columns(self):
 
     def archive_montage_list(self):
         # Just copy it and put it in archive folder

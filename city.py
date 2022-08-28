@@ -67,9 +67,9 @@ class City:
         for nvt in self.nvt_list:
             if len(nvts_to_update) > 0:
                 if nvt.nvt_number in nvts_to_update:
-                    nvt.generate_montage_list_files()
+                    nvt.generate_montage_excel()
             else:
-                nvt.generate_montage_list_files()
+                nvt.generate_montage_excel()
 
     def print(self):
         print("Details of city {} of path {}".format(self.name, self.root_path))
