@@ -6,13 +6,11 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 import time
 from entities import Kls, Address, Person, Owner
+from my_functions import log
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument('--start-maximized')
-
-def log(message):
-    print("Log: " + message)
 
 """
 ATTENTION:
@@ -56,7 +54,14 @@ class Navigator:
         self.browser.execute_script("arguments[0].click();", gap_installation_option);
         time.sleep(3)
 
-    def filter_according_to_nvt_number(self, nvt_number):
+    def filter_in_nvt(self, nvt_number):
+        log("Start filtering in kls list according to nvt_number: " + nvt_number)
+        self._enter_nvt_number(nvt_number)
+
+        log("Clicking the search button")
+        self.click_the_search_button()
+
+    def _enter_nvt_number(self, nvt_number):
         log(nvt_number)
         # First we need to click on nvt div to show the input of entering nvt number:
         nvt_filter_div = self.browser.find_element("id", "searchCriteriaForm:nvtArea")
@@ -151,9 +156,6 @@ class Navigator:
         # tbody: is an html element contains all rows
         tbody = self.browser.find_element("id", 'searchResultForm:propertySearchSRT_data')
         return tbody.find_elements("css selector", 'tr')
-
-    def get_kls_status(self):
-        status = html_column.find_element("css selector", 'input').get_attribute("aria-checked")
 
     def get_exploration_necessary(self, html_column):
         exp_necessary = html_column.find_element("css selector", 'input').get_attribute("aria-checked")

@@ -29,19 +29,13 @@ class NVT:
         # self.initialize_using_web_scrapper()
 
     def initialize_using_web_scrapper(self):
-        self.filter_in_kls_list()
+        self.navigator.filter_in_nvt(self.nvt_number)
         self.visit_eyes_pages()
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
         self.write_to_json()
 
-    def filter_in_kls_list(self):
-        log("Start filtering in kls list according to nvt_number: " + self.nvt_number)
-        self.navigator.filter_according_to_nvt_number(self.nvt_number)
-
-        log("Clicking the search button")
-        self.navigator.click_the_search_button()
 
     def visit_eyes_pages(self):
         for i in range(1, 1000):
