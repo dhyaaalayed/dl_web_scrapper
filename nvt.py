@@ -18,40 +18,32 @@ class NVT:
     kls_list = None
     navigator = None
 
-    def __init__(self, nvt_number, path, city, navigator):  # Dresden
+    def __init__(self, nvt_number, path, city, navigator):
         log("Start NVT Constructor")
         self.nvt_number = nvt_number
         self.path = path
         self.city = city
-        self.navigator = navigator
-        self.nvt_telekom_list = []
         self.kls_list = []
-        # self.initialize_using_web_scrapper()
+        self.navigator = navigator
 
     def initialize_using_web_scrapper(self):
         self.navigator.filter_in_nvt(self.nvt_number)
-        self.visit_eyes_pages()
+        self.kls_list = self.visit_eyes_pages()
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
         self.write_to_json()
 
-
     def visit_eyes_pages(self):
+        kls_list = []
         for i in range(1, 1000):
             self.navigator.log_number_of_eyes_of_current_page(i)
 
-            kls_list = self.visit_current_eyes_page()
-            self.kls_list += kls_list
-            print("self.kls_list: ", self.kls_list)
+            kls_list += self.navigator.get_eyes_data(self.nvt_number)
 
             if not self.navigator.navigate_to_next_page(i + 1):
                 break
-
-    def visit_current_eyes_page(self):
-        """ Gets the kls_dicts of the eyes of the current page
-        """
-        return self.navigator.get_eyes_data(self.nvt_number)  # return a kls object
+        return kls_list
 
     def get_address_list(self):
         return [kls.address for kls in self.kls_list]
