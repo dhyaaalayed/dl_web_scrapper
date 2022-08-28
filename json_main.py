@@ -1,4 +1,5 @@
-from city import log, City
+from city import City
+from my_functions import log
 
 
 class LoadFromJson:
