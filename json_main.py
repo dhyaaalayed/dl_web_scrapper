@@ -13,22 +13,6 @@ class LoadFromJson:
             # city.update_montage_lists(nvts_to_update)
             self.cities.append( city )
 
-            # to generate new montage liste files without templates
-            # for nvt in city.nvt_list:
-            #     nvt.export_anshprechpartner_to_excel()
-                # nvt.clean_generated_anshprechpartner_files()
-                # nvt.clean_generated_montage_list_files()
-
-            # to update current montage liste files and copy the old ones
-            for nvt in city.nvt_list:
-                if nvt.nvt_number in []:
-                    continue
-                log("Renaming in nvt" + str(nvt.path))
-                nvt.rename_ansprech_files()
-
-        # for city in self.cities:
-            # Update MasterListe
-
 
 
 if __name__ == "__main__":
@@ -38,3 +22,10 @@ if __name__ == "__main__":
         ]
 
     main = LoadFromJson(roots_list)
+
+
+    for city in main.cities:
+        for nvt in city.nvt_list:
+            if nvt.nvt_number in ["42V1018"]:
+                # nvt.archive_montage_excel()
+                nvt.add_new_columns()

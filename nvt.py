@@ -108,7 +108,6 @@ class NVT:
         return nvt_json
 
     def import_from_json(self, kls_json):
-        self.nvt_telekom_list = kls_json["nvt_telekom_list"]
         self.kls_list = []
         for kls_json_obj in kls_json["kls_list"]:
             kls_json_obj = json.loads(kls_json_obj)
@@ -118,7 +117,6 @@ class NVT:
                 [Person(person_json) for person_json in kls_json_obj["people"]],
                 [Owner(owner_json) for owner_json in kls_json_obj["owners"]]
             )
-            kls.address.htn = kls_json_obj["htn"]
             self.kls_list.append(kls)
 
     def write_to_json(self):
@@ -137,7 +135,7 @@ class NVT:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
 
-    def archive_montage_list(self):
+    def archive_montage_excel(self):
         # Just copy it and put it in archive folder
         montage_scr_path = self.path / "Montageliste_{}.xlsx".format(self.nvt_number)
         montage_dest_path = self.path / "Archive" / "montage_liste" / date.today().strftime('%Y_%m_%d')
@@ -182,6 +180,11 @@ class NVT:
             for idx, column in enumerate(df.columns):
                 writer.sheets[sheet_name].set_column(idx, idx, columns_max_length[idx])
             writer.save()
+
+    def add_new_columns(self):
+        log("Adding new columns:")
+        montage_excel_parser = self.get_montage_list_parser()
+        montage_excel_parser.add_new_columns(9, 3)
 
     def get_anshprechpartner_dataframe(self):
         klsid = []

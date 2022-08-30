@@ -149,7 +149,6 @@ class Navigator:
         kls.owners = self.get_owners_list()
     
         self.close_address_page()
-        time.sleep(2)
         return kls
 
     def get_and_refresh_eyes_rows(self):
@@ -192,9 +191,9 @@ class Navigator:
 
             # Creating Kls object
             kls = self.get_eye_data(eye_link) # here an eye link should be given
-            kls.status = status
-            kls.kundentermin_start = kundentermin_start
-            kls.kundentermin_end = kundentermin_end
+            kls.address.status = status
+            kls.address.kundentermin_start = kundentermin_start
+            kls.address.kundentermin_end = kundentermin_end
             kls_list.append(kls)
             # Just to refresh
             eyes_rows = self.get_and_refresh_eyes_rows()
@@ -210,7 +209,6 @@ class Navigator:
         address.postal = self.browser.find_element("id", "processPageForm:postalCode").text
         address.city = self.browser.find_element("id", "processPageForm:city").text
         address.house_char = self.browser.find_element("id", "processPageForm:houseNumberApp").text
-        log("Reading Address: " + str(address))
         return kls_id, address
 
     def navigate_to_contact_people_tab(self):
@@ -270,6 +268,11 @@ class Navigator:
         log("Pressing close button of address page")
         close_button = self.browser.find_element('id', 'page-header-form:closePropertyDetailsPage')
         self.browser.execute_script("arguments[0].click();", close_button)
+
+        log("Waiting for closing address page")
+        WebDriverWait(self.browser, 100).until(
+            EC.presence_of_element_located((By.ID, "searchResultForm:propertySearchSRT:col_klsId:filter_label")))
+
 
 
 

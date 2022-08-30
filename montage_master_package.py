@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 import shutil
 
 
+
 class MontageExcelParser:
 	df = None
 	path_to_excel = None
@@ -113,6 +114,21 @@ class MontageExcelParser:
 		print("new_df: ", new_df)
 		new_df.to_excel(new_montage_file_path)
 
+	def add_new_columns(self, before_col_idx, number_of_cols):
+		"""
+			Only for one call: to add Status, Termin Beginn and End columns
+		"""
+		book = load_workbook(self.path_to_excel)
+		ws = book["HA_Auswertung"]
+		# ws.insert_cols(before_col_idx, number_of_cols)
+		ws.move_range("J6:AD6", rows=0, cols=2) # Moving header
+		ws.move_range("J7:AD1000", rows=0, cols=2) # rows=0 means we don't move rows
+		ws["I7"] = "Status"
+		ws["J7"] = "Kundentermin Beginn"
+		ws["K7"] = "Kundentermin Ende"
+		book.save(self.path_to_excel)
+
+
 
 	def update_current_montage_list_file(self):
 		# function to copy the file to a new one, return excel_path
@@ -128,6 +144,7 @@ class MontageExcelParser:
 		writer = pd.ExcelWriter(new_montage_file_path, engine='openpyxl')
 		writer.book = book
 		writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+
 		start_row = self._get_where_to_write_row_index_on_excel()
 		print("Log: Writing on Excel starting from: ", start_row, " at: ", self.path_to_excel)
 		new_address_df.to_excel(writer, index=False, startrow=start_row, startcol=0, sheet_name='HA_Auswertung', header=False)

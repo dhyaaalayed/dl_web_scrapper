@@ -8,9 +8,6 @@ class Kls:
     address = None
     people = None
     owners = None
-    status = None
-    kundentermin_start = None
-    kundentermin_end = None
 
     def __init__(self, id=None, address=None, people=None, owners=None):
         self.id = id
@@ -39,7 +36,10 @@ class Address:
     house_char = ""
     postal = None
     city = None
-    htn = None
+    kundentermin_start = None
+    kundentermin_end = None
+    status = None
+
 
     def __init__(self, address_json=None):
         if address_json is not None:
@@ -51,7 +51,10 @@ class Address:
             "house_number": self.house_number,
             "house_char": self.house_char,
             "postal": self.postal,
-            "city": self.city
+            "city": self.city,
+            "status": self.status,
+            "kundentermin_start": self.kundentermin_start,
+            "kundentermin_end": self.kundentermin_end
         })
 
     def import_from_json(self, address_json):
@@ -61,6 +64,9 @@ class Address:
         self.house_char = address_json["house_char"]
         self.postal = address_json["postal"]
         self.city = address_json["city"]
+        self.status = address_json["status"]
+        self.kundentermin_start = address_json["kundentermin_start"]
+        self.kundentermin_end = address_json["kundentermin_end"]
 
     def print(self):
         print("street: ", self.street)
@@ -68,6 +74,9 @@ class Address:
         print("house_char: ", self.house_char)
         print("postal: ", self.postal)
         print("city: ", self.city)
+        print("status: ", self.status)
+        print("kundentermin_start: ", self.kundentermin_start)
+        print("kundentermin_end: ", self.kundentermin_end)
 
     def create_unique_key(self):
         return "_".join([
