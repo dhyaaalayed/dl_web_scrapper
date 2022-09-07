@@ -23,7 +23,7 @@
         ]
     },
     "Pulsnitz": {
-        "scrapping_activated": true
+        "scrapping_activated": false
         , "loading_json_activated": false
         , "updating_montage_activated": false
         , "generating_ansprechpartner": false

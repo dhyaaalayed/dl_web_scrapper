@@ -11,8 +11,12 @@ from entities import Kls, Address, Person, Owner
 from my_functions import log
 
 chrome_options = Options()
-chrome_options.add_argument("--headless")
-chrome_options.add_argument('--start-maximized')
+# chrome_options.add_argument("--headless")
+# chrome_options.add_argument('--start-maximized')
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument("--disable-setuid-sandbox")
+
 
 """
 ATTENTION:
