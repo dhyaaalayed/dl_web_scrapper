@@ -1,3 +1,5 @@
+from datetime import date
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -24,9 +26,9 @@ class Navigator:
 
     browser = None
 
-    def __init__(self):
+    def __init__(self, user_name, password):
         self.browser = Chrome(options = chrome_options)
-        self.login()
+        self.login_with_dieaa()
         log("Loging in")
         self.move_to_the_search_page()
         log("Moving to the search page")
@@ -34,14 +36,21 @@ class Navigator:
         # self.apply_first_filter() # Disabled upon Hakan request!
         # log("Applying Gap installation Filter")
 
-    def login(self):
+    def login(self, user_name, password):
 
         URL = "https://glasfaser.telekom.de/auftragnehmerportal-ui/home?a-cid=50708"
         self.browser.get(URL)
-        self.browser.find_element('id', 'username').send_keys('ertugrul.yilmaz@dl-projects.de')
-        self.browser.find_element('id', 'password').send_keys('Ertu2022!')
+        self.browser.find_element('id', 'username').send_keys(user_name) # 'ertugrul.yilmaz@dl-projects.de'
+        self.browser.find_element('id', 'password').send_keys(password) # 'Ertu2022!'
         self.browser.find_element('name', 'login').click()
-        
+
+    def login_with_dieaa(self):
+        URL = "https://glasfaser.telekom.de/auftragnehmerportal-ui/home?a-cid=50708"
+        self.browser.get(URL)
+        self.browser.find_element('id', 'username').send_keys('dieaa.aled@dl-projects.de')
+        self.browser.find_element('id', 'password').send_keys('Dieaa1234!')
+        self.browser.find_element('name', 'login').click()
+
 
     def move_to_the_search_page(self):
         self.browser.get("https://glasfaser.telekom.de/auftragnehmerportal-ui/property/search")
@@ -75,8 +84,10 @@ class Navigator:
         # self.browser.execute_script("arguments[0].setAttribute('value', '{}');".format(nvt_number), nvt_input_field)
 
         # Waiting for drowpdown spans to select the nvt number
-        self.browser.set_window_size(1920, 1400)
-        self.browser.save_screenshot('/Users/dlprojectsit/Desktop/Github_local/web_scrapper/screenshot.png')
+
+        # self.browser.set_window_size(1920, 1400)
+        # self.browser.save_screenshot('/Users/dlprojectsit/Desktop/Github_local/web_scrapper/screenshot.png')
+
         log("Waiting for dropdown list to select the span of the nvt")
 
         nvt_span = WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.CLASS_NAME, "ui-autocomplete-query")))
@@ -97,6 +108,10 @@ class Navigator:
     def click_reset_filter_button(self):
         reset_button = self.browser.find_element('id', 'searchCriteriaForm:resetButton')
         reset_button.click()
+
+        log("Waiting after clicking the reset button")
+        WebDriverWait(self.browser, 100).until(
+            EC.presence_of_element_located((By.XPATH, '//tr[@class="ui-widget-content ui-datatable-empty-message"]')))
 
     def navigate_to_address_page(self, eye_button):
         print("Log: Navigating to address page")
@@ -126,7 +141,17 @@ class Navigator:
         eys_links = self.browser.find_elements("xpath", '//a[contains(@id,":viewSelectedRowItem")]')
         print("Log: Number of rows is ", len(eys_links), " in Page ", str(i))
 
-    def get_eye_data(self, eye_button):
+    def download_exploration_protocol(self, nvt_path, address_key):
+        download_button = self.browser.find_element("id", "processPageForm:explorationProtocol")
+        pdf_name = "Auskundungsprotokolle_{}_{}".format(address_key, date.today().strftime('%Y_%m_%d'))
+        pdf_path = nvt_path / "Auskundungsprotokolle" / pdf_name
+        
+        if download_button.get_attribute("aria-disabled") == "true":
+            log("Downloading an Auskundungsprotokolle: ")
+            self.browser.execute_script("arguments[0].click();", download_button);
+
+
+    def get_eye_data(self, eye_button, nvt_path):
         """
             eye_date: means one kls record that contains:
                     kls_id
@@ -136,11 +161,16 @@ class Navigator:
         """
 
         kls = Kls()
+
+
+
         self.browser.find_elements("xpath", '//a[contains(@id,":viewSelectedRowItem")]')
         self.navigate_to_address_page(eye_button)
         kls_id, address = self.get_address_data_with_kls_id()
         kls.id = kls_id
         kls.address = address
+
+        # self.download_exploration_protocol(nvt_path, address.create_unique_key())
     
         self.navigate_to_contact_people_tab()
         kls.people = self.get_contact_people_list()
@@ -164,7 +194,7 @@ class Navigator:
         exp_finished = html_column.find_element("css selector", 'input').get_attribute("aria-checked")
         return True if exp_finished == "true" else False
 
-    def get_eyes_data(self, nvt_number):
+    def get_eyes_data(self, nvt_number, nvt_path):
         kls_list = []
         eyes_rows = self.get_and_refresh_eyes_rows()
         number_of_rows = len(eyes_rows)
@@ -177,6 +207,7 @@ class Navigator:
             status = html_columns[2].find_element("css selector", "span").text
             kundentermin_start = html_columns[12].find_element("css selector", "span").text
             kundentermin_end = html_columns[13].find_element("css selector", "span").text
+            we = html_columns[14].find_element("css selector", "span").text
             kls_nvt_number = html_columns[23].find_element("css selector", "span").text
             if nvt_number != kls_nvt_number:
                 log("Error: nvt number is different, readed {}, expected {}".format(kls_nvt_number, nvt_number))
@@ -190,10 +221,11 @@ class Navigator:
             eye_link = html_columns[0].find_element("css selector", 'a')
 
             # Creating Kls object
-            kls = self.get_eye_data(eye_link) # here an eye link should be given
+            kls = self.get_eye_data(eye_link, nvt_path) # here an eye link should be given
             kls.address.status = status
             kls.address.kundentermin_start = kundentermin_start
             kls.address.kundentermin_end = kundentermin_end
+            kls.address.we = we
             kls_list.append(kls)
             # Just to refresh
             eyes_rows = self.get_and_refresh_eyes_rows()

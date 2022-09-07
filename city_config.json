@@ -1,0 +1,48 @@
+{
+    "Dresden": {
+        "scrapping_activated": false
+        , "loading_json_activated": false
+        , "updating_montage_activated": true
+        , "generating_ansprechpartner": true
+        , "user_name": "markus.lora@dl-projects.de"
+        , "password": "Markus2022!"
+        , "paths": [
+            "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-07 Dresden/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)"
+            , "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-07 Dresden/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
+        ]
+    },
+    "Bautzen": {
+        "scrapping_activated": false
+        , "loading_json_activated": false
+        , "updating_montage_activated": true
+        , "generating_ansprechpartner": true
+        , "user_name": "David.peterson@dl-projects.de"
+        , "password": "David2022!"
+        , "paths": [
+            "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-09 Bautzen-Mitte/BVH-01 Bautzen/Baupläne (HK+NVT)"
+        ]
+    },
+    "Pulsnitz": {
+        "scrapping_activated": true
+        , "loading_json_activated": false
+        , "updating_montage_activated": false
+        , "generating_ansprechpartner": false
+        , "user_name": "ahmet.orla@dl-project.de"
+        , "password": "Ahmet2022!"
+        , "paths": [
+            "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-09 Bautzen-Mitte/BVH-02 Pulsnitz/Baupläne (HK+NVT)"
+        ]
+    },
+    "Cottbus": {
+        "scrapping_activated": true
+        , "loading_json_activated": true
+        , "updating_montage_activated": true
+        , "generating_ansprechpartner": true
+        , "user_name": "dieaa.aled@dl-projects.de"
+        , "password": "Dieaa1234!"
+        , "paths": [
+            "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-07 Dresden/BVH-02 Cottbus/Baupläne (HK+NVT)"
+        ]
+    }
+
+}

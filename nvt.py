@@ -1,3 +1,4 @@
+import glob
 import shutil
 import os
 from pathlib import Path
@@ -17,6 +18,8 @@ class NVT:
     city = None
     kls_list = None
     navigator = None
+    montage_excel_path = None
+    montage_excel_parser = None
 
     def __init__(self, nvt_number, path, city, navigator):
         log("Start NVT Constructor")
@@ -25,27 +28,31 @@ class NVT:
         self.city = city
         self.kls_list = []
         self.navigator = navigator
+        self.montage_excel_path = self._get_montage_excel_path()
+        self.montage_excel_parser = None
+        
 
     def initialize_using_web_scrapper(self):
         self.navigator.filter_in_nvt(self.nvt_number)
-        self.kls_list = self.visit_eyes_pages()
+        self.kls_list = self.visit_eyes_pages(self.path)
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
         self.write_to_json()
 
-    def visit_eyes_pages(self):
+    def visit_eyes_pages(self, nvt_path):
         kls_list = []
         for i in range(1, 1000):
             self.navigator.log_number_of_eyes_of_current_page(i)
 
-            kls_list += self.navigator.get_eyes_data(self.nvt_number)
+            kls_list += self.navigator.get_eyes_data(self.nvt_number, nvt_path)
 
             if not self.navigator.navigate_to_next_page(i + 1):
                 break
         return kls_list
 
-    def get_address_list(self):
+    def get_address_list_from_json(self):
+        print("kls_list: ", len(self.kls_list))
         return [kls.address for kls in self.kls_list]
 
     def get_new_address_for_montage_list(self):
@@ -53,7 +60,7 @@ class NVT:
         montage_file = "Montageliste_{}.xlsx".format(self.nvt_number)
         montage_path = Path(self.path) / montage_file
 
-        self.montage_excel_parser = MontageExcelParser(montage_path, self.get_address_list())
+        self.montage_excel_parser = MontageExcelParser(montage_path, self.get_address_list_from_json())
         new_montage_address_list = self.montage_excel_parser.get_new_address_list()
         print("new address at nvt: {}".format(self.nvt_number))
         if len(new_montage_address_list) > 0:
@@ -63,18 +70,23 @@ class NVT:
             print("There is no new addresses")
         print("___________________\n")
 
-    def get_montage_list_parser(self):
+    def _get_montage_excel_path(self):
         montage_file = "Montageliste_{}.xlsx".format(self.nvt_number)
         montage_path = Path(self.path) / montage_file
-        return MontageExcelParser(montage_path, self.get_address_list())
+        return montage_path
+
+    def initialize_montage_excel_parser(self):
+        montage_file = "Montageliste_{}.xlsx".format(self.nvt_number)
+        montage_path = Path(self.path) / montage_file
+        self.montage_excel_parser = MontageExcelParser(montage_path, self.get_address_list_from_json())
 
     def generate_montage_excel(self):
         # self.get_new_address_for_montage_list()
-        montage_excel_parser = self.get_montage_list_parser()
+        montage_excel_parser = self.initialize_montage_excel_parser()
         montage_excel_parser.generate_new_address_list_file()
 
     def update_montage_excel(self):
-        montage_excel_parser = self.get_montage_list_parser()
+        montage_excel_parser = self.initialize_montage_excel_parser()
         montage_excel_parser.update_current_montage_list_file()
 
     def print(self):
@@ -101,6 +113,8 @@ class NVT:
 
     def export_to_json(self):
         nvt_json = self.__dict__.copy()
+        del nvt_json["montage_excel_parser"]
+        del nvt_json["montage_excel_path"]
         del nvt_json["navigator"]
         nvt_json["path"] = str(nvt_json["path"])
         nvt_json["kls_list"] = [kls.export_to_json() for kls in self.kls_list]
@@ -108,7 +122,9 @@ class NVT:
         return nvt_json
 
     def import_from_json(self, kls_json):
+        log("Calling import_from_json")
         self.kls_list = []
+        print('kls_json["kls_list"]: ', len(kls_json["kls_list"]))
         for kls_json_obj in kls_json["kls_list"]:
             kls_json_obj = json.loads(kls_json_obj)
             kls = Kls(
@@ -118,7 +134,7 @@ class NVT:
                 [Owner(owner_json) for owner_json in kls_json_obj["owners"]]
             )
             self.kls_list.append(kls)
-
+        print('self.kls_list111: ', len(self.kls_list))
     def write_to_json(self):
         json_obj = self.export_to_json()
         store_path = self.path / 'automated_data'
@@ -136,41 +152,42 @@ class NVT:
         self.import_from_json(kls_json)
 
     def archive_montage_excel(self):
+
+
         # Just copy it and put it in archive folder
-        montage_scr_path = self.path / "Montageliste_{}.xlsx".format(self.nvt_number)
         montage_dest_path = self.path / "Archive" / "montage_liste" / date.today().strftime('%Y_%m_%d')
         montage_dest_path.mkdir(parents=True, exist_ok=True)
         montage_dest_path = montage_dest_path / "Montageliste_{}_{}.xlsx".format(self.nvt_number,
                                                                                  str(uuid4()).replace("-", "_"))
-        shutil.copy(montage_scr_path, montage_dest_path)
+        if not os.path.exists(self.montage_excel_path):
+            log("There is no Montage Files yet!")
+            return
+        shutil.copy(self.montage_excel_path, montage_dest_path)
 
-    def rename_montage_liste_files(self):
-        montage_list_current_name = "updated_Montageliste_{}.xlsx".format(self.nvt_number[-4:])
-        montage_list_new_name = "Montageliste_{}.xlsx".format(self.nvt_number)
-        os.rename(self.path / montage_list_current_name, self.path / montage_list_new_name)
+    def unarchive_montage_excel(self):
+        montage_src_folder = self.path / "Archive" / "montage_liste" / "2022_09_05"
+        csv_files = glob.glob(os.path.join(montage_src_folder, "Montageliste_{}_*.xlsx".format(self.nvt_number)))
+        montage_src_path = csv_files[0]
+        
+        shutil.copy(montage_src_path, self.montage_excel_path)
 
-    def archive_human_created_files(self):
-        # start with montage liste
-        log("Archiving for {}".format(str(self.nvt_number)))
-        log("The path is: " + str(self.path))
-        ansprechpartnerListe_file_name = "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number[-4:])
+
+    def copy_montage_template_to_montage_excel_path(self):
+        shutil.copy("excel_templates/Montageliste_Template_Final.xlsx", self.montage_excel_path)
+
+
+
+    def archive_ansprech_excel(self):
+        ansprechpartnerListe_file_name = "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
         ansprechpartnerListe_src_path = Path(self.path) / ansprechpartnerListe_file_name
-        ansprechpartnerListe_dest_path = Path(self.path) / "Archive" / "ansprechpartner_liste" / "human_created"
+        ansprechpartnerListe_dest_path = Path(self.path) / "Archive" / "ansprechpartner_liste" / date.today().strftime('%Y_%m_%d')
         ansprechpartnerListe_dest_path.mkdir(parents=True, exist_ok=True)
-        ansprechpartnerListe_dest_path = ansprechpartnerListe_dest_path / ansprechpartnerListe_file_name
-
-        montage_list_file_name = "Montageliste_{}.xlsx".format(self.nvt_number[-4:])
-        montage_list_src_path = Path(self.path) / montage_list_file_name
-        montage_list_dist_path = Path(self.path) / "Archive" / "montage_liste" / "human_created"
-        montage_list_dist_path.mkdir(parents=True, exist_ok=True)
-        montage_list_dist_path = montage_list_dist_path / montage_list_file_name
-
-        shutil.move(ansprechpartnerListe_src_path, ansprechpartnerListe_dest_path)
-        shutil.move(montage_list_src_path, montage_list_dist_path)
+        ansprechpartnerListe_dest_path = ansprechpartnerListe_dest_path / "AnsprechpartnerListe_{}_{}.xlsx".format(self.nvt_number, str(uuid4()).replace("-", "_"))
+        shutil.copy(ansprechpartnerListe_src_path, ansprechpartnerListe_dest_path)
 
     def export_anshprechpartner_to_excel(self):
         df = self.get_anshprechpartner_dataframe()
-        path = Path(self.path) / "generated_anshprechpartner_list_{}.xlsx".format(self.nvt_number)
+        path = Path(self.path) / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
         # df.to_excel(path, engine='xlsxwriter')
         measurer = np.vectorize(len)
         columns_max_length = measurer(df.values.astype(str)).max(axis=0)
@@ -181,10 +198,7 @@ class NVT:
                 writer.sheets[sheet_name].set_column(idx, idx, columns_max_length[idx])
             writer.save()
 
-    def add_new_columns(self):
-        log("Adding new columns:")
-        montage_excel_parser = self.get_montage_list_parser()
-        montage_excel_parser.add_new_columns(9, 3)
+
 
     def get_anshprechpartner_dataframe(self):
         klsid = []

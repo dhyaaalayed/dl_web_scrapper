@@ -39,6 +39,7 @@ class Address:
     kundentermin_start = None
     kundentermin_end = None
     status = None
+    we = None
 
 
     def __init__(self, address_json=None):
@@ -54,7 +55,8 @@ class Address:
             "city": self.city,
             "status": self.status,
             "kundentermin_start": self.kundentermin_start,
-            "kundentermin_end": self.kundentermin_end
+            "kundentermin_end": self.kundentermin_end,
+            "we": self.we
         })
 
     def import_from_json(self, address_json):
@@ -67,6 +69,7 @@ class Address:
         self.status = address_json["status"]
         self.kundentermin_start = address_json["kundentermin_start"]
         self.kundentermin_end = address_json["kundentermin_end"]
+        self.we = address_json["we"]
 
     def print(self):
         print("street: ", self.street)
@@ -77,15 +80,17 @@ class Address:
         print("status: ", self.status)
         print("kundentermin_start: ", self.kundentermin_start)
         print("kundentermin_end: ", self.kundentermin_end)
+        print("we: ", self.we)
 
     def create_unique_key(self):
         return "_".join([
-            str(self.postal),
+            str(int(self.postal)),
             str(self.city),
             str(self.street),
             str(self.house_number),
             str(self.house_char)
         ])
+
     def export_to_json(self):
         return json.dumps(self.__dict__)
 

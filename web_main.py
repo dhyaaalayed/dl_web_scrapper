@@ -1,31 +1,24 @@
+import json
+ 
+# Opening JSON file
 from city import City
+from my_functions import log
 from navigator import Navigator
 
+with open('city_config.json') as json_file:
+    city_dict = json.load(json_file)
+ 
 
-class LoadFromWebMain:
-    """
-        City class is only used, when we load the data for the first time, or when we want to overwrite the current json files
-    """
-
-    cities = []
-    navigator = None
-
-    def __init__(self, root_paths):
-        self.navigator = Navigator()
-        for path in root_paths:
-            city = City("Dresden", path, self.navigator)
-
-            already_downloaded_list = ["1016", "1015", "1030", "1018", "1019", "1014", "1011", "1010", "1012"]
+for city_key in city_dict.keys():
+    city_obj = city_dict[city_key]
+    if city_obj["scrapping_activated"] == True:
+        log("Scrapping activated for {}".format(city_key))
+        user_name = city_obj["user_name"]
+        password = city_obj["password"]
+        navigator = Navigator(user_name, password)
+        for path in city_obj["paths"]:
+            city = City(city_key, path, navigator)
             city.initialize_nvt_dict_using_web_navigator(already_downloaded_list=[])
-            self.cities.append(city)
+            log("Finishing scrapping subcity of {} of path {}".format(city_key, path))
 
 
-
-
-if __name__ == "__main__":
-    roots_list = [
-          "/Users/dlprojectsit/Library/CloudStorage/OneDrive-SharedLibraries-DLProjectsGmbH/Data Management DL Projects - BAU/RV-07 Dresden/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
-        , "/Users/dlprojectsit/Library/CloudStorage/OneDrive-SharedLibraries-DLProjectsGmbH/Data Management DL Projects - BAU/RV-07 Dresden/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)"
-        ]
-
-    LoadFromWebMain(roots_list)

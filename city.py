@@ -4,9 +4,14 @@
     2- We get all NVT paths and we istantiate an object for each of them!
 """
 import glob
+import os.path
+import shutil
 from pathlib import Path
 import time
 import warnings
+
+import pandas as pd
+from openpyxl.reader.excel import load_workbook
 
 from my_functions import log
 from nvt import NVT
@@ -48,20 +53,22 @@ class City:
                 self.nvt_list.append(nvt)
                 self.navigator.click_reset_filter_button()
                 log("Reseting current nvt list filter")
-                time.sleep(5)
                 print("____________________________________")
                 print("____________________________________")
 
-    def load_nvt_dict_from_stored_json(self):
+    def load_nvt_dict_from_stored_json(self, execluding_list = []):
         for nvt_path in self.nvt_path_list:
+
             nvt_number = nvt_path.stem.replace("NVT " ,"")
-            log("Parsed nvt_number: " + nvt_number)
-            log("Parsed nvt_path: " + str(nvt_path))
-            nvt = NVT(nvt_number, nvt_path, city = self.name, navigator = None)
-            nvt.read_from_json()
-            log("nvt_number after json: " + nvt_number)
-            log("nvt_path after json: " + str(nvt_path))
-            self.nvt_list.append(nvt)
+            nvt_json = nvt_path / "automated_data" / "nvt_telekom_data.json"
+            if os.path.exists(nvt_json):
+                log("Parsed nvt_number: " + nvt_number)
+                log("Parsed nvt_path: " + str(nvt_path))
+                nvt = NVT(nvt_number, nvt_path, city = self.name, navigator = None)
+                nvt.read_from_json()
+                log("nvt_number after json: " + nvt_number)
+                log("nvt_path after json: " + str(nvt_path))
+                self.nvt_list.append(nvt)
 
     def update_montage_lists(self, nvts_to_update):
         for nvt in self.nvt_list:
@@ -70,6 +77,63 @@ class City:
                     nvt.generate_montage_excel()
             else:
                 nvt.generate_montage_excel()
+
+
+    def copy_master_liste_template(self):
+        saving_path_folder = Path(self.root_path) / "telekom_list"
+        saving_path_folder.mkdir(parents=True, exist_ok=True)
+        saving_path = saving_path_folder / "Masterliste_{}.xlsx".format(self.name)
+        shutil.copy("excel_templates/template_master.xlsx", saving_path)
+
+    def export_all_montage_to_one_excel(self):
+        dfs = []
+        for nvt in self.nvt_list:
+            df = nvt.montage_excel_parser.export_updated_addresses_to_df()
+            df = df.fillna('').reset_index(drop=True)
+            df.insert(0, "nvt_number", [nvt.nvt_number for i in range(len(df))])
+            dfs.append(df)
+
+        df = pd.concat(dfs)
+        saving_path_folder = Path(self.root_path) / "telekom_list"
+        saving_path_folder.mkdir(parents=True, exist_ok=True)
+        saving_path = saving_path_folder / "Masterliste_{}.xlsx".format(self.name)
+        book = load_workbook(saving_path)  # assuming that the new template is there
+        writer = pd.ExcelWriter(saving_path, engine='openpyxl')
+        writer.book = book
+        writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+
+        print("Log: Writing on Excel")
+
+        sheet = book["HA_Auswertung"]
+        sheet["A1"] = "All Montage: " + self.name
+
+        df.to_excel(writer, index=False, startrow=7, startcol=0, sheet_name='HA_Auswertung', header=False)
+
+        writer.save()
+
+    def export_every_nvt_montage_telekom_excel_from_city_montage_telekom_excel(self):
+        city_df = pd.read_excel(Path(self.root_path) / "telekom_list" / "telekom_addresses.xlsx", dtype={'postal': str})
+
+        print(city_df)
+
+        #### Creating the dictionary:
+        nvt_dict = {}
+        for i in range(len(city_df)):
+            nvt = city_df.iloc[i]["nvt"]
+            if nvt not in nvt_dict.keys():
+                nvt_dict[nvt] = []
+            else:
+                nvt_dict[nvt].append(city_df.iloc[i])
+
+        for nvt in self.nvt_list:
+            if nvt.nvt_number in nvt_dict.keys():
+                print("one series: ", nvt_dict[nvt.nvt_number][0])
+
+                nvt_df = pd.DataFrame(nvt_dict[nvt.nvt_number])
+                nvt_df.to_excel(nvt.path / "automated_data" / "telekom_addresses.xlsx", index=False)
+            else:
+                log("NVT {} is not existed in the city Telekom montage file!".format(nvt.nvt_number))
+
 
     def print(self):
         print("Details of city {} of path {}".format(self.name, self.root_path))
