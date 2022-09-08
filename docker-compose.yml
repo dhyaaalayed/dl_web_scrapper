@@ -1,4 +1,4 @@
-version: "4.12"
+version: "3.3"
 services:
   web_scrapper:
     build: .
@@ -6,3 +6,7 @@ services:
       - "8000:5000"
     volumes:
       - ./:/app
+      #- /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
+    environment:
+      - APP_CLIENT_ID=0000000040172910
+      - APP_CLIENT_SECRET=WAltBcwM9B3nlGDmplOUGfPLqsw5bHDA
