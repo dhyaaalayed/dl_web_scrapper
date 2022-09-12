@@ -209,8 +209,11 @@ class Navigator:
             html_columns = eye_row.find_elements('css selector', 'td')
 
             status = html_columns[2].find_element("css selector", "span").text
+            expl_necessary = html_columns[4].find_element("css selector", "input").get_attribute("aria-checked")
+            expl_finished = html_columns[8].find_element("css selector", "input").get_attribute("aria-checked")
             kundentermin_start = html_columns[12].find_element("css selector", "span").text
             kundentermin_end = html_columns[13].find_element("css selector", "span").text
+            gfap_inst_status = html_columns[10].find_element("css selector", "span").text
             we = html_columns[14].find_element("css selector", "span").text
             kls_nvt_number = html_columns[23].find_element("css selector", "span").text
             if nvt_number != kls_nvt_number:
@@ -230,6 +233,9 @@ class Navigator:
             kls.address.kundentermin_start = kundentermin_start
             kls.address.kundentermin_end = kundentermin_end
             kls.address.we = we
+            kls.address.gfap_inst_status = gfap_inst_status
+            kls.address.expl_necessary = expl_necessary
+            kls.address.expl_finished = expl_finished
             kls_list.append(kls)
             # Just to refresh
             eyes_rows = self.get_and_refresh_eyes_rows()
@@ -240,6 +246,8 @@ class Navigator:
         kls_element = WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.ID, 'processPageForm:klsId')))
         kls_id = kls_element.text
         log("Starting with kls: " + kls_id)
+        address.kls_id = kls_element.text
+        address.fold_id = self.browser.find_element("id", "processPageForm:folId").text
         address.street = self.browser.find_element("id", "processPageForm:street").text
         address.house_number = self.browser.find_element("id", "processPageForm:houseNumber").text
         address.postal = self.browser.find_element("id", "processPageForm:postalCode").text

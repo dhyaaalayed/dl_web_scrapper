@@ -24,10 +24,14 @@ class ExcelAddress:
     hc_gezeichnet = None
     hp_gezeichnet = None
     vermessung_verantwortlicher = None
+    # New columns
+    kunden_status = None
+    nur_hup = None
 
     def init_from_excel_row(self, row: "Pandas Series"):
+        print("rowrow: ", row)
         self.address = Address()
-        self.address.postal = row["PLZ"]
+        self.address.postal = str(row["PLZ"])
         if len(self.address.postal) < 5:
             number_of_zeros = 5 - len(self.address.postal)
             zeros = "0" * number_of_zeros
@@ -35,7 +39,7 @@ class ExcelAddress:
         self.address.city = row["Ort"]
         self.address.street = row["Straße"]
         self.address.house_number = row["Hausnr."]
-        self.address.house_char = row[4] # because it's nan in the header!
+        self.address.house_char = row["Hauschar"] # because it's nan in the header!
         self.hk = row["HK"]
         self.htn = row["HTN"]
         self.we = row["WE"]
@@ -60,17 +64,43 @@ class ExcelAddress:
         self.hc_gezeichnet = row["HC gezeichnet"]
         self.hp_gezeichnet = row["HP gezeichnet"]
         self.vermessung_verantwortlicher = row["Verantwortlicher VM"]
+        # Here to add new rows:
+        # We need an if check for each
+        """
+        added_columns = ["Installiert", "Kunden Status", "KLS-ID", "FOL-ID",
+         "Auskundung erforderlich", "Auskundung erfolgt", "nur HÜP"]
+         """
+
+        if "Installiert" in row.index:
+            self.address.gfap_inst_status = "Installed" if row["Installiert"] == "✔" else ""
+        if "KLS-ID" in row.index:
+            self.address.kls_id = row["KLS-ID"]
+        if "FOL-ID" in row.index:
+            self.address.fold_id = row["FOL-ID"]
+
+        if "Auskundung erforderlich" in row.index:
+            self.address.expl_necessary = row["Auskundung erfolgt"]
+
+        if "Auskundung erfolgt" in row.index:
+            self.address.expl_finished = row["Auskundung erforderlich"]
+
+        if "nur HÜP" in row.index:
+            self.address.nur_hup = row["nur HÜP"]
+
+        if "Kunden Status" in row.index:
+            self.kunden_status = row["Kunden Status"]
 
 
     def export_to_df_dict(self):
-        return {'PLZ': self.address.postal,
+        return {
+            'PLZ': self.address.postal,
             'Ort': self.address.city,
             'Straße': self.address.street,
-            'Hausnr.': self.address.house_number,
+            'Hausnr.': int(self.address.house_number),
             'Hauschar': self.address.house_char,
             'HK': self.hk,
             'HTN': self.htn,
-            'WE': self.address.we,
+            'WE': int(self.address.we) if self.address.we is not None else self.address.we,
             'Status': self.address.status,
             'Datum GBGS': self.datum_gbgs,
             'Kundentermin Beginn': self.address.kundentermin_start,
@@ -92,40 +122,26 @@ class ExcelAddress:
             'Verantwortlicher MT': self.montage_verantwortlicher,
             'HC gezeichnet': self.hc_gezeichnet,
             'HP gezeichnet': self.hp_gezeichnet,
-            'Verantwortlicher VM': self.vermessung_verantwortlicher}
+            'Verantwortlicher VM': self.vermessung_verantwortlicher,
+            # new columns
+            'Installiert': "✔" if self.address.gfap_inst_status == "Installed" else "",
+            'KLS-ID': self.address.kls_id,
+            'FOL-ID': self.address.fold_id,
+            'Auskundung erforderlich': "Ja" if self.address.expl_necessary == "true" else "Nein",
+            'Auskundung erfolgt': "Ja" if self.address.expl_finished == "true" else "Nein",
+            'Kunden Status': self.kunden_status,
+            'nur HÜP': self.nur_hup
+            }
 
 
-"""
-    def export_to_list(self): # to be used as a row in a df
-        return [self.address.postal,
-                self.address.city,
-                self.address.street,
-                self.address.house_number,
-                self.address.house_char,
-                self.hk,
-                self.htn,
-                self.we,
-                self.address.status,
-                self.datum_gbgs,
-                self.address.kundentermin_start,
-                self.address.kundentermin_end,
-                self.bemerkungen,
-                self.Kommentare,
 
-                self.he_erledigt,
-                self.passed_plus,
-                self.kabel_erledigt,
-                self.einblasdatum,
-                self.lange,
-                self.einblasprotokoll,
-                self.kabel_verantwortlicher,
-                self.nvt,
-                self.hup,
-                self.messung,
-                self.messprotokoll,
-                self.montage_verantwortlicher,
-                self.hc_gezeichnet,
-                self.hp_gezeichnet,
-                self.vermessung_verantwortlicher
-                ]
-"""
+
+
+
+
+
+
+
+
+
+

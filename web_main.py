@@ -6,8 +6,8 @@ from my_functions import log
 from navigator import Navigator
 
 with open('city_config.json') as json_file:
-    city_dict = json.load(json_file)
- 
+    conf_dict = json.load(json_file)
+city_dict = conf_dict["cities"]
 
 for city_key in city_dict.keys():
     city_obj = city_dict[city_key]

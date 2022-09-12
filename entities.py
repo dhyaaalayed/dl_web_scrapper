@@ -41,6 +41,12 @@ class Address:
     status = None
     we = None
 
+    # new columns:
+    gfap_inst_status = None
+    kls_id = None
+    fold_id = None
+    expl_necessary = None
+    expl_finished = None
 
     def __init__(self, address_json=None):
         if address_json is not None:
@@ -56,11 +62,17 @@ class Address:
             "status": self.status,
             "kundentermin_start": self.kundentermin_start,
             "kundentermin_end": self.kundentermin_end,
-            "we": self.we
+            "we": self.we,
+            "gfap_inst_status": self.gfap_inst_status,
+            "expl_necessary": self.expl_necessary,
+            "expl_finished": self.expl_finished,
         })
 
     def import_from_json(self, address_json):
         address_json = ast.literal_eval(address_json)
+        self.gfap_inst_status = address_json["gfap_inst_status"]
+        self.kls_id = address_json["kls_id"]
+        self.fold_id = address_json["fold_id"]
         self.street = address_json["street"]
         self.house_number = address_json["house_number"]
         self.house_char = address_json["house_char"]
@@ -70,8 +82,14 @@ class Address:
         self.kundentermin_start = address_json["kundentermin_start"]
         self.kundentermin_end = address_json["kundentermin_end"]
         self.we = address_json["we"]
+        self.gfap_inst_status = address_json["gfap_inst_status"]
+        self.expl_necessary = address_json["expl_necessary"]
+        self.expl_finished = address_json["expl_finished"]
 
     def print(self):
+        print("gfap_inst_status: ", self.gfap_inst_status)
+        print("kls_id: ", self.kls_id)
+        print("fold_id: ", self.fold_id)
         print("street: ", self.street)
         print("house_number: ", self.house_number)
         print("house_char: ", self.house_char)
@@ -81,6 +99,9 @@ class Address:
         print("kundentermin_start: ", self.kundentermin_start)
         print("kundentermin_end: ", self.kundentermin_end)
         print("we: ", self.we)
+        print("gfap_inst_status: ", self.gfap_inst_status)
+        print("expl_necessary: ", self.expl_necessary)
+        print("expl_finished: ", self.expl_finished)
 
     def create_unique_key(self):
         return "_".join([

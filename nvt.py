@@ -151,14 +151,14 @@ class NVT:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
 
-    def archive_montage_excel(self):
+    def archive_montage_excel(self, key):
 
 
         # Just copy it and put it in archive folder
         montage_dest_path = self.path / "Archive" / "montage_liste" / date.today().strftime('%Y_%m_%d')
         montage_dest_path.mkdir(parents=True, exist_ok=True)
         montage_dest_path = montage_dest_path / "Montageliste_{}_{}.xlsx".format(self.nvt_number,
-                                                                                 str(uuid4()).replace("-", "_"))
+                                                                                 key)
         if not os.path.exists(self.montage_excel_path):
             log("There is no Montage Files yet!")
             return
@@ -172,10 +172,8 @@ class NVT:
         shutil.copy(montage_src_path, self.montage_excel_path)
 
 
-    def copy_montage_template_to_montage_excel_path(self):
-        shutil.copy("excel_templates/Montageliste_Template_Final.xlsx", self.montage_excel_path)
-
-
+    def copy_montage_template_to_montage_excel_path(self, montage_template_path):
+        shutil.copy(montage_template_path, self.montage_excel_path)
 
     def archive_ansprech_excel(self):
         ansprechpartnerListe_file_name = "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
