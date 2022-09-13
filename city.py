@@ -82,7 +82,8 @@ class City:
         saving_path = saving_path_folder / "Masterliste_{}.xlsx".format(self.name)
         shutil.copy("/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx", saving_path)
 
-    def export_all_montage_to_one_excel(self, montage_template_columns):
+
+    def export_all_montage_to_one_df(self, montage_template_columns):
         dfs = []
         for nvt in self.nvt_list:
             df = nvt.montage_excel_parser.export_updated_addresses_to_df(montage_template_columns)
@@ -93,9 +94,15 @@ class City:
 
         if len(dfs) == 0:
             log("There is no Masterlist to generate")
-            return
+            return None
 
-        df = pd.concat(dfs)
+        return pd.concat(dfs)
+
+
+    def export_all_montage_to_one_excel(self, montage_template_columns):
+        df = self.export_all_montage_to_one_df(montage_template_columns)
+        if df == None:
+            return
         saving_path_folder = Path(self.root_path) / "telekom_list"
         saving_path_folder.mkdir(parents=True, exist_ok=True)
         saving_path = saving_path_folder / "Masterliste_{}.xlsx".format(self.name)

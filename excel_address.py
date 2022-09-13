@@ -56,7 +56,7 @@ class ExcelAddress:
         self.lange = row["Länge"]
         self.einblasprotokoll = row["Einblasprotokoll"]
         self.kabel_verantwortlicher = row["Verantwortlicher KB"]
-        self.nvt = row["NVT"]
+        # self.nvt = row["NVT"] # deleted column (The blue nvt)
         self.hup = row["HÜP"]
         self.messung = row["Messung"]
         self.messprotokoll = row["Messprotokoll"]
@@ -108,7 +108,7 @@ class ExcelAddress:
             'Bemerkungen': self.bemerkungen,
             'Kommentare ': self.Kommentare,
             'VZK Anbindung': self.vzk_anbindung,
-            'HE erledigt': self.he_erledigt,
+            'HE erledigt': "✔" if self.he_erledigt == "✓" else self.he_erledigt,
             'passed plus': self.passed_plus,
             'Erledigt KB': self.kabel_erledigt,
             'Einblasdatum': self.einblasdatum,

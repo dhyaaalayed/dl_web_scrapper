@@ -12,9 +12,9 @@
     "cities": {
         "Dresden": {
             "scrapping_activated": false,
-            "loading_json_activated": false,
-            "updating_montage_activated": false,
-            "generating_ansprechpartner": false,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
             "user_name": "markus.lora@dl-projects.de",
             "password": "Markus2022!",
             "paths": [
@@ -24,9 +24,9 @@
         },
         "Bautzen": {
             "scrapping_activated": false,
-            "loading_json_activated": false,
-            "updating_montage_activated": false,
-            "generating_ansprechpartner": false,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
             "user_name": "David.peterson@dl-projects.de",
             "password": "David2022!",
             "paths": [
@@ -34,10 +34,10 @@
             ]
         },
         "Pulsnitz": {
-            "scrapping_activated": false,
-            "loading_json_activated": false,
-            "updating_montage_activated": false,
-            "generating_ansprechpartner": false,
+            "scrapping_activated": true,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
             "user_name": "ahmet.orla@dl-project.de",
             "password": "Ahmet2022!",
             "paths": [
@@ -46,9 +46,9 @@
         },
         "Cottbus": {
             "scrapping_activated": false,
-            "loading_json_activated": false,
-            "updating_montage_activated": false,
-            "generating_ansprechpartner": false,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
             "user_name": "dieaa.aled@dl-projects.de",
             "password": "Dieaa1234!",
             "paths": [

@@ -156,6 +156,7 @@ class NVT:
         with open(json_path) as json_file:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
+        
     def is_json_recently_updated(self):
         json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
         with open(json_path) as json_file:
@@ -163,8 +164,6 @@ class NVT:
         nvt_json["creation_time"]
 
     def archive_montage_excel(self, key):
-
-
         # Just copy it and put it in archive folder
         montage_dest_path = self.path / "Archive" / "montage_liste" / date.today().strftime('%Y_%m_%d')
         montage_dest_path.mkdir(parents=True, exist_ok=True)
