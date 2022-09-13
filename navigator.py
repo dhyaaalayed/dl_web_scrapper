@@ -74,6 +74,11 @@ class Navigator:
         log("Clicking the search button")
         self.click_the_search_button()
 
+    def take_screenshot(self):
+        self.browser.set_window_size(1920, 1400)
+        self.browser.save_screenshot('/Users/dlprojectsit/Desktop/Github_local/web_scrapper/screenshot.png')
+
+
     def _enter_nvt_number(self, nvt_number):
         log(nvt_number)
         # First we need to click on nvt div to show the input of entering nvt number:
@@ -89,8 +94,6 @@ class Navigator:
 
         # Waiting for drowpdown spans to select the nvt number
 
-        # self.browser.set_window_size(1920, 1400)
-        # self.browser.save_screenshot('/Users/dlprojectsit/Desktop/Github_local/web_scrapper/screenshot.png')
 
         log("Waiting for dropdown list to select the span of the nvt")
 
@@ -99,6 +102,7 @@ class Navigator:
         self.browser.execute_script("arguments[0].click();", nvt_span)
 
         log("Waiting for NVT Filtering until loading li element of NVT: {}".format(nvt_number))
+        self.take_screenshot()
         WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.XPATH, '//li[@data-token-value="{}"]'.format(nvt_number))))
         log("Li element of NVT {} is loaded".format(nvt_number))
 
@@ -106,8 +110,17 @@ class Navigator:
         search_button_element = self.browser.find_element('id', 'searchCriteriaForm:searchButton')
         search_button_element.click()
 
+        table_rows = EC.presence_of_element_located((By.XPATH, '//tr[@data-ri="0" and @role="row"]'))
+        no_result_span = EC.presence_of_element_located((By.XPATH, '//span[text()="{}"]'.format("The search did not yield any results.")))
+        any_of = EC.any_of(
+            no_result_span,
+            table_rows
+        )
+
         log("Waiting for loading the table after pressing the search button")
-        WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.XPATH, '//tr[@data-ri="0" and @role="row"]')))
+
+        WebDriverWait(self.browser, 100).until(any_of)
+        WebDriverWait(self.browser, 100).until( EC.invisibility_of_element_located((By.XPATH, '//span[text()="{}"]'.format("The search did not yield any results."))))
 
     def click_reset_filter_button(self):
         reset_button = self.browser.find_element('id', 'searchCriteriaForm:resetButton')
@@ -119,7 +132,7 @@ class Navigator:
 
     def navigate_to_address_page(self, eye_button):
         print("Log: Navigating to address page")
-        self.browser.execute_script("arguments[0].click();", eye_button);
+        self.browser.execute_script("arguments[0].click();", eye_button)
         # time.sleep(2)
 
     def get_next_page_button(self, index):
@@ -144,6 +157,7 @@ class Navigator:
     def log_number_of_eyes_of_current_page(self, i):
         eys_links = self.browser.find_elements("xpath", '//a[contains(@id,":viewSelectedRowItem")]')
         print("Log: Number of rows is ", len(eys_links), " in Page ", str(i))
+        return len(eys_links)
 
     def download_exploration_protocol(self, nvt_path, address_key):
         download_button = self.browser.find_element("id", "processPageForm:explorationProtocol")

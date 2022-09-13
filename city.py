@@ -43,10 +43,7 @@ class City:
         for nvt_path in self.nvt_path_list:
             # hk_number = nvt_path.parent.stem.split("+")[0].replace("HK ", "").replace(" ", "") # There is no need to it
             nvt_number = nvt_path.stem.replace("NVT " ,"")
-            if nvt_number in already_downloaded_list and len(already_downloaded_list) > 0:
-                log(str(nvt_number) + " is already downloaded!")
-                log("Moving to the next one...")
-            else:
+            if nvt_number not in already_downloaded_list:
                 log("Start scrapping NVT: " + str(nvt_number))
                 nvt = NVT(nvt_number, nvt_path, city = self.name, navigator = self.navigator)
                 nvt.initialize_using_web_scrapper()

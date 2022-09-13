@@ -35,6 +35,10 @@ class NVT:
     def initialize_using_web_scrapper(self):
         self.navigator.filter_in_nvt(self.nvt_number)
         self.kls_list = self.visit_eyes_pages(self.path)
+        if self.kls_list == None:
+            log("There is no gpgs data for NVT {}".format(self.nvt_number))
+            self.navigator.browser.refresh()
+            return
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
@@ -43,7 +47,9 @@ class NVT:
     def visit_eyes_pages(self, nvt_path):
         kls_list = []
         for i in range(1, 1000):
-            self.navigator.log_number_of_eyes_of_current_page(i)
+            number_of_rows = self.navigator.log_number_of_eyes_of_current_page(i)
+            if number_of_rows == 0:
+                return None
 
             kls_list += self.navigator.get_eyes_data(self.nvt_number, nvt_path)
 
@@ -150,6 +156,11 @@ class NVT:
         with open(json_path) as json_file:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
+    def is_json_recently_updated(self):
+        json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
+        with open(json_path) as json_file:
+            nvt_json = json.load(json_file)
+        nvt_json["creation_time"]
 
     def archive_montage_excel(self, key):
 
