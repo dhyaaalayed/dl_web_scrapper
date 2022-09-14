@@ -7,7 +7,7 @@ import json
 from entities import Kls, Address, Person, Owner
 from montage_master_package import MontageExcelParser
 import numpy as np
-from datetime import date
+from datetime import date, datetime
 from uuid import uuid4
 from my_functions import log
 
@@ -37,7 +37,10 @@ class NVT:
         self.kls_list = self.visit_eyes_pages(self.path)
         if self.kls_list == None:
             log("There is no gpgs data for NVT {}".format(self.nvt_number))
-            self.navigator.browser.refresh()
+            log("Refreshing the web page")
+            log("Waiting for loading the page")
+            self.navigator.refresh_page()
+            log("Page is loaded!")
             return
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
@@ -124,6 +127,7 @@ class NVT:
         del nvt_json["navigator"]
         nvt_json["path"] = str(nvt_json["path"])
         nvt_json["kls_list"] = [kls.export_to_json() for kls in self.kls_list]
+        nvt_json["creation_time"] = str(datetime.now())
         print("nvt_json: ", nvt_json)
         return nvt_json
 
@@ -149,6 +153,7 @@ class NVT:
             json.dump(json_obj, f)
         log("Storing nvt json at: " + str(store_path / 'nvt_telekom_data.json'))
 
+
     def read_from_json(self):
         log("Start reading nvt {} from json file".format(self.nvt_number))
         json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
@@ -159,9 +164,19 @@ class NVT:
         
     def is_json_recently_updated(self):
         json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
+        if not os.path.exists(json_path):
+            return False
+
         with open(json_path) as json_file:
             nvt_json = json.load(json_file)
-        nvt_json["creation_time"]
+
+        if "creation_time" not in nvt_json.keys():
+            return False
+
+        creation_time = nvt_json["creation_time"]
+        creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
+        time_difference = datetime.now() - creation_time
+        return time_difference.seconds < 86400
 
     def archive_montage_excel(self, key):
         # Just copy it and put it in archive folder

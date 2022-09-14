@@ -107,15 +107,12 @@ Later:
 
 
 
-
-Last Step:
-	Getting the new addresses for montage_liste :)
-Next:
-	Write them to their excel files :)
-
-
-
-
+13.09.2022
+	
+	I created creation_time attribute to each nvt json file
+	Next: I need to load the creation time before scrapping the nvt
+		if the creation time occured less than 2 hours ago
+			then do not scrap!
 
 
 

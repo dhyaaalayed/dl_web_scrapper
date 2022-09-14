@@ -78,9 +78,14 @@ class Navigator:
         self.browser.set_window_size(1920, 1400)
         self.browser.save_screenshot('/Users/dlprojectsit/Desktop/Github_local/web_scrapper/screenshot.png')
 
+    def refresh_page(self):
+        self.browser.refresh()
+        WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.ID,  "searchCriteriaForm:nvtArea")))
 
     def _enter_nvt_number(self, nvt_number):
         log(nvt_number)
+        WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.ID,  "searchCriteriaForm:nvtArea")))
+        self.take_screenshot()
         # First we need to click on nvt div to show the input of entering nvt number:
         nvt_filter_div = self.browser.find_element("id", "searchCriteriaForm:nvtArea")
         self.browser.execute_script("arguments[0].click();", nvt_filter_div)
@@ -102,7 +107,7 @@ class Navigator:
         self.browser.execute_script("arguments[0].click();", nvt_span)
 
         log("Waiting for NVT Filtering until loading li element of NVT: {}".format(nvt_number))
-        self.take_screenshot()
+        # self.take_screenshot()
         WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.XPATH, '//li[@data-token-value="{}"]'.format(nvt_number))))
         log("Li element of NVT {} is loaded".format(nvt_number))
 
@@ -120,7 +125,7 @@ class Navigator:
         log("Waiting for loading the table after pressing the search button")
 
         WebDriverWait(self.browser, 100).until(any_of)
-        WebDriverWait(self.browser, 100).until( EC.invisibility_of_element_located((By.XPATH, '//span[text()="{}"]'.format("The search did not yield any results."))))
+        # WebDriverWait(self.browser, 100).until( EC.invisibility_of_element_located((By.XPATH, '//span[text()="{}"]'.format("The search did not yield any results."))))
 
     def click_reset_filter_button(self):
         reset_button = self.browser.find_element('id', 'searchCriteriaForm:resetButton')

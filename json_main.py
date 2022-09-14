@@ -59,9 +59,9 @@ for city_key in city_dict.keys(): # city key is for the whole BVH area
                     nvt.montage_excel_parser.update_addresses_from_telekom_excel()
                 
                     # Now using the new template:
-                    # log("Using the new Montage Excel template")
-                    # nvt.copy_montage_template_to_montage_excel_path(montage_template_path)
-                    # nvt.montage_excel_parser.export_current_data_to_excel(nvt.nvt_number, montage_template_columns)
+                    log("Using the new Montage Excel template")
+                    nvt.copy_montage_template_to_montage_excel_path(montage_template_path)
+                    nvt.montage_excel_parser.export_current_data_to_excel(nvt.nvt_number, montage_template_columns)
 
         # log("Exporting Masterliste for {}".format(city.name))
         # city.copy_master_liste_template()

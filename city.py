@@ -46,6 +46,9 @@ class City:
             if nvt_number not in already_downloaded_list:
                 log("Start scrapping NVT: " + str(nvt_number))
                 nvt = NVT(nvt_number, nvt_path, city = self.name, navigator = self.navigator)
+                if nvt.is_json_recently_updated():
+                    log("NVT {} is already updated".format(nvt_number))
+                    continue
                 nvt.initialize_using_web_scrapper()
                 self.nvt_list.append(nvt)
                 self.navigator.click_reset_filter_button()

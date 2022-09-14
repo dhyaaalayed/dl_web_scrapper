@@ -34,7 +34,7 @@
             ]
         },
         "Pulsnitz": {
-            "scrapping_activated": true,
+            "scrapping_activated": false,
             "loading_json_activated": true,
             "updating_montage_activated": true,
             "generating_ansprechpartner": true,
@@ -56,7 +56,7 @@
             ]
         },
         "Prignitz": {
-            "scrapping_activated": false,
+            "scrapping_activated": true,
             "loading_json_activated": true,
             "updating_montage_activated": true,
             "generating_ansprechpartner": true,
