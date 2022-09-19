@@ -176,7 +176,7 @@ class NVT:
         creation_time = nvt_json["creation_time"]
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
-        return time_difference.seconds < 86400
+        return time_difference.seconds < 10000
 
     def archive_montage_excel(self, key):
         # Just copy it and put it in archive folder
