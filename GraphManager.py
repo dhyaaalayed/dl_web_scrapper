@@ -95,37 +95,40 @@ class GraphManager:
         )
         return response
 
-    def get_folder_items_by_url(self, url):
+    def get_folder_items_by_id(self, id):
         """
             Items are folders and files
         """
-        print("url: ", url)
-        encoded64_url = self.encode64_url(url)
         response = requests.get(
-            self.GRAPH_API_ENDPOINT + f'/shares/{encoded64_url}/driveItem?$expand=children',
+            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{id}/children',
             headers=self.headers,
         )
-        print("response.json(): ", response.json())
-        return response.json()["children"]
+        return response.json()["value"]
 
 
-    def get_folder_subfolders_by_url(self, url):
-        items = self.get_folder_items_by_url(url)
+    def get_folder_subfolders_by_id(self, id):
+        items = self.get_folder_items_by_id(id)
         return [item for item in items if "folder" in item.keys()]
 
     def copy_file(self, src_path, dest_path):
         pass
 
-    def get_nvt_paths(self, subcity_url):
+    def get_nvt_ids(self, subcity_path):
         """
             city folder
         """
-        nvt_collections = self.get_folder_subfolders_by_url(subcity_url)
-        nvt_folders_urls = []
-        for collection in nvt_collections:
-            nvt_folders = self.get_folder_subfolders_by_url(collection["webUrl"])
-            nvt_folders_urls += [folder["webUrl"] for folder in nvt_folders if "NVT" in folder["name"]]
-        return nvt_folders_urls
+        subcity_id = self.get_path_id(subcity_path)
+
+        hk_folders = self.get_folder_subfolders_by_id(subcity_id)
+        hk_folders = [folder for folder in hk_folders if "NVT" in folder["name"]]
+        nvt_folders = []
+        for hk_folder in hk_folders:
+            iter_nvt_folders = self.get_folder_subfolders_by_id(hk_folder["id"])
+            iternvt_folders = [folder for folder in iter_nvt_folders if "NVT" in folder["name"]]
+            nvt_folders += iternvt_folders
+        return nvt_folders
+
+
 
     def get_folder_id(self, parent_id, folder_name):
         response = requests.get(
@@ -165,5 +168,5 @@ if __name__ == "__main__":
 
 
 
-    path_id = graph_manager.get_path_id("BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)")
-    print("path_id: ", path_id)
+    folders = graph_manager.get_nvt_ids("BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)")
+    print("folders: ", folders)
