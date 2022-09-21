@@ -48,7 +48,7 @@ class GraphManager:
             client_credential=client_secret,
         )
         access_token_req = client.acquire_token_by_username_password(username="robotics@dl-projects.de",
-                                                                 password="Daf14576", scopes=scopes)
+                                                                 password="", scopes=scopes)
         self.access_token = access_token_req["access_token"]
 
     def encode_file(self, local_path):
