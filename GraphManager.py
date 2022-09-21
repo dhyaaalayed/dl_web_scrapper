@@ -190,6 +190,13 @@ class MicrosoftGraphNVTManager:
         # paths
         self.nvt_download_path = self.graph_manager.download_folder / "NVT {}".format(self.nvt_number)
         self.nvt_to_upload_path = self.graph_manager.upload_folder / "NVT {}".format(self.nvt_number)
+
+    def get_generated_json_path(self):
+        path = self.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json"
+        if os.path.exists(path):
+            return path
+        return None
+
     def download_automated_data_folder(self):
         os.mkdir(self.nvt_download_path)
         # 1- Downloading automated_folder
@@ -205,7 +212,7 @@ class MicrosoftGraphNVTManager:
     def upload_nvt_json_file(self):
         path = self.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json"
         if os.path.exists(path):
-            self.graph_manager.upload_file(path, self.nvt_mg_obj)
+            self.graph_manager.upload_file(path, self.automated_data_folder_mg_obj)
             log("uploading generated gpgs json to one drive")
         else:
             log("No generated gpgs json file to upload")
