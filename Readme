@@ -117,9 +117,38 @@ Later:
 
 
 
+14.09.2022
+	
+	Solving microsoft graph problem:
+
+
+Left menu --> authentication
+
+then
+
+	Supported account types
+	Who can use this application or access this API?
+	Accounts in any organizational directory (Any Azure AD directory - Multitenant)
+
+I changed it to this option
+
+then I have got another error:
+	AADSTS500113: No reply address is registered for the application.
+
+I solved by:
+Left menu --> authentication
+
+then Add platform -> then web
+then entering this redirect url: http://localhost:1234
 
 
 
+19.09.2022
+	
+	By adding any new Baupläne folder
+		Baupläne word must be replace with this: Baupläne
+			because they are not the same!
+				according to microsoft graph!
 
 
 

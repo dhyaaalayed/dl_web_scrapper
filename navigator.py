@@ -174,7 +174,7 @@ class Navigator:
             self.browser.execute_script("arguments[0].click();", download_button);
 
 
-    def get_eye_data(self, eye_button, nvt_path):
+    def get_eye_data(self, eye_button):
         """
             eye_date: means one kls record that contains:
                     kls_id
@@ -217,7 +217,7 @@ class Navigator:
         exp_finished = html_column.find_element("css selector", 'input').get_attribute("aria-checked")
         return True if exp_finished == "true" else False
 
-    def get_eyes_data(self, nvt_number, nvt_path):
+    def get_eyes_data(self, nvt_number):
         kls_list = []
         eyes_rows = self.get_and_refresh_eyes_rows()
         number_of_rows = len(eyes_rows)
@@ -247,7 +247,7 @@ class Navigator:
             eye_link = html_columns[0].find_element("css selector", 'a')
 
             # Creating Kls object
-            kls = self.get_eye_data(eye_link, nvt_path) # here an eye link should be given
+            kls = self.get_eye_data(eye_link) # here an eye link should be given
             kls.address.status = status
             kls.address.kundentermin_start = kundentermin_start
             kls.address.kundentermin_end = kundentermin_end

@@ -13,6 +13,7 @@ import warnings
 import pandas as pd
 from openpyxl.reader.excel import load_workbook
 
+from GraphManager import MicrosoftGraphNVTManager
 from my_functions import log
 from nvt import NVT
 
@@ -35,14 +36,38 @@ class City:
         self.root_path = path
         self.navigator = navigator
         self.nvt_list = []
-        self.nvt_path_list = [Path(path) for path in glob.glob(self.root_path + "/*/*") if "NVT" in Path(path).stem]
+        self.nvt_path_list = []
+
+    def initialize_nvt_dict_using_web_navigator_mg(self, graph_manager):
+        """
+            Here we are only talking about the json files:
+            So what we need:
+                1- All nvt names to use by filtering the Telekom UI
+                2- All automated_data ids to upload the new json files
+                3- All already existed json files to read them!
+        """
+        mg_nvts = graph_manager.get_nvt_ids(self.root_path)
+        for mg_nvt in mg_nvts:
+
+            nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt)
+            nvt_mgm.download_automated_data_folder()
+
+            nvt = NVT(nvt_mgm.nvt_number, path="None", city=self.name, navigator=self.navigator)
+            log("Start scrapping NVT: " + str(nvt_mgm.nvt_number))
+            if nvt.is_json_recently_updated(nvt_mgm.nvt_download_path / "automated_data" / "nvt_telekom_data.json" ):
+                log("NVT {} is already updated".format(nvt_mgm.nvt_number))
+                continue
+            nvt.initialize_using_web_scrapper(nvt_mgm.nvt_to_upload_path / "automated_data")
+            nvt_mgm.upload_nvt_json_file()
+            self.nvt_list.append(nvt)
+            self.navigator.click_reset_filter_button()
 
     def initialize_nvt_dict_using_web_navigator(self, already_downloaded_list = []):
         log("Start: initialize_nvt_dict")
-        
+        self.nvt_path_list = [Path(path) for path in glob.glob(self.root_path + "/*/*") if "NVT" in Path(path).stem]
         for nvt_path in self.nvt_path_list:
             # hk_number = nvt_path.parent.stem.split("+")[0].replace("HK ", "").replace(" ", "") # There is no need to it
-            nvt_number = nvt_path.stem.replace("NVT " ,"")
+            nvt_number = nvt_path.stem.replace("NVT ", "")
             if nvt_number not in already_downloaded_list:
                 log("Start scrapping NVT: " + str(nvt_number))
                 nvt = NVT(nvt_number, nvt_path, city = self.name, navigator = self.navigator)
@@ -57,9 +82,11 @@ class City:
                 print("____________________________________")
 
     def load_nvt_dict_from_stored_json(self, execluding_list = []):
+        # initialize the list using installed one drive app
+        self.nvt_path_list = [Path(path) for path in glob.glob(self.root_path + "/*/*") if "NVT" in Path(path).stem]
         for nvt_path in self.nvt_path_list:
 
-            nvt_number = nvt_path.stem.replace("NVT " ,"")
+            nvt_number = nvt_path.stem.replace("NVT ", "")
             nvt_json = nvt_path / "automated_data" / "nvt_telekom_data.json"
             if os.path.exists(nvt_json):
                 log("Parsed nvt_number: " + nvt_number)

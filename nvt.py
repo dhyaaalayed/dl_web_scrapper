@@ -32,9 +32,9 @@ class NVT:
         self.montage_excel_parser = None
         
 
-    def initialize_using_web_scrapper(self):
+    def initialize_using_web_scrapper(self, storing_json_path=None):
         self.navigator.filter_in_nvt(self.nvt_number)
-        self.kls_list = self.visit_eyes_pages(self.path)
+        self.kls_list = self.visit_eyes_pages()
         if self.kls_list == None:
             log("There is no gpgs data for NVT {}".format(self.nvt_number))
             log("Refreshing the web page")
@@ -45,16 +45,16 @@ class NVT:
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
-        self.write_to_json()
+        self.write_to_json(storing_json_path)
 
-    def visit_eyes_pages(self, nvt_path):
+    def visit_eyes_pages(self):
         kls_list = []
         for i in range(1, 1000):
             number_of_rows = self.navigator.log_number_of_eyes_of_current_page(i)
             if number_of_rows == 0:
                 return None
 
-            kls_list += self.navigator.get_eyes_data(self.nvt_number, nvt_path)
+            kls_list += self.navigator.get_eyes_data(self.nvt_number)
 
             if not self.navigator.navigate_to_next_page(i + 1):
                 break
@@ -145,9 +145,10 @@ class NVT:
             )
             self.kls_list.append(kls)
         print('self.kls_list111: ', len(self.kls_list))
-    def write_to_json(self):
+    def write_to_json(self, store_path=None):
+        if store_path == None:
+            store_path = self.path / 'automated_data'
         json_obj = self.export_to_json()
-        store_path = self.path / 'automated_data'
         Path(store_path).mkdir(parents=True, exist_ok=True)
         with open(store_path / 'nvt_telekom_data.json', 'w') as f:
             json.dump(json_obj, f)
@@ -162,8 +163,9 @@ class NVT:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
         
-    def is_json_recently_updated(self):
-        json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
+    def is_json_recently_updated(self, json_path=None):
+        if json_path == None: # In case of not using Microsoft Graph downloaded file
+            json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
         if not os.path.exists(json_path):
             return False
 
@@ -176,7 +178,7 @@ class NVT:
         creation_time = nvt_json["creation_time"]
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
-        return time_difference.seconds < 10000
+        return time_difference.seconds < 1000
 
     def archive_montage_excel(self, key):
         # Just copy it and put it in archive folder

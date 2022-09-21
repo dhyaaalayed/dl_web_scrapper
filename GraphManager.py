@@ -5,53 +5,28 @@ to get shared one by id:
     self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{BAU_FOLDER_ID}
 """
 import base64
+import os
+import shutil
 from pathlib import Path
 
 import msal
 import requests
 
 # Drive id of Derla Device, where we have the BAU and other folders!
-from IPython.core.display_functions import display
-
 DRIVE_ID = "b!t3YEe8U8mkSNKqGW2Jx1iTQpNwrZTC5Bob7-032a29z3_1Qd4gMtTo_N_SKBLQH0"
 BAU_FOLDER_ID = "01A6QGC52KCABYH3NEJRDYM37SPH5MQPYF"
-BAU_FOLDER_URL = "https://derlatiefbau-my.sharepoint.com/personal/data_management_derla-tiefbau_de/Documents/BAU"
-# BAU_FOLDER_URL = "u!" + str(base64.b64encode( bytes(BAU_FOLDER_URL, 'utf-8') )).replace('/', '_').replace('+', '-')[2:-3]
-# print("BAU_FOLDER_URL", str(BAU_FOLDER_URL))
 
-# just to test
-SUBCITY_URL = "https://derlatiefbau-my.sharepoint.com/personal/data_management_derla-tiefbau_de/Documents/BAU/RV-07%20Dresden-Cottbus/BVH-01%20Dresden%20Cotta/Cotta%20West/Baupl%C3%A4ne%20(HK+NVT)"
 
-shared_folders = {
-    "BAU": {
-        "id": "01A6QGC52KCABYH3NEJRDYM37SPH5MQPYF",
-    },
-    "shared_with_telekom": { # For MasterListe
-        "Dresden": {
-            "id": "01A6QGC55DPQV75GHFYNALMTB5RLTWQYU3"
-        },
-        "Cottbus": {
-            "id": "01A6QGC53CHKYNQLNVPJD2E6HRBHM4NJN2"
-        },
-        "Bautzen": {
-            "id": "01A6QGC5ZMZCRSH4MKEZB3Y2HATRLG6E2D"
-        },
-        "Pulsnitz": {
-            "id": "01A6QGC54PGFPMKNH73VCY4RY3XVT5BNXB"
-        },
-        "Prignitz": {
-            "id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"
-        }
-    }
-}
 
 class GraphManager:
     access_token = None
     client = None
     headers = None
     GRAPH_API_ENDPOINT = None
+    path_id_dict = {}
 
-
+    download_folder = Path("onedrive_data/download")
+    upload_folder = Path("onedrive_data/upload")
 
     def __init__(self):
         self.GRAPH_API_ENDPOINT = 'https://graph.microsoft.com/v1.0'
@@ -59,6 +34,7 @@ class GraphManager:
         self.headers = {
             'authorization': 'Bearer {}'.format(self.access_token),
         }
+        self.clean_cloud_onedrive_folder()
 
     def encode64_url(self, url):
         return "u!" + str(base64.b64encode( bytes(url, 'utf-8') )).replace('/', '_').replace('+', '-')[2:-3]
@@ -73,23 +49,31 @@ class GraphManager:
         )
         access_token_req = client.acquire_token_by_username_password(username="robotics@dl-projects.de",
                                                                  password="Daf14576", scopes=scopes)
-        self.access_token =  access_token_req["access_token"]
+        self.access_token = access_token_req["access_token"]
 
     def encode_file(self, local_path):
         with open(local_path, 'rb') as upload:
             media_content = upload.read()
         return media_content
 
-    def download_file(self, local_path, drive_path):
-        requests.get(
-            self.GRAPH_API_ENDPOINT + f'/me'
-        )
+    def download_file(self, file, path_to_store):
 
-    def upload_file(self, local_path, drive_path):
+        response = requests.get(
+            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{file["id"]}/content',
+            headers=self.headers,
+        )
+        Path(path_to_store).mkdir(parents=True, exist_ok=True)
+        download_path = Path(path_to_store) / file["name"]
+        with open(download_path, "wb") as handler:
+            handler.write(response.content)
+
+
+    def upload_file(self, local_path, drive_folder):
+        file_name = Path(local_path).name
         media_content = self.encode_file(local_path)
         response = requests.put(
             # GRAPH_API_ENDPOINT + f'/users/user_id/robotics@dl-projects.de/drive/items/root:/{file_name}:/content',
-            self.GRAPH_API_ENDPOINT + f'/me/drive/items/root:/{drive_path}:/content',
+            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{drive_folder["id"]}:/{file_name}:/content',
             headers=self.headers,
             data=media_content
         )
@@ -124,26 +108,27 @@ class GraphManager:
         nvt_folders = []
         for hk_folder in hk_folders:
             iter_nvt_folders = self.get_folder_subfolders_by_id(hk_folder["id"])
-            iternvt_folders = [folder for folder in iter_nvt_folders if "NVT" in folder["name"]]
-            nvt_folders += iternvt_folders
+            iter_nvt_folders = [folder for folder in iter_nvt_folders if "NVT" in folder["name"]]
+            nvt_folders += iter_nvt_folders
         return nvt_folders
 
 
 
-    def get_folder_id(self, parent_id, folder_name):
+    def get_item(self, parent_id, item_name):
+        """
+            Returns a dict of an item.
+        """
         response = requests.get(
             self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{parent_id}/children',
             # self.GRAPH_API_ENDPOINT + f'/shares/{parent_id}/driveItem?$expand=children',
             headers=self.headers,
         )
-        print("response.json(): ", response.json())
 
         children = response.json()["value"]
 
         for child in children:
-            if "folder" in child.keys():
-                if child["name"] == folder_name:
-                    return child["id"]
+            if child["name"] == item_name:
+                return child
         return None
 
 
@@ -156,17 +141,78 @@ class GraphManager:
         next_id = BAU_FOLDER_ID
         for name in Path(path).parts[1:]: # [1:] for execluding BAU
             print("name: ", name)
-            next_id = self.get_folder_id(next_id, name)
+            next_id = self.get_item(next_id, name)["id"]
             print("next_id: ", next_id)
         return next_id
 
+    def get_nvt_data_ids(self, nvt_id, nvt_path):
+        # nvt_id: to Upload montageliste:
+        # nvt_montage_id: to download the current montageliste
+        # telkom_addresses_id: to get telekom addresses
+        # automated_data folder id: to upload a new telekom list
+        # json_file_id to read the current telekom data
 
-#users/user_id/data.management@derla-tiefbau.de
+        automated_folder_id = self.get_item(nvt_id, "automated_data")
+        json_file_id = self.get_item(automated_folder_id, "nvt_telekom_data.json")
+        telkom_addresses_id = self.get_item(automated_folder_id, "telekom_addresses.xlsx")
+
+
+    def clean_cloud_onedrive_folder(self):
+        """Just to delete all data after finishing from the current nvt
+            Simply: by deleting the folder and creating it again :)
+        """
+        if os.path.exists(self.download_folder):
+            shutil.rmtree(self.download_folder)
+        if os.path.exists(self.upload_folder):
+            shutil.rmtree(self.upload_folder)
+        os.mkdir(self.download_folder)
+        os.mkdir(self.upload_folder)
+
+
+class MicrosoftGraphNVTManager:
+    graph_manager = None
+    nvt_mg_obj = None
+    nvt_number = None
+    automated_data_folder_mg_obj = None
+
+    # paths
+    nvt_to_upload_path = None # the path of the json that we are gonna generate
+    nvt_download_path = None
+
+    def __init__(self, graph_manager: GraphManager, nvt_mg_obj):
+        self.graph_manager = graph_manager
+        self.nvt_mg_obj = nvt_mg_obj
+        self.nvt_number = self.nvt_mg_obj["name"].replace("NVT ", "")
+        self.automated_data_folder_mg_obj = self.graph_manager.get_item(self.nvt_mg_obj["id"], "automated_data")
+        # paths
+        self.nvt_download_path = self.graph_manager.download_folder / "NVT {}".format(self.nvt_number)
+        self.nvt_to_upload_path = self.graph_manager.upload_folder / "NVT {}".format(self.nvt_number)
+    def download_automated_data_folder(self):
+        os.mkdir(self.nvt_download_path)
+        # 1- Downloading automated_folder
+
+        automated_data_mg_obj_items = self.graph_manager.get_folder_items_by_id(self.automated_data_folder_mg_obj["id"])
+        for item in automated_data_mg_obj_items:
+            self.graph_manager.download_file(item, self.nvt_download_path / "automated_data")
+
+        # 2- Download montage excel file
+        montage_excel_mg_obj = self.graph_manager.get_item(self.nvt_mg_obj["id"], "Montageliste_{}.xlsx".format(self.nvt_number))
+        self.graph_manager.download_file(montage_excel_mg_obj, self.nvt_download_path)
+
+    def upload_nvt_json_file(self):
+        self.graph_manager.upload_file(self.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json", self.nvt_mg_obj)
+
 
 if __name__ == "__main__":
     graph_manager = GraphManager()
 
+    nvt_mg_list = graph_manager.get_nvt_ids("BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)")
+    nvt_mg_obj = nvt_mg_list[0]
+
+    nvt_mgm = MicrosoftGraphNVTManager(graph_manager, nvt_mg_obj)
+    nvt_mgm.download_automated_data_folder()
 
 
-    folders = graph_manager.get_nvt_ids("BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)")
-    print("folders: ", folders)
+
+
+

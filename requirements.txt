@@ -2,3 +2,4 @@ openpyxl==3.0.10
 pandas==1.4.3
 selenium==4.4.0
 UliPlot==0.2.2
+msal==1.18.0
