@@ -12,6 +12,9 @@ from pathlib import Path
 import msal
 import requests
 
+from my_functions import log
+from security_config import user_name, password
+
 # Drive id of Derla Device, where we have the BAU and other folders!
 DRIVE_ID = "b!t3YEe8U8mkSNKqGW2Jx1iTQpNwrZTC5Bob7-032a29z3_1Qd4gMtTo_N_SKBLQH0"
 BAU_FOLDER_ID = "01A6QGC52KCABYH3NEJRDYM37SPH5MQPYF"
@@ -47,8 +50,8 @@ class GraphManager:
             app_id, authority="https://login.microsoftonline.com/organizations/",
             client_credential=client_secret,
         )
-        access_token_req = client.acquire_token_by_username_password(username="robotics@dl-projects.de",
-                                                                 password="", scopes=scopes)
+        access_token_req = client.acquire_token_by_username_password(username=user_name,
+                                                                 password=password, scopes=scopes)
         self.access_token = access_token_req["access_token"]
 
     def encode_file(self, local_path):
@@ -200,7 +203,12 @@ class MicrosoftGraphNVTManager:
         self.graph_manager.download_file(montage_excel_mg_obj, self.nvt_download_path)
 
     def upload_nvt_json_file(self):
-        self.graph_manager.upload_file(self.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json", self.nvt_mg_obj)
+        path = self.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json"
+        if os.path.exists(path):
+            self.graph_manager.upload_file(path, self.nvt_mg_obj)
+            log("uploading generated gpgs json to one drive")
+        else:
+            log("No generated gpgs json file to upload")
 
 
 if __name__ == "__main__":

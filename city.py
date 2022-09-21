@@ -29,7 +29,6 @@ class City:
     # list of nvts with their elements
     nvt_list = None # key: nvt_number, value: {path, place, nvt_telekom_list}
     nvt_path_list = None # contains all paths to nvt_folders
-    
 
     def __init__(self, name, path, navigator):
         self.name = name
@@ -47,16 +46,19 @@ class City:
                 3- All already existed json files to read them!
         """
         mg_nvts = graph_manager.get_nvt_ids(self.root_path)
+
         for mg_nvt in mg_nvts:
 
             nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt)
-            nvt_mgm.download_automated_data_folder()
-
-            nvt = NVT(nvt_mgm.nvt_number, path="None", city=self.name, navigator=self.navigator)
             log("Start scrapping NVT: " + str(nvt_mgm.nvt_number))
-            if nvt.is_json_recently_updated(nvt_mgm.nvt_download_path / "automated_data" / "nvt_telekom_data.json" ):
-                log("NVT {} is already updated".format(nvt_mgm.nvt_number))
-                continue
+            nvt_number = mg_nvt["name"].replace("NVT ", "")
+            nvt = NVT(nvt_number, path="None", city=self.name, navigator=self.navigator)
+
+            if nvt_mgm.automated_data_folder_mg_obj != None:
+                nvt_mgm.download_automated_data_folder()
+                if nvt.is_json_recently_updated(nvt_mgm.nvt_download_path / "automated_data" / "nvt_telekom_data.json" ):
+                    log("NVT {} is already updated".format(nvt_mgm.nvt_number))
+                    continue
             nvt.initialize_using_web_scrapper(nvt_mgm.nvt_to_upload_path / "automated_data")
             nvt_mgm.upload_nvt_json_file()
             self.nvt_list.append(nvt)
@@ -81,7 +83,7 @@ class City:
                 print("____________________________________")
                 print("____________________________________")
 
-    def load_nvt_dict_from_stored_json(self, execluding_list = []):
+    def load_nvt_dict_from_stored_json(self):
         # initialize the list using installed one drive app
         self.nvt_path_list = [Path(path) for path in glob.glob(self.root_path + "/*/*") if "NVT" in Path(path).stem]
         for nvt_path in self.nvt_path_list:
@@ -96,6 +98,26 @@ class City:
                 log("nvt_number after json: " + nvt_number)
                 log("nvt_path after json: " + str(nvt_path))
                 self.nvt_list.append(nvt)
+
+    def load_nvt_dict_from_stored_json_mg(self, graph_manager):
+        mg_nvts = graph_manager.get_nvt_ids(self.root_path)
+        for mg_nvt in mg_nvts:
+
+            nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt)
+            nvt_mgm.download_automated_data_folder()
+
+            log("Reading from json NVT: " + str(nvt_mgm.nvt_number))
+
+            nvt = NVT(nvt_mgm.nvt_number, path="None", city=self.name, navigator=self.navigator)
+            # if nvt.is_json_recently_updated(nvt_mgm.nvt_download_path / "automated_data" / "nvt_telekom_data.json" ):
+            #     log("NVT {} is already updated".format(nvt_mgm.nvt_number))
+            #     continue
+            nvt.read_from_json(nvt_mgm.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json")
+            nvt.nvt_mgm = nvt_mgm
+            # then uploading the updated fies:
+            # nvt_mgm.upload_nvt_json_file()
+            self.nvt_list.append(nvt)
+
 
     def update_montage_lists(self, nvts_to_update):
         for nvt in self.nvt_list:

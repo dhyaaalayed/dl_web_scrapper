@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 import pandas as pd
 import json
+
+from GraphManager import MicrosoftGraphNVTManager
 from entities import Kls, Address, Person, Owner
 from montage_master_package import MontageExcelParser
 import numpy as np
@@ -20,6 +22,7 @@ class NVT:
     navigator = None
     montage_excel_path = None
     montage_excel_parser = None
+    nvt_mgm: MicrosoftGraphNVTManager = None # MicrosoftGraphNVTManager objcet, used only by mg_json_main when we run the code in the cloud
 
     def __init__(self, nvt_number, path, city, navigator):
         log("Start NVT Constructor")
@@ -155,9 +158,10 @@ class NVT:
         log("Storing nvt json at: " + str(store_path / 'nvt_telekom_data.json'))
 
 
-    def read_from_json(self):
+    def read_from_json(self, json_path=None):
         log("Start reading nvt {} from json file".format(self.nvt_number))
-        json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
+        if json_path == None:
+            json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
         log("path: " + str(json_path))
         with open(json_path) as json_file:
             kls_json = json.load(json_file)
@@ -210,9 +214,10 @@ class NVT:
         ansprechpartnerListe_dest_path = ansprechpartnerListe_dest_path / "AnsprechpartnerListe_{}_{}.xlsx".format(self.nvt_number, str(uuid4()).replace("-", "_"))
         shutil.copy(ansprechpartnerListe_src_path, ansprechpartnerListe_dest_path)
 
-    def export_anshprechpartner_to_excel(self):
+    def export_anshprechpartner_to_excel(self, path=None):
         df = self.get_anshprechpartner_dataframe()
-        path = Path(self.path) / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
+        if path==None:
+            path = Path(self.path) / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
         # df.to_excel(path, engine='xlsxwriter')
         measurer = np.vectorize(len)
         columns_max_length = measurer(df.values.astype(str)).max(axis=0)

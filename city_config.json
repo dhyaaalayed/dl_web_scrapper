@@ -11,7 +11,7 @@
     },
     "cities": {
         "Dresden": {
-            "scrapping_activated": true,
+            "scrapping_activated": false,
             "loading_json_activated": true,
             "updating_montage_activated": true,
             "generating_ansprechpartner": true,
@@ -23,7 +23,7 @@
             ]
         },
         "Bautzen": {
-            "scrapping_activated": true,
+            "scrapping_activated": false,
             "loading_json_activated": true,
             "updating_montage_activated": true,
             "generating_ansprechpartner": true,
