@@ -1,11 +1,11 @@
 {
     "templates": {
         "montage_template": {
-            "path": "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/gbgs_config/Templates/Montageliste_Template_Final.xlsx"
+            "path": "BAU/gbgs_config/Templates/Montageliste_Template_Final.xlsx"
             , "number_of_columns": 38
         },
         "master_template": {
-            "path": "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx"
+            "path": "BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx"
             , "number_of_columns": 41
         }
     },
@@ -18,8 +18,8 @@
             "user_name": "markus.lora@dl-projects.de",
             "password": "Markus2022!",
             "paths": [
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)",
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
+                "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)",
+                "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
             ]
         },
         "Bautzen": {
@@ -30,7 +30,7 @@
             "user_name": "David.peterson@dl-projects.de",
             "password": "David2022!",
             "paths": [
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-09 Bautzen-Mitte/BVH-01 Bautzen/Baupläne (HK+NVT)"
+                "BAU/RV-09 Bautzen-Mitte/BVH-01 Bautzen/Baupläne (HK+NVT)"
             ]
         },
         "Pulsnitz": {
@@ -41,7 +41,7 @@
             "user_name": "ahmet.orla@dl-project.de",
             "password": "Ahmet2022!",
             "paths": [
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-09 Bautzen-Mitte/BVH-02 Pulsnitz/Baupläne (HK+NVT)"
+                "BAU/RV-09 Bautzen-Mitte/BVH-02 Pulsnitz/Baupläne (HK+NVT)"
             ]
         },
         "Cottbus": {
@@ -52,7 +52,7 @@
             "user_name": "dieaa.aled@dl-projects.de",
             "password": "Dieaa1234!",
             "paths": [
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-07 Dresden-Cottbus/BVH-02 Cottbus/Baupläne (HK+NVT)"
+                "BAU/RV-07 Dresden-Cottbus/BVH-02 Cottbus/Baupläne (HK+NVT)"
             ]
         },
         "Prignitz": {
@@ -63,11 +63,11 @@
             "user_name": "ahmet.orla@dl-project.de",
             "password": "Ahmet2022!",
             "paths": [
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Bad Wilsnack",
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Garz-Hoppenrade",
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Lanz Cumlosen",
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Perleberg Kleinow",
-                "/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Plettenburg Glöwen"
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Bad Wilsnack",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Garz-Hoppenrade",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Lanz Cumlosen",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Perleberg Kleinow",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Plettenburg Glöwen"
             ]
         }
     }
