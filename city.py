@@ -52,25 +52,32 @@ class City:
         mg_nvts = graph_manager.get_nvt_ids(self.root_path)
 
         for mg_nvt in mg_nvts: # mg_nvt: a Microsoft Graph object contains id, name...
-
-
-            nvt_path = self.root_path / mg_nvt["name"]
-            nvt_number = mg_nvt["name"].replace("NVT ", "")
-            log("Start scrapping NVT: " + str(nvt_number))
-            #### Now we need nvt and nvt_mgm objects
-            nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt, nvt_path)
-            nvt = NVT(nvt_number=nvt_number, city=self, nvt_mgm=nvt_mgm)
-
-            automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
-            if automated_folder_mg_obj != None:
-                nvt_mgm.download_automated_data_folder(nvt.path / "automated_data")
-                if nvt.is_json_recently_updated(nvt.path / "automated_data" / "nvt_telekom_data.json" ):
-                    log("NVT {} is already updated".format(nvt_mgm.nvt_number))
+            nvt_scrapping_done = False
+            while nvt_scrapping_done == False:
+                try:
+                    nvt_path = self.root_path / mg_nvt["name"]
+                    nvt_number = mg_nvt["name"].replace("NVT ", "")
+                    log("Start scrapping NVT: " + str(nvt_number))
+                    #### Now we need nvt and nvt_mgm objects
+                    nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt, nvt_path)
+                    nvt = NVT(nvt_number=nvt_number, city=self, nvt_mgm=nvt_mgm)
+                    automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
+                    if automated_folder_mg_obj != None:
+                        nvt_mgm.download_automated_data_folder(nvt.path)
+                        if nvt.is_json_recently_updated(nvt.path / "automated_data" / "nvt_telekom_data.json"):
+                            log("NVT {} is already updated".format(nvt_mgm.nvt_number))
+                            continue
+                    nvt.initialize_using_web_scrapper() # path is okay
+                    nvt_mgm.upload_nvt_json_file()
+                    self.nvt_list.append(nvt)
+                    self.navigator.click_reset_filter_button()
+                    nvt_scrapping_done = True
+                except Exception as e:
+                    print("Exception: ", str(e))
+                    log("Repeat the scrapping process for NVT {}".format(mg_nvt["name"]))
                     continue
-            nvt.initialize_using_web_scrapper() # path is okay
-            nvt_mgm.upload_nvt_json_file()
-            self.nvt_list.append(nvt)
-            self.navigator.click_reset_filter_button()
+
+
 
 
 

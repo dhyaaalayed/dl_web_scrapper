@@ -126,6 +126,8 @@ class NVT:
         del nvt_json["montage_excel_parser"]
         del nvt_json["montage_excel_path"]
         del nvt_json["navigator"]
+        del nvt_json["nvt_mgm"]
+        del nvt_json["city"]
         nvt_json["path"] = str(nvt_json["path"])
         nvt_json["kls_list"] = [kls.export_to_json() for kls in self.kls_list]
         nvt_json["creation_time"] = str(datetime.now())
@@ -170,6 +172,7 @@ class NVT:
             return False
 
         with open(json_path) as json_file:
+            print("json_path: ", json_path)
             nvt_json = json.load(json_file)
 
         if "creation_time" not in nvt_json.keys():

@@ -1,13 +1,19 @@
 version: "3.3"
 services:
-  web_scrapper:
+  web_scrapper_navigator:
     build: .
     ports:
       - "8000:5000"
     volumes:
       - ./:/app
-      - /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
-    environment:
-      - APP_CLIENT_ID=0000000040172910
-      - APP_CLIENT_SECRET=WAltBcwM9B3nlGDmplOUGfPLqsw5bHDA
+      # - /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
+    # environment:
+    #   - APP_CLIENT_ID=0000000040172910
+    #   - APP_CLIENT_SECRET=WAltBcwM9B3nlGDmplOUGfPLqsw5bHDA
     command: python mg_web_main.py
+  excel_updater:
+    build: .
+    volumes:
+      - ./:/app
+    command: python mg_json_main.py
+
