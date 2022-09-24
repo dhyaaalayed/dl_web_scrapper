@@ -30,4 +30,3 @@ RUN pip install --upgrade pip
 
 RUN pip install -r requirements.txt
 
-CMD ["python", "./mg_web_main.py"]

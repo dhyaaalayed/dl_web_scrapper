@@ -10,3 +10,4 @@ services:
     environment:
       - APP_CLIENT_ID=0000000040172910
       - APP_CLIENT_SECRET=WAltBcwM9B3nlGDmplOUGfPLqsw5bHDA
+    command: python mg_web_main.py

@@ -11,7 +11,7 @@
     },
     "cities": {
         "Dresden": {
-            "scrapping_activated": true,
+            "scrapping_activated": false,
             "loading_json_activated": true,
             "updating_montage_activated": true,
             "generating_ansprechpartner": true,
@@ -20,10 +20,12 @@
             "paths": [
                 "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)",
                 "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
-            ]
+            ],
+            "bvh_master_storing_path": "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta",
+            "master_storing_folder_id": "01A6QGC55DPQV75GHFYNALMTB5RLTWQYU3"
         },
         "Bautzen": {
-            "scrapping_activated": true,
+            "scrapping_activated": false,
             "loading_json_activated": true,
             "updating_montage_activated": true,
             "generating_ansprechpartner": true,
@@ -31,7 +33,9 @@
             "password": "David2022!",
             "paths": [
                 "BAU/RV-09 Bautzen-Mitte/BVH-01 Bautzen/Baupläne (HK+NVT)"
-            ]
+            ],
+            "bvh_master_storing_path": "BAU/RV-09 Bautzen-Mitte/BVH-01 Bautzen",
+            "master_storing_folder_id": "01A6QGC5ZMZCRSH4MKEZB3Y2HATRLG6E2D"
         },
         "Pulsnitz": {
             "scrapping_activated": true,
@@ -42,7 +46,9 @@
             "password": "Ahmet2022!",
             "paths": [
                 "BAU/RV-09 Bautzen-Mitte/BVH-02 Pulsnitz/Baupläne (HK+NVT)"
-            ]
+            ],
+            "bvh_master_storing_path": "BAU/RV-09 Bautzen-Mitte/BVH-02 Pulsnitz",
+            "master_storing_folder_id": "01A6QGC54PGFPMKNH73VCY4RY3XVT5BNXB"
         },
         "Cottbus": {
             "scrapping_activated": true,
@@ -53,7 +59,9 @@
             "password": "Dieaa1234!",
             "paths": [
                 "BAU/RV-07 Dresden-Cottbus/BVH-02 Cottbus/Baupläne (HK+NVT)"
-            ]
+            ],
+            "bvh_master_storing_path": "BAU/RV-07 Dresden-Cottbus/BVH-02 Cottbus",
+            "master_storing_folder_id": "01A6QGC53CHKYNQLNVPJD2E6HRBHM4NJN2"
         },
         "Prignitz": {
             "scrapping_activated": true,
@@ -68,7 +76,9 @@
                 "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Lanz Cumlosen",
                 "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Perleberg Kleinow",
                 "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Plettenburg Glöwen"
-            ]
+            ],
+            "bvh_master_storing_path": "BAU/RV-08 Prignitz/BVH-01 Prignitz",
+            "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"
         }
     }
 }

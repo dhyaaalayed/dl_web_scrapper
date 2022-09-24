@@ -67,6 +67,32 @@ class Navigator:
         self.browser.execute_script("arguments[0].click();", gap_installation_option);
         time.sleep(3)
 
+    def get_all_nvt_data(self, nvt_number: str):
+        """
+            This is the main function and the main goal of this class
+            The main goal is just to return the kls_list
+            Because the nvt is just a list of kls :)
+        """
+        self.filter_in_nvt(nvt_number)
+        kls_list = self.visit_eyes_pages(nvt_number)
+        if kls_list == None:
+            self.refresh_page()
+        return kls_list
+
+
+    def visit_eyes_pages(self, nvt_number: str):
+        kls_list = []
+        for i in range(1, 1000):
+            number_of_rows = self.log_number_of_eyes_of_current_page(i)
+            if number_of_rows == 0:
+                return None
+
+            kls_list += self.get_eyes_data(nvt_number)
+
+            if not self.navigate_to_next_page(i + 1):
+                break
+        return kls_list
+
     def filter_in_nvt(self, nvt_number):
         log("Start filtering in kls list according to nvt_number: " + nvt_number)
         self._enter_nvt_number(nvt_number)

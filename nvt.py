@@ -24,44 +24,41 @@ class NVT:
     montage_excel_parser = None
     nvt_mgm: MicrosoftGraphNVTManager = None # MicrosoftGraphNVTManager objcet, used only by mg_json_main when we run the code in the cloud
 
-    def __init__(self, nvt_number, path, city, navigator):
+    def __init__(self, nvt_number: str, city: "City", nvt_mgm: MicrosoftGraphNVTManager):
         log("Start NVT Constructor")
         self.nvt_number = nvt_number
-        self.path = path
-        self.city = city
-        self.kls_list = []
-        self.navigator = navigator
+        self.path = Path(city.root_path) / "NVT {}".format(nvt_number)
+        self.city = city.name
+        self.kls_list = None
+        self.navigator = city.navigator
         self.montage_excel_path = self._get_montage_excel_path()
         self.montage_excel_parser = None
+        self.nvt_mgm = nvt_mgm
         
 
-    def initialize_using_web_scrapper(self, storing_json_path=None):
-        self.navigator.filter_in_nvt(self.nvt_number)
-        self.kls_list = self.visit_eyes_pages()
+    def initialize_using_web_scrapper(self):
+
+        #### Getting data from the navigator
+        self.kls_list = self.navigator.get_all_nvt_data(self.nvt_number)
         if self.kls_list == None:
-            log("There is no gpgs data for NVT {}".format(self.nvt_number))
-            log("Refreshing the web page")
-            log("Waiting for loading the page")
-            self.navigator.refresh_page()
-            log("Page is loaded!")
             return
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
-        self.write_to_json(storing_json_path)
+        self.write_to_json()
 
-    def visit_eyes_pages(self):
-        kls_list = []
-        for i in range(1, 1000):
-            number_of_rows = self.navigator.log_number_of_eyes_of_current_page(i)
-            if number_of_rows == 0:
-                return None
+    def download_automated_data_folder(self):
+        automated_data_path = self.path / "automated_data"
+        automated_data_path.mkdir(parents=True, exist_ok=True)
+        # 1- Downloading automated_folder
 
-            kls_list += self.navigator.get_eyes_data(self.nvt_number)
+        automated_data_mg_obj_items = self.graph_manager.get_folder_items_by_id(self.automated_data_folder_mg_obj["id"])
+        for item in automated_data_mg_obj_items:
+            self.graph_manager.download_file(item, self.nvt_download_path / "automated_data")
 
-            if not self.navigator.navigate_to_next_page(i + 1):
-                break
-        return kls_list
+        # 2- Download montage excel file
+        montage_excel_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Montageliste_{}.xlsx".format(self.nvt_number))
+        self.graph_manager.download_file(montage_excel_mg_obj, self.nvt_download_path)
 
     def get_address_list_from_json(self):
         print("kls_list: ", len(self.kls_list))
@@ -81,6 +78,7 @@ class NVT:
         else:
             print("There is no new addresses")
         print("___________________\n")
+
 
     def _get_montage_excel_path(self):
         montage_file = "Montageliste_{}.xlsx".format(self.nvt_number)
@@ -148,9 +146,8 @@ class NVT:
             )
             self.kls_list.append(kls)
         print('self.kls_list111: ', len(self.kls_list))
-    def write_to_json(self, store_path=None):
-        if store_path == None:
-            store_path = self.path / 'automated_data'
+    def write_to_json(self):
+        store_path = self.path / 'automated_data'
         json_obj = self.export_to_json()
         Path(store_path).mkdir(parents=True, exist_ok=True)
         with open(store_path / 'nvt_telekom_data.json', 'w') as f:
@@ -158,10 +155,9 @@ class NVT:
         log("Storing nvt json at: " + str(store_path / 'nvt_telekom_data.json'))
 
 
-    def read_from_json(self, json_path=None):
+    def read_from_json(self):
         log("Start reading nvt {} from json file".format(self.nvt_number))
-        if json_path == None:
-            json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
+        json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
         log("path: " + str(json_path))
         with open(json_path) as json_file:
             kls_json = json.load(json_file)
@@ -214,15 +210,14 @@ class NVT:
         ansprechpartnerListe_dest_path = ansprechpartnerListe_dest_path / "AnsprechpartnerListe_{}_{}.xlsx".format(self.nvt_number, str(uuid4()).replace("-", "_"))
         shutil.copy(ansprechpartnerListe_src_path, ansprechpartnerListe_dest_path)
 
-    def export_anshprechpartner_to_excel(self, path=None):
+    def export_anshprechpartner_to_excel(self):
         df = self.get_anshprechpartner_dataframe()
-        if path==None:
-            path = Path(self.path) / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
+        path = self.path / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
         # df.to_excel(path, engine='xlsxwriter')
         measurer = np.vectorize(len)
         columns_max_length = measurer(df.values.astype(str)).max(axis=0)
         with pd.ExcelWriter(path, engine='xlsxwriter') as writer:
-            sheet_name = "AnsprechpartnerListe_{}".format(self.nvt_number)
+            sheet_name = "AnsprechpartnerListe"
             df.to_excel(writer, sheet_name=sheet_name, index=False)
             for idx, column in enumerate(df.columns):
                 writer.sheets[sheet_name].set_column(idx, idx, columns_max_length[idx])

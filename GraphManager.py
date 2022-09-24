@@ -5,6 +5,7 @@ to get shared one by id:
     self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{BAU_FOLDER_ID}
 """
 import base64
+import json
 import os
 import shutil
 from pathlib import Path
@@ -37,7 +38,6 @@ class GraphManager:
         self.headers = {
             'authorization': 'Bearer {}'.format(self.access_token),
         }
-        self.clean_cloud_onedrive_folder()
 
     def encode64_url(self, url):
         return "u!" + str(base64.b64encode( bytes(url, 'utf-8') )).replace('/', '_').replace('+', '-')[2:-3]
@@ -59,7 +59,7 @@ class GraphManager:
             media_content = upload.read()
         return media_content
 
-    def download_file(self, file, path_to_store):
+    def download_file(self, file: "mg object", path_to_store):
 
         response = requests.get(
             self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{file["id"]}/content',
@@ -71,12 +71,12 @@ class GraphManager:
             handler.write(response.content)
 
 
-    def upload_file(self, local_path, drive_folder):
+    def upload_file(self, local_path, drive_folder_id):
         file_name = Path(local_path).name
         media_content = self.encode_file(local_path)
         response = requests.put(
             # GRAPH_API_ENDPOINT + f'/users/user_id/robotics@dl-projects.de/drive/items/root:/{file_name}:/content',
-            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{drive_folder["id"]}:/{file_name}:/content',
+            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{drive_folder_id}:/{file_name}:/content',
             headers=self.headers,
             data=media_content
         )
@@ -97,8 +97,28 @@ class GraphManager:
         items = self.get_folder_items_by_id(id)
         return [item for item in items if "folder" in item.keys()]
 
-    def copy_file(self, src_path, dest_path):
-        pass
+    def copy_item(self, item_id: str, item_new_name: str, dest_id: str) -> None:
+        """
+            This function can copy both files and folders
+            item_id: item that we need to copy
+            item_new_name: the name of the new copied created item
+            dest_id: the folder that we need to put the new copy in
+        """
+        response = requests.post(
+            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{item_id}/copy',
+            headers=self.headers,
+            json={
+                "parentReference": {
+                    "driveId": DRIVE_ID,
+                    "id": dest_id
+                },
+                "name": item_new_name
+
+            }
+        )
+        log("The response of the copy function: ")
+        print(response)
+        return response
 
     def get_nvt_ids(self, subcity_path):
         """
@@ -117,7 +137,7 @@ class GraphManager:
 
 
 
-    def get_item(self, parent_id, item_name):
+    def get_next_item_in_path(self, parent_id, item_name):
         """
             Returns a dict of an item.
         """
@@ -136,17 +156,27 @@ class GraphManager:
 
 
 
+
+
+    def get_path_mg_obj(self, path):
+        """
+            Similar to get_path_id, but it returns the whole object instead of the id
+        """
+        next_id = BAU_FOLDER_ID
+        item_mg_obj = None
+        for name in Path(path).parts[1:]: # [1:] for execluding BAU
+            print("name: ", name)
+            item_mg_obj = self.get_next_item_in_path(next_id, name)
+            next_id = item_mg_obj["id"]
+            print("next_id: ", next_id)
+        return item_mg_obj
+
     def get_path_id(self, path):
         """Path start with BAU, since we have the id of BAU
         , we can get the other ids recursively
-        Example: path =
+        Example: path = "BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx"
         """
-        next_id = BAU_FOLDER_ID
-        for name in Path(path).parts[1:]: # [1:] for execluding BAU
-            print("name: ", name)
-            next_id = self.get_item(next_id, name)["id"]
-            print("next_id: ", next_id)
-        return next_id
+        return self.get_path_mg_obj(path)["id"]
 
     def get_nvt_data_ids(self, nvt_id, nvt_path):
         # nvt_id: to Upload montageliste:
@@ -155,77 +185,152 @@ class GraphManager:
         # automated_data folder id: to upload a new telekom list
         # json_file_id to read the current telekom data
 
-        automated_folder_id = self.get_item(nvt_id, "automated_data")
-        json_file_id = self.get_item(automated_folder_id, "nvt_telekom_data.json")
-        telkom_addresses_id = self.get_item(automated_folder_id, "telekom_addresses.xlsx")
+        automated_folder_id = self.get_next_item_in_path(nvt_id, "automated_data")
+        json_file_id = self.get_next_item_in_path(automated_folder_id, "nvt_telekom_data.json")
+        telkom_addresses_id = self.get_next_item_in_path(automated_folder_id, "telekom_addresses.xlsx")
 
-
-    def clean_cloud_onedrive_folder(self):
-        """Just to delete all data after finishing from the current nvt
-            Simply: by deleting the folder and creating it again :)
+    def create_new_folder(self, parent_id: str, new_folder_name: str):
         """
-        if os.path.exists(self.download_folder):
-            shutil.rmtree(self.download_folder)
-        if os.path.exists(self.upload_folder):
-            shutil.rmtree(self.upload_folder)
-        os.mkdir(self.download_folder)
-        os.mkdir(self.upload_folder)
+            parent_id: folder id that we want to create the new folder in
+            new_folder_name: the name of the new folder
+        """
+        headers = self.headers
+        # headers["Content-Type"] = "application/json"
+
+        response = requests.post(
+            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{parent_id}/children',
+            headers=headers,
+            json={
+                "name": new_folder_name,
+                "folder": {},
+            }
+        )
+        log("Creating new folder response")
+        return response.json()
+
+    def print_all_shared_folders_with_their_ids(self):
+        """
+            This functions is used by adding a new BVH shared folder for Telekom
+            then, we copy the id of it manually to the city_config.json file
+            in order to be used by mg_json_main.py to put the master excel inside it
+        """
+        response = requests.get(
+            graph_manager.GRAPH_API_ENDPOINT + f'/me/insights/shared',
+            headers=graph_manager.headers,
+        )
+        # json.dumps with intend = 4 parameter just to print the json object in a pretty way
+        print(json.dumps(response.json(), indent = 4) )
 
 
 class MicrosoftGraphNVTManager:
+    """
+        This class get the folowing for one nvt:
+            1- automated_data_folder_mg_obj
+            2- Montage_excel_mg_obj
+
+    """
     graph_manager = None
     nvt_mg_obj = None
     nvt_number = None
     automated_data_folder_mg_obj = None
+    montage_excel_mg_obj = None
+    archive_folder_mg_obj = None
 
-    # paths
-    nvt_to_upload_path = None # the path of the json that we are gonna generate
-    nvt_download_path = None
+    nvt_path: Path = None # the path locally in the cloud
+    def __init__(self, graph_manager: GraphManager, nvt_mg_obj: "Microsoft Graph Obj", nvt_path: Path):
 
-    def __init__(self, graph_manager: GraphManager, nvt_mg_obj):
         self.graph_manager = graph_manager
         self.nvt_mg_obj = nvt_mg_obj
         self.nvt_number = self.nvt_mg_obj["name"].replace("NVT ", "")
-        self.automated_data_folder_mg_obj = self.graph_manager.get_item(self.nvt_mg_obj["id"], "automated_data")
+        self.automated_data_folder_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "automated_data")
+        self.montage_excel_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Montageliste_{}.xlsx".format(self.nvt_number))
+        self.archive_folder_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Archive")
         # paths
-        self.nvt_download_path = self.graph_manager.download_folder / "NVT {}".format(self.nvt_number)
-        self.nvt_to_upload_path = self.graph_manager.upload_folder / "NVT {}".format(self.nvt_number)
+        # self.nvt_download_path = self.graph_manager.download_folder / "NVT {}".format(self.nvt_number)
+        # self.nvt_to_upload_path = self.graph_manager.upload_folder / "NVT {}".format(self.nvt_number)
+        self.nvt_path = nvt_path
+    def get_nvt_json_path(self):
+        """
+            Returns the local path of the generated json.
+                To be used by mg_json_main to update Montage and generate Ansprech...
+        """
+        return self.nvt_path / "automated_data" / "nvt_telekom_data.json"
 
-    def get_generated_json_path(self):
-        path = self.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json"
-        if os.path.exists(path):
-            return path
-        return None
 
-    def download_automated_data_folder(self):
-        os.mkdir(self.nvt_download_path)
+    def download_automated_data_folder(self, nvt_path: Path):
+        """
+            1- Initiaize nvt folder if it's not initialized
+            2- Download the automated folder inside it
+            Example: nvt_path: BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)/42V1020
+        """
+        if self.automated_data_folder_mg_obj == None:
+            return
+        automated_data_path = nvt_path / "automated_data"
+        automated_data_path.mkdir(parents=True, exist_ok=True)
         # 1- Downloading automated_folder
-
         automated_data_mg_obj_items = self.graph_manager.get_folder_items_by_id(self.automated_data_folder_mg_obj["id"])
         for item in automated_data_mg_obj_items:
-            self.graph_manager.download_file(item, self.nvt_download_path / "automated_data")
+            self.graph_manager.download_file(item, automated_data_path)
 
-        # 2- Download montage excel file
-        montage_excel_mg_obj = self.graph_manager.get_item(self.nvt_mg_obj["id"], "Montageliste_{}.xlsx".format(self.nvt_number))
-        self.graph_manager.download_file(montage_excel_mg_obj, self.nvt_download_path)
+
+    def download_montage_excel(self):
+        self.nvt_path.mkdir(parents=True, exist_ok=True)
+        # Download montage excel file
+        self.graph_manager.download_file(self.montage_excel_mg_obj, self.nvt_path)
+
+    def archive_montage_excel(self, archive_date: str, generated_unique_key: str):
+        """
+            One one drive: copy the current Montageliste to Archive folder
+            We need to get the archive date folder
+            If it's None, then we need to create one
+            Paramters:
+                archive_date: It's good to take it from json_main, in order to archive all nvts in the same date
+                archive_date example: 2022_09_01
+                generated_unique_key: UUI4 key
+        """
+        date_archive_folder_mg_obj = self.created_dated_archive_folder(archive_date)
+        print("self.montage_excel_mg_obj: ", self.montage_excel_mg_obj)
+        print("date_archive_folder_mg_obj: ", date_archive_folder_mg_obj)
+        self.graph_manager.copy_item(self.montage_excel_mg_obj["id"]
+                                     ,   "Montageliste_{}_{}.xlsx".format(self.nvt_number, generated_unique_key)
+                                     , date_archive_folder_mg_obj["id"])
+
+    def created_dated_archive_folder(self, archive_date: str):
+        """
+            Checks out first if there is already a created folder of the same name
+            If not, then it creates one and it returns its id
+            archive_date example: 2022_09_01
+        """
+        montage_archive_folder = self.graph_manager.get_next_item_in_path(self.archive_folder_mg_obj["id"], "montage_liste")
+        dated_archive_folder_mg_obj = self.graph_manager.get_next_item_in_path(montage_archive_folder["id"], archive_date)
+        if dated_archive_folder_mg_obj != None:
+            return dated_archive_folder_mg_obj
+
+        return self.graph_manager.create_new_folder(montage_archive_folder["id"], archive_date)
+
+
 
     def upload_nvt_json_file(self):
-        path = self.nvt_to_upload_path / "automated_data" / "nvt_telekom_data.json"
+        path = self.nvt_path / "automated_data" / "nvt_telekom_data.json"
         if os.path.exists(path):
-            self.graph_manager.upload_file(path, self.automated_data_folder_mg_obj)
+            self.graph_manager.upload_file(local_path=path, drive_folder_id=self.automated_data_folder_mg_obj["id"])
             log("uploading generated gpgs json to one drive")
         else:
             log("No generated gpgs json file to upload")
 
+    def upload_montage_excel(self):
+        path = self.nvt_path / "Montageliste_{}.xlsx".format(self.nvt_number)
+        self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
+
+    def upload_ansprechspartner_excel(self):
+        path = self.nvt_path / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
+        self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
 
 if __name__ == "__main__":
     graph_manager = GraphManager()
 
-    nvt_mg_list = graph_manager.get_nvt_ids("BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)")
-    nvt_mg_obj = nvt_mg_list[0]
+    graph_manager.print_all_shared_folders_with_their_ids()
 
-    nvt_mgm = MicrosoftGraphNVTManager(graph_manager, nvt_mg_obj)
-    nvt_mgm.download_automated_data_folder()
 
 
 

@@ -153,12 +153,29 @@ then entering this redirect url: http://localhost:1234
 
 
 
+23.09.2022
+	TODO:
+		1- Implement all todo steps in json_main
+		2- Test the copying and creating new folders on graph functions
 
 
 
 
+Last step: Updating and uploading montageliste for 2 nvt examples
 
+Next step: Doing that by deleting [:1] in the city.py file
 
+ATTENTION: Update my email signature!!!!
+
+Ask Hakan, Goerkem about overwriting current masterliste!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Later: 
+	1- Run updating telekom jsons in infinity loop
+		1- Require repearing the nvt instead of stopping
+			By throwing timeout exception!
+
+	2- Put mg_json_main on another service and run it at 00:00
+		Using apache airflow or just using normal script :)
 
 
 
