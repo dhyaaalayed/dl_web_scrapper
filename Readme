@@ -179,11 +179,34 @@ Later:
 
 
 
+run certain container in background examples:
+
+	docker-compose up -d web_scrapper_navigator
+	docker-compose up -d excel_updater
+
+to get logs:
+	docker-compose logs <name of service>
+	example:
+	docker-compose logs excel_updater
+
+get running containers:
+
+	docker compose ps
 
 
 
 
 
+
+
+
+
+
+TODO Later:
+	
+	IF there is no gbgs of an NVT
+		Copy the new template there
+		Also add all telekom list of nein...
 
 
 
