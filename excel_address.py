@@ -4,7 +4,6 @@ class ExcelAddress:
     address = None
     hk = None
     htn = None
-    we = None
     datum_gbgs = None
     bemerkungen = None
     Kommentare = None
@@ -42,7 +41,7 @@ class ExcelAddress:
         self.address.house_char = row["Hauschar"] # because it's nan in the header!
         self.hk = row["HK"]
         self.htn = row["HTN"]
-        self.we = row["WE"]
+        self.address.we = row["WE"]
         self.address.status = row["Status"]
         self.datum_gbgs = row["Datum GBGS"]
         self.address.kundentermin_start = row["Kundentermin Beginn"]
