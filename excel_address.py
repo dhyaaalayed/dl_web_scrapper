@@ -1,5 +1,5 @@
 from entities import Address
-
+import pandas as pd
 class ExcelAddress:
     address = None
     hk = None
@@ -102,7 +102,7 @@ class ExcelAddress:
             'Hauschar': self.address.house_char,
             'HK': self.hk,
             'HTN': self.htn,
-            'WE': int(self.address.we) if self.address.we is not None else self.address.we,
+            'WE': int(self.address.we) if not pd.isnull(self.address.we) else self.address.we,
             'Status': self.address.status,
             'Datum GBGS': self.datum_gbgs,
             'Kundentermin Beginn': self.address.kundentermin_start,
