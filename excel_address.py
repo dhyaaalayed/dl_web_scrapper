@@ -8,6 +8,7 @@ class ExcelAddress:
     datum_gbgs = None
     bemerkungen = None
     Kommentare = None
+    hk_montage = None
     vzk_anbindung = None
     he_erledigt = None
     passed_plus = None
@@ -16,7 +17,6 @@ class ExcelAddress:
     lange = None
     einblasprotokoll = None
     kabel_verantwortlicher = None
-    nvt = None
     hup = None
     messung = None
     messprotokoll = None
@@ -49,6 +49,9 @@ class ExcelAddress:
         self.address.kundentermin_end = row["Kundentermin Ende"]
         self.bemerkungen = row["Bemerkungen"]
         self.Kommentare = row["Kommentare "]
+        if "HK Montage" in row.index:
+            self.hk_montage = row["HK Montage"]
+        self.vzk_anbindung = row["VZK Anbindung"]
         self.he_erledigt = row["HE erledigt"]
         self.passed_plus = row["passed plus"]
         self.kabel_erledigt = row["Erledigt KB"]
@@ -107,6 +110,7 @@ class ExcelAddress:
             'Kundentermin Ende': self.address.kundentermin_end,
             'Bemerkungen': self.bemerkungen,
             'Kommentare ': self.Kommentare,
+            'HK Montage': self.hk_montage,
             'VZK Anbindung': self.vzk_anbindung,
             'HE erledigt': "✔" if self.he_erledigt == "✓" else self.he_erledigt,
             'passed plus': self.passed_plus,
@@ -115,7 +119,6 @@ class ExcelAddress:
             'Länge': self.lange,
             'Einblasprotokoll': self.einblasprotokoll,
             'Verantwortlicher KB': self.kabel_verantwortlicher,
-            'NVT': self.nvt,
             'HÜP': self.hup,
             'Messung': self.messung,
             'Messprotokoll': self.messprotokoll,
