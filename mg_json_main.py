@@ -30,7 +30,9 @@ import sys
 
 from GraphManager import GraphManager
 from city import City
-from my_functions import log, get_template_columns, write_bvh_dfs_to_excel
+from my_functions import log, get_template_columns, write_bvh_dfs_to_excel, parse_master_excel, \
+    get_old_column_data_for_master_list, create_unique_id_for_master_df
+
 
 def main():
     with open('city_config.json') as json_file:
@@ -53,6 +55,8 @@ def main():
     # 3- Getting template columns
     montage_template_columns = get_template_columns(montage_template_path, montage_number_of_columns)
     master_template_columns = get_template_columns(master_template_path, master_number_of_columns)
+    kommentar_telekom_column_name = '          Kommentar Telekom'
+    kommentar_montage_column_name = 'Kommentar Montage'
     #
     city_dict = conf_dict["cities"]
     #
@@ -103,23 +107,45 @@ def main():
         bvh_dfs = [bvh_df for bvh_df in bvh_dfs if bvh_df is not None]
         if len(bvh_dfs) > 0:
             bvh_df = pd.concat(bvh_dfs)
-            # city_master_storing_path = graph_manager.get_path_id()
+
+            ####
+            # 1- Read the current stored bvh_df: current_bvh_df
+                # 1- Download it.
+            graph_manager.download_folder_files_by_id(id=city_obj["master_storing_folder_id"], path=city_obj["bvh_master_storing_path"])
+            # We use this path to read the master excel and to generate the new one
             bvh_storing_path: Path = Path(city_obj["bvh_master_storing_path"]) / "Masterliste_{}.xlsx".format(city_key)
+                # 2- Read it according to the right columns
+            current_df = parse_master_excel(bvh_storing_path, master_number_of_columns)
+
+            # Create unique ids for the dfs
+            bvh_df = create_unique_id_for_master_df(bvh_df)
+            current_df = create_unique_id_for_master_df(current_df)
+
+            # Get old data from Masterliste
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_telekom_column_name)
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_montage_column_name)
+
+            # Delete the unique id column before exporting the df
+            del bvh_df["unique_id"]
+
+            # Exporting and uploading the new bvh_df
+
             shutil.copy(master_template_path, bvh_storing_path)
             write_bvh_dfs_to_excel(bvh_storing_path, city_key, bvh_df) # Including copying template to the same path
             graph_manager.upload_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
         else:
-            log("No Montageliste to generate the Masterlist")
+            log("No Montageliste to generate the Masterlist for BVH {}".format(city_key))
 
 
 if __name__ == "__main__":
     log("Starting updating excel files service")
     log("We will execute the service in the midnight")
-    while True:
-        current_time = datetime.datetime.now()
-        current_time_number = current_time.hour + current_time.minute/100
-        if 0.4 < current_time_number < 0.5:
-            main()
+    main()
+    # while True:
+    #     current_time = datetime.datetime.now()
+    #     current_time_number = current_time.hour + current_time.minute/100
+    #     if 0.4 < current_time_number < 0.5:
+    #         main()
 
 
 

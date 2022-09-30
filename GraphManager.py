@@ -60,6 +60,9 @@ class GraphManager:
         return media_content
 
     def download_file(self, file: "mg object", path_to_store):
+        """
+            path_to_store: is a path to a folder, the file name is not included.
+        """
 
         response = requests.get(
             self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{file["id"]}/content',
@@ -96,6 +99,16 @@ class GraphManager:
     def get_folder_subfolders_by_id(self, id):
         items = self.get_folder_items_by_id(id)
         return [item for item in items if "folder" in item.keys()]
+
+    def get_folder_files_by_id(self, id):
+        items = self.get_folder_items_by_id(id)
+        return [item for item in items if "file" in item.keys()]
+
+    def download_folder_files_by_id(self, id, path):
+        files = self.get_folder_files_by_id(id)
+        for file in files:
+            log("downloading {} at {}".format(file["name"], str(path)))
+            self.download_file(file=file, path_to_store=path)
 
     def copy_item(self, item_id: str, item_new_name: str, dest_id: str) -> None:
         """
