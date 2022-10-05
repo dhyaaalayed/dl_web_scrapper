@@ -197,14 +197,22 @@ get running containers:
 	docker compose ps
 
 ________________________________________________________
+04.10.2022
+
+ast.literal_eval(json_string_obj) vs json.loads
+
+both functions convert string to python dict
+, but ast.literal_eval does not work if we have non string values like boolean.
+
+Therefore, user json.loads insread!
+
+I discovered this problem when I added a boolean variable to store if the exploration protocol has been downloaded before or not, then this problem happend with this boolean value!
 
 
 
 
 
-
-
-
+_________________________________________________________
 
 
 

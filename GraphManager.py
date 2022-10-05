@@ -29,9 +29,6 @@ class GraphManager:
     GRAPH_API_ENDPOINT = None
     path_id_dict = {}
 
-    download_folder = Path("onedrive_data/download")
-    upload_folder = Path("onedrive_data/upload")
-
     def __init__(self):
         self.GRAPH_API_ENDPOINT = 'https://graph.microsoft.com/v1.0'
         self.update_athentication_token()
@@ -73,17 +70,66 @@ class GraphManager:
         with open(download_path, "wb") as handler:
             handler.write(response.content)
 
-
-    def upload_file(self, local_path, drive_folder_id):
-        file_name = Path(local_path).name
+    def upload_file(self, local_path: Path, drive_folder_id):
+        file_size = local_path.stat().st_size
         media_content = self.encode_file(local_path)
+        file_name = Path(local_path).name
+        if file_size > 4000000:
+            log("Upload large file")
+            upload_url = self.create_upload_session(file_name, drive_folder_id)
+            log("upload_url {}: ".format(upload_url))
+            response = self.upload_large_file(file_size=file_size, media_content=media_content, upload_url=upload_url)
+            requests.delete(upload_url)  # to cancel the upload session
+            log("response: ")
+            print(response.json())
+        else:
+            self.upload_small_file(file_name, media_content, drive_folder_id)
+
+    def upload_small_file(self, file_name, media_content, drive_folder_id):
+
         response = requests.put(
-            # GRAPH_API_ENDPOINT + f'/users/user_id/robotics@dl-projects.de/drive/items/root:/{file_name}:/content',
             self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{drive_folder_id}:/{file_name}:/content',
             headers=self.headers,
             data=media_content
         )
         return response
+
+    def create_upload_session(self, file_name: str, drive_folder_id: str):
+        """
+            For Large files > 4 MB, we need to create an upload session
+            We need to get the upload_url from the session in order to be able to upload the file.
+        """
+        response = requests.post(
+            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{drive_folder_id}:/{file_name}:/createUploadSession',
+            headers = self.headers,
+
+        )
+        upload_url = response.json()["uploadUrl"]
+        return upload_url
+
+    def upload_large_file(self, file_size: int, media_content: bytes, upload_url: str):
+
+        headers = {
+            "Content-Length": "{}".format(file_size),
+            "Content-Range": "bytes 0-{}/{}".format(file_size - 1, file_size)
+        }
+        return requests.put(
+            upload_url,
+            headers = headers,
+            data=media_content
+        )
+
+
+    def upload_folder_files(self, local_folder_path: Path, drive_folder_id: str):
+        """
+            We assume that the local folder contains only files not folders
+        """
+        for file in local_folder_path.glob("*.pdf"):
+            log("Uploading file: {}".format(str(file)))
+            response = self.upload_small_file(file, drive_folder_id)
+
+            log("Upload file response: ")
+            print(response.json())
 
     def get_folder_items_by_id(self, id):
         """
@@ -156,7 +202,6 @@ class GraphManager:
         """
         response = requests.get(
             self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{parent_id}/children',
-            # self.GRAPH_API_ENDPOINT + f'/shares/{parent_id}/driveItem?$expand=children',
             headers=self.headers,
         )
 
@@ -326,24 +371,35 @@ class MicrosoftGraphNVTManager:
     def upload_nvt_json_file(self):
         path = self.nvt_path / "automated_data" / "nvt_telekom_data.json"
         if os.path.exists(path):
-            self.graph_manager.upload_file(local_path=path, drive_folder_id=self.automated_data_folder_mg_obj["id"])
+            self.graph_manager.upload_small_file(local_path=path, drive_folder_id=self.automated_data_folder_mg_obj["id"])
             log("uploading generated gpgs json to one drive")
         else:
             log("No generated gpgs json file to upload")
 
+    def get_exploration_protocol_mg_obj(self):
+        folder_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Auskundungsprotokolle")
+        if folder_mg_obj == None: # then we need to create a new folder
+            folder_mg_obj = self.graph_manager.create_new_folder(self.nvt_mg_obj["id"], "Auskundungsprotokolle")
+        return folder_mg_obj
+    def upload_exploration_protocols_pdfs(self):
+        local_path = self.nvt_path / "Auskundungsprotokolle"
+        protocol_folder_mg_obj = self.get_exploration_protocol_mg_obj()
+        self.graph_manager.upload_folder_files(local_folder_path=local_path, drive_folder_id=protocol_folder_mg_obj["id"])
+
     def upload_montage_excel(self):
         path = self.nvt_path / "Montageliste_{}.xlsx".format(self.nvt_number)
-        self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
+        self.graph_manager.upload_small_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
 
     def upload_ansprechspartner_excel(self):
         path = self.nvt_path / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
-        self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
+        self.graph_manager.upload_small_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
 
 if __name__ == "__main__":
     graph_manager = GraphManager()
 
-    graph_manager.print_all_shared_folders_with_their_ids()
-
+    # graph_manager.print_all_shared_folders_with_their_ids()
+    file_path = Path("/Users/dlprojectsit/Downloads/grad-school-1.0.0.txt")
+    graph_manager.upload_file(file_path, BAU_FOLDER_ID)
 
 
 

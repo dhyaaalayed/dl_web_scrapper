@@ -39,7 +39,10 @@ class NVT:
     def initialize_using_web_scrapper(self):
 
         #### Getting data from the navigator
-        self.kls_list = self.navigator.get_all_nvt_data(self.nvt_number)
+        # We need to give the path parameter to get_all_nvt_data function in order
+        # to download the Auskundigungprotocol at it
+        already_download_exploration_protocols = self.get_already_download_exploration_protocols()
+        self.kls_list = self.navigator.get_all_nvt_data(self.nvt_number, self.path, already_download_exploration_protocols)
         if self.kls_list == None:
             return
         log("Finishing reading the whole KLS")
@@ -164,16 +167,22 @@ class NVT:
         with open(json_path) as json_file:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
-        
-    def is_json_recently_updated(self, json_path=None):
-        if json_path == None: # In case of not using Microsoft Graph downloaded file
-            json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
+
+    def read_existed_nvt_json(self):
+        json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
         if not os.path.exists(json_path):
             return False
 
         with open(json_path) as json_file:
             print("json_path: ", json_path)
             nvt_json = json.load(json_file)
+        return nvt_json
+
+    def is_json_recently_updated(self):
+        nvt_json = self.read_existed_nvt_json()
+
+        if not nvt_json: # there is no created json file
+            return False
 
         if "creation_time" not in nvt_json.keys():
             return False
@@ -182,6 +191,22 @@ class NVT:
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
         return time_difference.seconds < 1000
+
+    def get_already_download_exploration_protocols(self):
+        nvt_json = self.read_existed_nvt_json()
+        if not nvt_json: # there is no created json file yet
+            return [] # then we return an empty list
+        klses = nvt_json["kls_list"]
+        print("klses: ", klses)
+        already_download_exploration_protocols = []
+        for kls in klses:
+            print("kls: ", kls)
+            kls = json.loads(kls)
+            address = Address(kls["address"])
+            if address.exploration_protocol_already_downloaded:
+                already_download_exploration_protocols.append(address.create_unique_key())
+        return already_download_exploration_protocols
+
 
     def archive_montage_excel(self, key):
         # Just copy it and put it in archive folder

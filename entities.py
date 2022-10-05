@@ -48,6 +48,10 @@ class Address:
     expl_necessary = None
     expl_finished = None
 
+    # exploration_protocol (Auskundigung Protocol) boolean variable
+    # in order not to download the pdf again if it's True!
+    exploration_protocol_already_downloaded: bool = False
+
     def __init__(self, address_json=None):
         if address_json is not None:
             self.import_from_json(address_json)
@@ -66,10 +70,13 @@ class Address:
             "gfap_inst_status": self.gfap_inst_status,
             "expl_necessary": self.expl_necessary,
             "expl_finished": self.expl_finished,
+            "exploration_protocol_already_downloaded": self.exploration_protocol_already_downloaded,
         })
 
     def import_from_json(self, address_json):
-        address_json = ast.literal_eval(address_json)
+        print("address_json type: ", type(address_json))
+        print("address_json: ", address_json)
+        address_json = json.loads(address_json)
         self.gfap_inst_status = address_json["gfap_inst_status"]
         self.kls_id = address_json["kls_id"]
         self.fold_id = address_json["fold_id"]
@@ -85,6 +92,8 @@ class Address:
         self.gfap_inst_status = address_json["gfap_inst_status"]
         self.expl_necessary = address_json["expl_necessary"]
         self.expl_finished = address_json["expl_finished"]
+        if "exploration_protocol_already_downloaded" in address_json.keys():
+            self.exploration_protocol_already_downloaded = address_json["exploration_protocol_already_downloaded"]
 
     def print(self):
         print("gfap_inst_status: ", self.gfap_inst_status)
@@ -102,6 +111,7 @@ class Address:
         print("gfap_inst_status: ", self.gfap_inst_status)
         print("expl_necessary: ", self.expl_necessary)
         print("expl_finished: ", self.expl_finished)
+        print("exploration_protocol_already_downloaded: ", self.exploration_protocol_already_downloaded)
 
     def create_unique_key(self):
         return "_".join([

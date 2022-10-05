@@ -1,4 +1,8 @@
+import os
+import shutil
+import uuid
 from datetime import date
+from pathlib import Path
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,6 +21,11 @@ chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument("--disable-setuid-sandbox")
 
+exploration_protocols_download_path = Path('BAU/exploration_protocols')
+exploration_protocols_download_path.mkdir(parents=True, exist_ok=True)
+download_option = {'download.default_directory': str(exploration_protocols_download_path)}
+
+chrome_options.add_experimental_option('prefs', download_option)
 
 """
 ATTENTION:
@@ -48,6 +57,13 @@ class Navigator:
         self.browser.find_element('id', 'password').send_keys(password) # 'Ertu2022!'
         self.browser.find_element('name', 'login').click()
 
+    def logout(self):
+        URL = "https://glasfaser.telekom.de/auftragnehmerportal-ui/logout"
+        self.browser.get(URL)
+        # Attention: we need to wait for an element to be loaded after logout
+        # and regarding Telekom website it's a bit difficult
+
+
     def login_with_dieaa(self):
         URL = "https://glasfaser.telekom.de/auftragnehmerportal-ui/home?a-cid=50708"
         self.browser.get(URL)
@@ -67,27 +83,27 @@ class Navigator:
         self.browser.execute_script("arguments[0].click();", gap_installation_option);
         time.sleep(3)
 
-    def get_all_nvt_data(self, nvt_number: str):
+    def get_all_nvt_data(self, nvt_number: str, nvt_path, already_downloaded_exploration_protocols):
         """
             This is the main function and the main goal of this class
             The main goal is just to return the kls_list
             Because the nvt is just a list of kls :)
         """
         self.filter_in_nvt(nvt_number)
-        kls_list = self.visit_eyes_pages(nvt_number)
+        kls_list = self.visit_eyes_pages(nvt_number, nvt_path, already_downloaded_exploration_protocols)
         if kls_list == None:
             self.refresh_page()
         return kls_list
 
 
-    def visit_eyes_pages(self, nvt_number: str):
+    def visit_eyes_pages(self, nvt_number: str, nvt_path, already_downloaded_exploration_protocols: list):
         kls_list = []
         for i in range(1, 1000):
             number_of_rows = self.log_number_of_eyes_of_current_page(i)
             if number_of_rows == 0:
                 return None
 
-            kls_list += self.get_eyes_data(nvt_number)
+            kls_list += self.get_eyes_data(nvt_number, nvt_path, already_downloaded_exploration_protocols)
 
             if not self.navigate_to_next_page(i + 1):
                 break
@@ -192,35 +208,48 @@ class Navigator:
 
     def download_exploration_protocol(self, nvt_path, address_key):
         download_button = self.browser.find_element("id", "processPageForm:explorationProtocol")
-        pdf_name = "Auskundungsprotokolle_{}_{}".format(address_key, date.today().strftime('%Y_%m_%d'))
-        pdf_path = nvt_path / "Auskundungsprotokolle" / pdf_name
+        pdf_name = "Auskundungsprotokolle_{}_{}_id_{}.pdf".format(address_key, date.today().strftime('%Y_%m_%d'), str(uuid.uuid4()))
+        pdf_path: Path = nvt_path / "Auskundungsprotokolle" / pdf_name
         
-        if download_button.get_attribute("aria-disabled") == "true":
-            log("Downloading an Auskundungsprotokolle: ")
-            self.browser.execute_script("arguments[0].click();", download_button);
+        if download_button.get_attribute("aria-disabled") == "false":
+            pdf_path.parent.mkdir(parents=True, exist_ok=True)
+            log("Downloading Auskundungsprotokolle {}:".format(pdf_name))
+            self.browser.execute_script("arguments[0].click();", download_button)
+            log("Wait until download is completed")
+            while len(os.listdir(exploration_protocols_download_path)) == 0:
+                time.sleep(1)
+            downloaded_pdf_name = os.listdir(exploration_protocols_download_path)[0]
+            log("The name of the downloaded pdf {}".format(downloaded_pdf_name))
+            log("Moving the pdf to {}".format(str(pdf_path)))
+            # rename with pathlib = moving files :)
+            downloaded_pdf_path: Path = exploration_protocols_download_path / downloaded_pdf_name
+            downloaded_pdf_path.rename(pdf_path) # Moving procedure
 
 
-    def get_eye_data(self, eye_button):
+    def get_eye_data(self, eye_button, nvt_path, already_downloaded_exploration_protocols: list):
         """
             eye_date: means one kls record that contains:
                     kls_id
                     address
                     list of people
                     list of owners
+
+            nvt_path: very important parameter to store Auskundigung protocol!
+            already_downloaded_exploration_protocols: a list parsed from the stored json of the nvt
+                to check if the exploration protocol is included in the list or not
         """
 
         kls = Kls()
-
-
-
         self.browser.find_elements("xpath", '//a[contains(@id,":viewSelectedRowItem")]')
         self.navigate_to_address_page(eye_button)
         kls_id, address = self.get_address_data_with_kls_id()
         kls.id = kls_id
         kls.address = address
+        address_key = address.create_unique_key()
+        if address_key not in already_downloaded_exploration_protocols:
+            self.download_exploration_protocol(nvt_path, address_key)
+            kls.address.exploration_protocol_already_downloaded = True
 
-        # self.download_exploration_protocol(nvt_path, address.create_unique_key())
-    
         self.navigate_to_contact_people_tab()
         kls.people = self.get_contact_people_list()
     
@@ -243,7 +272,7 @@ class Navigator:
         exp_finished = html_column.find_element("css selector", 'input').get_attribute("aria-checked")
         return True if exp_finished == "true" else False
 
-    def get_eyes_data(self, nvt_number):
+    def get_eyes_data(self, nvt_number, nvt_path, already_downloaded_exploration_protocols):
         kls_list = []
         eyes_rows = self.get_and_refresh_eyes_rows()
         number_of_rows = len(eyes_rows)
@@ -273,7 +302,7 @@ class Navigator:
             eye_link = html_columns[0].find_element("css selector", 'a')
 
             # Creating Kls object
-            kls = self.get_eye_data(eye_link) # here an eye link should be given
+            kls = self.get_eye_data(eye_link, nvt_path, already_downloaded_exploration_protocols) # here an eye link should be given
             kls.address.status = status
             kls.address.kundentermin_start = kundentermin_start
             kls.address.kundentermin_end = kundentermin_end
