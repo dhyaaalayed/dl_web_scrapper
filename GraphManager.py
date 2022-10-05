@@ -126,7 +126,7 @@ class GraphManager:
         """
         for file in local_folder_path.glob("*.pdf"):
             log("Uploading file: {}".format(str(file)))
-            response = self.upload_small_file(file, drive_folder_id)
+            response = self.upload_file(file, drive_folder_id)
 
             log("Upload file response: ")
             print(response.json())
@@ -371,7 +371,7 @@ class MicrosoftGraphNVTManager:
     def upload_nvt_json_file(self):
         path = self.nvt_path / "automated_data" / "nvt_telekom_data.json"
         if os.path.exists(path):
-            self.graph_manager.upload_small_file(local_path=path, drive_folder_id=self.automated_data_folder_mg_obj["id"])
+            self.graph_manager.upload_file(local_path=path, drive_folder_id=self.automated_data_folder_mg_obj["id"])
             log("uploading generated gpgs json to one drive")
         else:
             log("No generated gpgs json file to upload")
@@ -388,11 +388,11 @@ class MicrosoftGraphNVTManager:
 
     def upload_montage_excel(self):
         path = self.nvt_path / "Montageliste_{}.xlsx".format(self.nvt_number)
-        self.graph_manager.upload_small_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
+        self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
 
     def upload_ansprechspartner_excel(self):
         path = self.nvt_path / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
-        self.graph_manager.upload_small_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
+        self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
 
 if __name__ == "__main__":
     graph_manager = GraphManager()

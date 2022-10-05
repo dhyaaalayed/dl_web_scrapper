@@ -132,7 +132,7 @@ def main():
 
             shutil.copy(master_template_path, bvh_storing_path)
             write_bvh_dfs_to_excel(bvh_storing_path, city_key, bvh_df) # Including copying template to the same path
-            graph_manager.upload_small_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
+            graph_manager.upload_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
         else:
             log("No Montageliste to generate the Masterlist for BVH {}".format(city_key))
 
