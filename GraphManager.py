@@ -83,7 +83,8 @@ class GraphManager:
             log("response: ")
             print(response.json())
         else:
-            self.upload_small_file(file_name, media_content, drive_folder_id)
+            response = self.upload_small_file(file_name, media_content, drive_folder_id)
+        return response
 
     def upload_small_file(self, file_name, media_content, drive_folder_id):
 
@@ -249,11 +250,12 @@ class GraphManager:
 
     def create_new_folder(self, parent_id: str, new_folder_name: str):
         """
-            parent_id: folder id that we want to create the new folder in
-            new_folder_name: the name of the new folder
+            Creates a new folder and returns the mg obj of it
+            Params:
+                parent_id: folder id that we want to create the new folder in
+                new_folder_name: the name of the new folder
         """
         headers = self.headers
-        # headers["Content-Type"] = "application/json"
 
         response = requests.post(
             self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{parent_id}/children',
@@ -266,9 +268,19 @@ class GraphManager:
         log("Creating new folder response")
         return response.json()
 
+    def create_or_get_mg_folder_if_existed(self, parent_id: str, new_folder_name: str):
+        """
+            Gets the mg obj of a folder, or creates a new folder and returns the mg obj for it if it's not existed
+        """
+        folder_mg_obj = self.get_next_item_in_path(parent_id=parent_id, item_name=new_folder_name)
+        if folder_mg_obj == None:
+            folder_mg_obj = self.create_new_folder(parent_id=parent_id, new_folder_name=new_folder_name)
+        return folder_mg_obj
+
+
     def print_all_shared_folders_with_their_ids(self):
         """
-            This functions is used by adding a new BVH shared folder for Telekom
+            This function is used by adding a new BVH shared folder for Telekom
             then, we copy the id of it manually to the city_config.json file
             in order to be used by mg_json_main.py to put the master excel inside it
         """
@@ -301,12 +313,15 @@ class MicrosoftGraphNVTManager:
         self.nvt_mg_obj = nvt_mg_obj
         self.nvt_number = self.nvt_mg_obj["name"].replace("NVT ", "")
         self.automated_data_folder_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "automated_data")
-        self.montage_excel_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Montageliste_{}.xlsx".format(self.nvt_number))
-        self.archive_folder_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Archive")
+        self.montage_excel_mg_obj = self.get_montage_excel_mg_obj()
+        self.archive_folder_mg_obj = self.graph_manager.create_or_get_mg_folder_if_existed(self.nvt_mg_obj["id"], "Archive")
         # paths
         # self.nvt_download_path = self.graph_manager.download_folder / "NVT {}".format(self.nvt_number)
         # self.nvt_to_upload_path = self.graph_manager.upload_folder / "NVT {}".format(self.nvt_number)
         self.nvt_path = nvt_path
+
+    def get_montage_excel_mg_obj(self):
+        return self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Montageliste_{}.xlsx".format(self.nvt_number))
     def get_nvt_json_path(self):
         """
             Returns the local path of the generated json.
@@ -346,26 +361,21 @@ class MicrosoftGraphNVTManager:
                 archive_date example: 2022_09_01
                 generated_unique_key: UUI4 key
         """
-        date_archive_folder_mg_obj = self.created_dated_archive_folder(archive_date)
+        date_archive_folder_mg_obj = self.create_dated_archive_folder(archive_date)
         print("self.montage_excel_mg_obj: ", self.montage_excel_mg_obj)
         print("date_archive_folder_mg_obj: ", date_archive_folder_mg_obj)
         self.graph_manager.copy_item(self.montage_excel_mg_obj["id"]
                                      ,   "Montageliste_{}_{}.xlsx".format(self.nvt_number, generated_unique_key)
                                      , date_archive_folder_mg_obj["id"])
 
-    def created_dated_archive_folder(self, archive_date: str):
+    def create_dated_archive_folder(self, archive_date: str):
         """
             Checks out first if there is already a created folder of the same name
             If not, then it creates one and it returns its id
             archive_date example: 2022_09_01
         """
-        montage_archive_folder = self.graph_manager.get_next_item_in_path(self.archive_folder_mg_obj["id"], "montage_liste")
-        dated_archive_folder_mg_obj = self.graph_manager.get_next_item_in_path(montage_archive_folder["id"], archive_date)
-        if dated_archive_folder_mg_obj != None:
-            return dated_archive_folder_mg_obj
-
-        return self.graph_manager.create_new_folder(montage_archive_folder["id"], archive_date)
-
+        montage_archive_folder = self.graph_manager.create_or_get_mg_folder_if_existed(self.archive_folder_mg_obj["id"], "montage_liste")
+        return self.graph_manager.create_or_get_mg_folder_if_existed(montage_archive_folder["id"], archive_date)
 
 
     def upload_nvt_json_file(self):

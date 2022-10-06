@@ -6,6 +6,7 @@
 import glob
 import os.path
 import shutil
+import sys
 from pathlib import Path
 import time
 import warnings
@@ -97,11 +98,13 @@ class City:
 
 
             generated_json_path = nvt_mgm.get_nvt_json_path()
-            if not os.path.exists(generated_json_path):
-                log("No Montageliste or Ansprechpartnerliste for {}, because there is no json gpgs".format(nvt_mgm.nvt_number))
-                continue
             nvt = NVT(nvt_mgm.nvt_number, city=self, nvt_mgm=nvt_mgm)
-            nvt.read_from_json()
+            if not os.path.exists(generated_json_path):
+                log("No gbgs json for NVT {}".format(nvt_mgm.nvt_number))
+                log("Creating empty NVT object for {}".format(nvt_mgm.nvt_number))
+                nvt.create_empty_content()
+            else:
+                nvt.read_from_json()
             self.nvt_list.append(nvt)
 
 

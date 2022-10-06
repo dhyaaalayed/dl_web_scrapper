@@ -80,13 +80,20 @@ def main():
                     if city_obj["generating_ansprechpartner"] == True:
                         log("Operation on NVT {}:".format(nvt.nvt_number))
                         log("Generating ansprechpartner liste")
-                        nvt.export_anshprechpartner_to_excel() # no need to archive the prev one
-                        nvt.nvt_mgm.upload_ansprechspartner_excel()
+                        nvt.export_and_upload_anshprechpartner_to_excel() # checking for non existed addresses is an internal operation
                     if city_obj["updating_montage_activated"] == True:
                         log("Archiving current montage")
-                        nvt.nvt_mgm.archive_montage_excel(archive_date=archive_date, generated_unique_key=nvt_archive_key) # change the body of it to call the one that I created
+
+                        if nvt.nvt_mgm.montage_excel_mg_obj == None: # There is no file yet!
+                            log("No Montage excel file for NVT {} yet".format(nvt.nvt_number))
+                            log("Create an empty montage excel")
+                            nvt.copy_montage_template_to_montage_excel_path(montage_template_path)
+
+                        if nvt.nvt_mgm.montage_excel_mg_obj != None:
+                            nvt.nvt_mgm.archive_montage_excel(archive_date=archive_date, generated_unique_key=nvt_archive_key) # change the body of it to call the one that I created
+                            nvt.nvt_mgm.download_montage_excel()
                         log("Update montage excel")
-                        nvt.nvt_mgm.download_montage_excel()
+
                         nvt.initialize_montage_excel_parser()
                         nvt.montage_excel_parser.update_addresses_from_web()
                         nvt.montage_excel_parser.update_addresses_from_telekom_excel()
@@ -132,7 +139,9 @@ def main():
 
             shutil.copy(master_template_path, bvh_storing_path)
             write_bvh_dfs_to_excel(bvh_storing_path, city_key, bvh_df) # Including copying template to the same path
-            graph_manager.upload_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
+            response = graph_manager.upload_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
+            log("Uploading Masterlist response: ")
+            print(response.json())
         else:
             log("No Montageliste to generate the Masterlist for BVH {}".format(city_key))
 

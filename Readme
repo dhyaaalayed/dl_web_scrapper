@@ -215,7 +215,20 @@ I discovered this problem when I added a boolean variable to store if the explor
 _________________________________________________________
 
 
+Current TODO:
+	/1- Add the template to Pulsnitz of no gpgs (Dilara)
+		check out the NVT that she said
 
+	/1.X- Check out the two addresses that Dilara mentioned
+
+	2- Check out why uploading masterliste is not working!
+		Maybe the ids are wrong?!
+
+	/3- Check out this error: Bautzen_Masterliste
+
+	    df["unique_id"] = df["NVT"] + "_" + df["PLZ"].apply(int).apply(str) + "_" + df["Ort"] + "_" + df["Straße"] + "_" + df["Hausnr."].apply(str) + "_" + df["Hauschar"]
+
+	TypeError: can only concatenate str (not "int") to str
 
 
 
@@ -229,4 +242,14 @@ TODO Later:
 		Also add all telekom list of nein...
 
 
+
+List of what I did during Hakan vocation:
+
+	1- Fixing not saving HK Montage and VKZ Anbindung
+	2- Implement saving Telekom Kommentar and Montage Kommentar in the Masterlist
+	3- Microsoft Graph functionality [10 days]
+		create folder
+		copy file
+		...
+	4- Auskundigung Protokol
 

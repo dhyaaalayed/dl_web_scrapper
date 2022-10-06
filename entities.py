@@ -74,8 +74,6 @@ class Address:
         })
 
     def import_from_json(self, address_json):
-        print("address_json type: ", type(address_json))
-        print("address_json: ", address_json)
         address_json = json.loads(address_json)
         self.gfap_inst_status = address_json["gfap_inst_status"]
         self.kls_id = address_json["kls_id"]

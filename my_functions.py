@@ -87,7 +87,7 @@ def create_unique_id_for_master_df(df):
         Takes a master df and create a unique_id column by concatenating the following columns:
         It has already been tested on Dresden rows and no more than row have the same id :)
     """
-    df["unique_id"] = df["NVT"] + "_" + df["PLZ"].apply(int).apply(str) + "_" + df["Ort"] + "_" + df["Straße"] + "_" + df["Hausnr."].apply(str) + "_" + df["Hauschar"]
+    df["unique_id"] = df["NVT"] + "_" + df["PLZ"].apply(int).apply(str) + "_" + df["Ort"] + "_" + df["Straße"] + "_" + df["Hausnr."].apply(str) + "_" + df["Hauschar"].apply(str)
     unique_column_list = list(df["unique_id"])
     log("Verifying that the generated unique_id column is unique!")
     assert(len(unique_column_list) == len(set(unique_column_list)))

@@ -137,6 +137,13 @@ class NVT:
         print("nvt_json: ", nvt_json)
         return nvt_json
 
+    def create_empty_content(self):
+        """
+            We call this function once we don't have gbgs json for the NVT
+            The empty content is simply an empty kls_list
+        """
+        self.kls_list = []
+
     def import_from_json(self, kls_json):
         log("Calling import_from_json")
         self.kls_list = []
@@ -228,6 +235,7 @@ class NVT:
 
 
     def copy_montage_template_to_montage_excel_path(self, montage_template_path):
+        self.path.mkdir(exist_ok=True, parents=True)
         shutil.copy(montage_template_path, self.montage_excel_path)
 
     def archive_ansprech_excel(self):
@@ -238,8 +246,17 @@ class NVT:
         ansprechpartnerListe_dest_path = ansprechpartnerListe_dest_path / "AnsprechpartnerListe_{}_{}.xlsx".format(self.nvt_number, str(uuid4()).replace("-", "_"))
         shutil.copy(ansprechpartnerListe_src_path, ansprechpartnerListe_dest_path)
 
-    def export_anshprechpartner_to_excel(self):
+    def export_and_upload_anshprechpartner_to_excel(self):
+        """
+            This function also checks if we have addresses
+        """
         df = self.get_anshprechpartner_dataframe()
+        if len(df) > 0:
+            self.export_anshprechpartner_to_excel(df)
+            self.nvt_mgm.upload_ansprechspartner_excel()
+        log("There is no anshprechpartner addresses for NVT {}".format(self.nvt_number))
+
+    def export_anshprechpartner_to_excel(self, df):
         path = self.path / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
         # df.to_excel(path, engine='xlsxwriter')
         measurer = np.vectorize(len)
