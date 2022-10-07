@@ -52,6 +52,10 @@ class City:
         graph_manager = GraphManager()
         mg_nvts = graph_manager.get_nvt_ids(self.root_path)
 
+        # Applying filter to be deleted later!
+        # filtered_list = ["42V1016"] # "42V1014", "42V1011", "42V1013", "42V1014"
+        # mg_nvts = [mg_nvt for mg_nvt in mg_nvts if mg_nvt["name"].replace("NVT ", "") in filtered_list]
+
         for mg_nvt in mg_nvts: # mg_nvt: a Microsoft Graph object contains id, name...
             nvt_scrapping_done = False
             while nvt_scrapping_done == False:
@@ -65,11 +69,12 @@ class City:
                     automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
                     if automated_folder_mg_obj != None:
                         nvt_mgm.download_automated_data_folder(nvt.path)
-                        if nvt.is_json_recently_updated(nvt.path / "automated_data" / "nvt_telekom_data.json"):
+                        if nvt.is_json_recently_updated():
                             log("NVT {} is already updated".format(nvt_mgm.nvt_number))
                             continue
                     nvt.initialize_using_web_scrapper() # path is okay
                     nvt_mgm.upload_nvt_json_file()
+                    nvt_mgm.upload_exploration_protocols_pdfs()
                     self.nvt_list.append(nvt)
                     self.navigator.click_reset_filter_button()
                     nvt_scrapping_done = True

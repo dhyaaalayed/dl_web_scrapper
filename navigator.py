@@ -207,8 +207,12 @@ class Navigator:
         return len(eys_links)
 
     def download_exploration_protocol(self, nvt_path, address_key):
+        """
+            Downloads the pdf if the button is enabled and returns true.
+            Returns false if the button is disabled.
+        """
         download_button = self.browser.find_element("id", "processPageForm:explorationProtocol")
-        pdf_name = "Auskundungsprotokolle_{}_{}_id_{}.pdf".format(address_key, date.today().strftime('%Y_%m_%d'), str(uuid.uuid4()))
+        pdf_name = "Auskundungsprotokolle_{}_date_{}_id_{}.pdf".format(address_key, date.today().strftime('%Y_%m_%d'), str(uuid.uuid4()))
         pdf_path: Path = nvt_path / "Auskundungsprotokolle" / pdf_name
         
         if download_button.get_attribute("aria-disabled") == "false":
@@ -216,14 +220,24 @@ class Navigator:
             log("Downloading Auskundungsprotokolle {}:".format(pdf_name))
             self.browser.execute_script("arguments[0].click();", download_button)
             log("Wait until download is completed")
-            while len(os.listdir(exploration_protocols_download_path)) == 0:
+            # we need to wait until downloading the file and also until the extension is pdf,
+            # otherwise another extension like .pdf.crdownload will be returned before continuing the download process!
+            while len(os.listdir(exploration_protocols_download_path)) == 0 or os.listdir(exploration_protocols_download_path)[0].endswith(".crdownload"):
                 time.sleep(1)
             downloaded_pdf_name = os.listdir(exploration_protocols_download_path)[0]
             log("The name of the downloaded pdf {}".format(downloaded_pdf_name))
             log("Moving the pdf to {}".format(str(pdf_path)))
             # rename with pathlib = moving files :)
             downloaded_pdf_path: Path = exploration_protocols_download_path / downloaded_pdf_name
-            downloaded_pdf_path.rename(pdf_path) # Moving procedure
+
+            log("Moving the pdf: ")
+            log("src: {}".format(str(downloaded_pdf_path) ))
+            log("dst: {}".format(str(pdf_path) ))
+            shutil.move(src=str(downloaded_pdf_path), dst=str(pdf_path))
+            # another moving method, but it did not work!
+            # downloaded_pdf_path.rename(pdf_path) # Moving procedure
+            return True
+        return False
 
 
     def get_eye_data(self, eye_button, nvt_path, already_downloaded_exploration_protocols: list):
@@ -247,7 +261,8 @@ class Navigator:
         kls.address = address
         address_key = address.create_unique_key()
         if address_key not in already_downloaded_exploration_protocols:
-            self.download_exploration_protocol(nvt_path, address_key)
+            kls.address.exploration_protocol_already_downloaded = self.download_exploration_protocol(nvt_path, address_key)
+        else:
             kls.address.exploration_protocol_already_downloaded = True
 
         self.navigate_to_contact_people_tab()

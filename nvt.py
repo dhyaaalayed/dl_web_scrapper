@@ -197,7 +197,7 @@ class NVT:
         creation_time = nvt_json["creation_time"]
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
-        return time_difference.seconds < 1000
+        return time_difference.seconds + time_difference.days * 24*3600  < 5000
 
     def get_already_download_exploration_protocols(self):
         nvt_json = self.read_existed_nvt_json()
