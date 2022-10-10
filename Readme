@@ -253,3 +253,5 @@ List of what I did during Hakan vocation:
 		...
 	4- Auskundigung Protokol
 
+	5- Uploading large files problem > 4 mb
+		requires openning a session at Microsoft Graph and closing it

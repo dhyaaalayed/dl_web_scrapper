@@ -149,12 +149,11 @@ def main():
 if __name__ == "__main__":
     log("Starting updating excel files service")
     log("We will execute the service in the midnight")
-    main()
-    # while True:
-    #     current_time = datetime.datetime.now()
-    #     current_time_number = current_time.hour + current_time.minute/100
-    #     if 0.4 < current_time_number < 0.5:
-    #         main()
+    while True:
+        current_time = datetime.datetime.now()
+        current_time_number = current_time.hour + current_time.minute/100
+        if 2.3 < current_time_number < 2.4:
+            main()
 
 
 
