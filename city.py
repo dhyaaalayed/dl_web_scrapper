@@ -74,9 +74,9 @@ class City:
                     automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
                     if automated_folder_mg_obj != None:
                         nvt_mgm.download_automated_data_folder(nvt.path)
-                        if nvt.is_json_recently_updated():
-                            log("NVT {} is already updated".format(nvt_mgm.nvt_number))
-                            continue
+                        # if nvt.is_json_recently_updated():
+                        #     log("NVT {} is already updated".format(nvt_mgm.nvt_number))
+                        #     continue
                     nvt.initialize_using_web_scrapper() # path is okay
                     nvt_mgm.upload_nvt_json_file()
                     nvt_mgm.upload_exploration_protocols_pdfs()
