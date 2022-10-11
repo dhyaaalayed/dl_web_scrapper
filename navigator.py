@@ -14,18 +14,6 @@ import time
 from entities import Kls, Address, Person, Owner
 from my_functions import log
 
-chrome_options = Options()
-# chrome_options.add_argument("--headless")
-# chrome_options.add_argument('--start-maximized')
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument("--disable-setuid-sandbox")
-
-exploration_protocols_download_path = Path('BAU/exploration_protocols')
-exploration_protocols_download_path.mkdir(parents=True, exist_ok=True)
-download_option = {'download.default_directory': str(exploration_protocols_download_path)}
-
-chrome_options.add_experimental_option('prefs', download_option)
 
 """
 ATTENTION:
@@ -35,19 +23,42 @@ Examples:
 Finding eye_link inside eye_row using css selector, by using xpath, it will find all eye_links over all rows! 
 """
 
+
+
 class Navigator:
 
     browser = None
-
+    exploration_protocols_download_path = None
     def __init__(self, user_name, password):
+        self.initialize_all()
+        # self.apply_first_filter() # Disabled upon Hakan request!
+        # log("Applying Gap installation Filter")
+
+    def initialize_all(self):
+        chrome_options = self.initialize_chrome_options()
         self.browser = Chrome(options = chrome_options)
         self.login_with_dieaa()
         log("Loging in")
         self.move_to_the_search_page()
         log("Moving to the search page")
 
-        # self.apply_first_filter() # Disabled upon Hakan request!
-        # log("Applying Gap installation Filter")
+    def initialize_chrome_options(self):
+        """
+            It's better to create them again once we create a new Navigator object
+            because of web exceptions
+        """
+        chrome_options = Options()
+
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument("--disable-setuid-sandbox")
+
+        self.exploration_protocols_download_path = Path('BAU/exploration_protocols')
+        self.exploration_protocols_download_path.mkdir(parents=True, exist_ok=True)
+        download_option = {'download.default_directory': str(self.exploration_protocols_download_path)}
+
+        chrome_options.add_experimental_option('prefs', download_option)
+        return chrome_options
 
     def login(self, user_name, password):
 
@@ -222,13 +233,13 @@ class Navigator:
             log("Wait until download is completed")
             # we need to wait until downloading the file and also until the extension is pdf,
             # otherwise another extension like .pdf.crdownload will be returned before continuing the download process!
-            while len(os.listdir(exploration_protocols_download_path)) == 0 or os.listdir(exploration_protocols_download_path)[0].endswith(".crdownload"):
+            while len(os.listdir(self.exploration_protocols_download_path)) == 0 or os.listdir(self.exploration_protocols_download_path)[0].endswith(".crdownload"):
                 time.sleep(1)
-            downloaded_pdf_name = os.listdir(exploration_protocols_download_path)[0]
+            downloaded_pdf_name = os.listdir(self.exploration_protocols_download_path)[0]
             log("The name of the downloaded pdf {}".format(downloaded_pdf_name))
             log("Moving the pdf to {}".format(str(pdf_path)))
             # rename with pathlib = moving files :)
-            downloaded_pdf_path: Path = exploration_protocols_download_path / downloaded_pdf_name
+            downloaded_pdf_path: Path = self.exploration_protocols_download_path / downloaded_pdf_name
 
             log("Moving the pdf: ")
             log("src: {}".format(str(downloaded_pdf_path) ))
@@ -407,7 +418,7 @@ class Navigator:
             EC.presence_of_element_located((By.ID, "searchResultForm:propertySearchSRT:col_klsId:filter_label")))
 
 
-
+NAVIGATOR = Navigator("user_name", "password")
 
 
 

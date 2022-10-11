@@ -16,11 +16,16 @@ from openpyxl.reader.excel import load_workbook
 
 from GraphManager import MicrosoftGraphNVTManager, GraphManager
 from my_functions import log
+from navigator import NAVIGATOR
 from nvt import NVT
 
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
+""" 11.10.2022
+    To be refactored:
+    self.navigator and NAVIGATOR are the same object
+"""
 
 class City:
     name = None
@@ -79,6 +84,7 @@ class City:
                     self.navigator.click_reset_filter_button()
                     nvt_scrapping_done = True
                 except Exception as e:
+                    NAVIGATOR.initialize_all()
                     print("Exception: ", str(e))
                     log("Repeat the scrapping process for NVT {}".format(mg_nvt["name"]))
                     continue
