@@ -5,3 +5,4 @@ venv
 *.ipynb
 *.xlsx
 .idea
+**/__pycache__

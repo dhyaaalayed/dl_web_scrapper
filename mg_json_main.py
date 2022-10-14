@@ -76,7 +76,7 @@ def main():
             graph_manager = GraphManager()
             city.load_nvt_dict_from_stored_json_mg(graph_manager)
             for nvt in city.nvt_list:
-                if 1 not in []:
+                if nvt.nvt_number not in []:
                     if city_obj["generating_ansprechpartner"] == True:
                         log("Operation on NVT {}:".format(nvt.nvt_number))
                         log("Generating ansprechpartner liste")
@@ -107,6 +107,7 @@ def main():
             # log("Exporting Masterliste for {}".format(city.name))
             # city.copy_master_liste_template()
             # city.export_all_montage_to_one_excel(master_template_columns)
+            # assert 1 == 2
             df = city.export_all_montage_to_one_df(master_template_columns)
             bvh_dfs.append(df)
         log("Starting BVH process of {}".format(city_key))

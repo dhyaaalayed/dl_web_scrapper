@@ -96,7 +96,11 @@ class City:
     def load_nvt_dict_from_stored_json_mg(self, graph_manager):
         mg_nvts = graph_manager.get_nvt_ids(self.root_path)
         log("ATTENTION: Operations on this subcity will be on the following nvts: ")
+        # To apply filter for test
+        # mg_nvts = [mg_nvt for mg_nvt in mg_nvts if mg_nvt["name"] == "NVT 42V1020"]
+
         to_print_nvts = [mg_nvt["name"].replace("NVT ", "") for mg_nvt in mg_nvts]
+
         print(to_print_nvts)
         for mg_nvt in mg_nvts:
             nvt_path = self.root_path / mg_nvt["name"]

@@ -1,5 +1,17 @@
 from entities import Address
 import pandas as pd
+
+"""
+    Adding new columns:
+    1- On this file:
+    once we add a new column, then we need to add it to:
+        1- the class attribute with None value
+        2- init_from_excel_row function, but with if statement to check if it exists in the template
+        3- export_to_df_dict function, but in the sorted order as in the excel template
+    
+    2- On the city_config.json
+        1- Change the number of columns for both Montage and Master
+"""
 class ExcelAddress:
     address = None
     hk = None
@@ -26,6 +38,7 @@ class ExcelAddress:
     # New columns
     kunden_status = None
     nur_hup = None
+    vorderhaus_hinterhaus = None
 
     def init_from_excel_row(self, row: "Pandas Series"):
         print("rowrow: ", row)
@@ -92,14 +105,22 @@ class ExcelAddress:
         if "Kunden Status" in row.index:
             self.kunden_status = row["Kunden Status"]
 
+        if "Vorderhaus/Hinterhaus" in row.index:
+            self.vorderhaus_hinterhaus = row["Vorderhaus/Hinterhaus"]
+
 
     def export_to_df_dict(self):
+        """
+            ATTENTION: these columns must be sorted as they in the Excel template
+            , otherwise, we will write the data on wrong columns
+        """
         return {
             'PLZ': self.address.postal,
             'Ort': self.address.city,
             'Straße': self.address.street,
             'Hausnr.': int(self.address.house_number),
             'Hauschar': self.address.house_char,
+            'Vorderhaus/Hinterhaus': self.vorderhaus_hinterhaus,
             'HK': self.hk,
             'HTN': self.htn,
             'WE': int(self.address.we) if not pd.isnull(self.address.we) else self.address.we,
