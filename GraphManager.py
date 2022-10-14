@@ -42,13 +42,14 @@ class GraphManager:
     def update_athentication_token(self):
         app_id = '10e05687-0807-45cd-8866-6bc87d5fc388'
         client_secret = '4-V8Q~oxz-HS_wO2K2GSATguJB2mUXJ5IfkWIbQ6'
-        scopes = ['User.Read', 'Files.ReadWrite.All']
+        scopes = ['User.Read', 'Files.ReadWrite.All', 'Mail.Send', 'Mail.ReadWrite']
         client = msal.ClientApplication(
             app_id, authority="https://login.microsoftonline.com/organizations/",
             client_credential=client_secret,
         )
         access_token_req = client.acquire_token_by_username_password(username=user_name,
                                                                  password=password, scopes=scopes)
+        print("access_token_req: ", access_token_req)
         self.access_token = access_token_req["access_token"]
 
     def encode_file(self, local_path):
@@ -291,6 +292,31 @@ class GraphManager:
         # json.dumps with intend = 4 parameter just to print the json object in a pretty way
         print(json.dumps(response.json(), indent = 4) )
 
+    def send_email(self, message):
+
+        request_body = {
+            "message": {
+                    "subject": "GBGS Automatic Mail",
+                    "body": {
+                        "contentType": "Text",
+                        "content": message
+                    },
+            "toRecipients": [
+                    {
+                        "emailAddress":
+                        {
+                            "address": "dhyaa.alayed@gmail.com"
+                        }
+                    }
+                    ],
+                },
+
+            }
+        return requests.post(
+            self.GRAPH_API_ENDPOINT + '/me/sendMail',
+            headers=graph_manager.headers,
+            json=request_body
+        )
 
 class MicrosoftGraphNVTManager:
     """
@@ -407,9 +433,6 @@ class MicrosoftGraphNVTManager:
 if __name__ == "__main__":
     graph_manager = GraphManager()
 
-    # graph_manager.print_all_shared_folders_with_their_ids()
-    file_path = Path("/Users/dlprojectsit/Downloads/grad-school-1.0.0.txt")
-    graph_manager.upload_file(file_path, BAU_FOLDER_ID)
 
 
 
