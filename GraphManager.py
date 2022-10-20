@@ -85,6 +85,11 @@ class GraphManager:
             print(response.json())
         else:
             response = self.upload_small_file(file_name, media_content, drive_folder_id)
+        print("response.status_code: ", response.status_code)
+        if response.status_code == 200:
+            log("Uploading succeded of {}".format(local_path.name))
+        else:
+            log("Uploading failed of {}".format(local_path.name))
         return response
 
     def upload_small_file(self, file_name, media_content, drive_folder_id):
