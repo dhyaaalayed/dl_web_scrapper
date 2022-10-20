@@ -255,3 +255,58 @@ List of what I did during Hakan vocation:
 
 	5- Uploading large files problem > 4 mb
 		requires openning a session at Microsoft Graph and closing it
+
+
+
+
+
+
+Hakan Notes  13.10
+
+	Email: send it imidiatly once a change happens
+		Add Hakan mail
+
+
+
+We need to install xlrd dependency for pandas to read xls excel!
+	This file has all installed nvts
+
+	fold_id is not unique at all!!!!!!!!!!
+
+
+
+__________________________________________
+To tell in the meeting:
+	fold_id is not unique
+		999 from 1300!!!!!!!!
+
+	that's why I created unique id myself
+
+
+
+_______________________________________
+
+
+Current Problems:
+	
+	1- Uploading masterliste sometimes does not work and that proved!
+
+	2- Apache airflow for web main, because it stops because of chrome crushing
+
+	3- Create notification class and integrate it with the email
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

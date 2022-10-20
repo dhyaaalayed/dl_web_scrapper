@@ -4,3 +4,4 @@ selenium==4.4.0
 UliPlot==0.2.2
 msal==1.18.0
 XlsxWriter==3.0.3
+xlrd==2.0.1

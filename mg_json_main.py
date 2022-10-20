@@ -32,9 +32,11 @@ from GraphManager import GraphManager
 from city import City
 from my_functions import log, get_template_columns, write_bvh_dfs_to_excel, parse_master_excel, \
     get_old_column_data_for_master_list, create_unique_id_for_master_df
-
+from navigator import NAVIGATOR
 
 def main():
+    log("Getting installed addresses")
+    installed_addresses = NAVIGATOR.get_installed_addresses()
     with open('city_config.json') as json_file:
         conf_dict = json.load(json_file)
     #
@@ -97,6 +99,7 @@ def main():
                         nvt.initialize_montage_excel_parser()
                         nvt.montage_excel_parser.update_addresses_from_web()
                         nvt.montage_excel_parser.update_addresses_from_telekom_excel()
+                        nvt.montage_excel_parser.update_from_installed_addresses(installed_addresses)
                         # Now using the new template:
                         log("Using the new Montage Excel template")
                         # It's already downloaded for every nvt, we just need to copy it
@@ -105,6 +108,7 @@ def main():
                         log("Finally: Uploading Generated Montage Excel")
                         nvt.nvt_mgm.upload_montage_excel()
             # log("Exporting Masterliste for {}".format(city.name))
+            # Old code do not activate the next two new lines:
             # city.copy_master_liste_template()
             # city.export_all_montage_to_one_excel(master_template_columns)
             # assert 1 == 2

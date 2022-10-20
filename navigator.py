@@ -4,6 +4,7 @@ import uuid
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -86,12 +87,54 @@ class Navigator:
     def move_to_the_search_page(self):
         self.browser.get("https://glasfaser.telekom.de/auftragnehmerportal-ui/property/search")
 
+    def move_to_ibt_order_page(self):
+        """
+            This link of it is the first button in the drop down list
+        """
+        log("Moving to ibt_order_page")
+        self.browser.get("https://glasfaser.telekom.de/auftragnehmerportal-ui/order/ibtorder/search")
+        # WebDriverWait(self.browser, 100).until(
+        #     EC.presence_of_element_located((By.XPATH, 'h1[@class="pull-left" and text()="IBT Order Search"]'))
+        # )
+        print("after waiting ibt logo")
+
+    def select_2500_option_in_ibt_order_page(self):
+        """
+            Second step in ibt order page
+            which is getting the full result
+            2500 is the maximum number of rows
+        """
+
+        select_elm = self.browser.find_element(By.ID, "searchCriteriaForm:nrOfResults_label")#//ul[@id="searchCriteriaForm:nrOfResults_items"]/li[@data-label="2500"]
+        self.javascript_click(select_elm)
+        self.take_screenshot()
+        WebDriverWait(self.browser, 100).until(
+            EC.presence_of_element_located((By.XPATH, '//div[@id="searchCriteriaForm:nrOfResults" and @aria-expanded="true"]')))
+
+        log("Sucessfuly the select options have been expaneded")
+        option_elm = self.browser.find_element(By.XPATH, '//ul[@id="searchCriteriaForm:nrOfResults_items"]/li[@data-label="2500"]')
+        self.javascript_click(option_elm)
+
+        WebDriverWait(self.browser, 100).until(
+            EC.presence_of_element_located((By.XPATH, '//label[@id="searchCriteriaForm:nrOfResults_label" and text()="2500"]')))
+
+    def download_ibt_excel(self):
+        download_button = self.browser.find_element(By.ID, "searchResultForm:orderSRT:exportData")
+        self.browser.execute_script("arguments[0].click();", download_button)
+        log("Waiting until finish downloading")
+        while not Path("BAU/exploration_protocols/ibt-orders.xls").exists():
+            time.sleep(1)
+        log("Downloading is completed")
+
+    def javascript_click(self, elm):
+        self.browser.execute_script("arguments[0].click();", elm)
+
     def apply_first_filter(self): # GFAP_INSTALLATION Filter
         time.sleep(2)
         # Get the select of the filter value directly and click on it!
         gap_installation_option = self.browser.find_element('xpath', '//option[@value="GFAP_INSTALLATION"]')
         # gap_installation_option.click()
-        self.browser.execute_script("arguments[0].click();", gap_installation_option);
+        self.browser.execute_script("arguments[0].click();", gap_installation_option)
         time.sleep(3)
 
     def get_all_nvt_data(self, nvt_number: str, nvt_path, already_downloaded_exploration_protocols):
@@ -417,19 +460,36 @@ class Navigator:
         WebDriverWait(self.browser, 100).until(
             EC.presence_of_element_located((By.ID, "searchResultForm:propertySearchSRT:col_klsId:filter_label")))
 
+    def read_ibt_excel_and_get_installed_addresses(self):
+        df = pd.read_excel("BAU/exploration_protocols/ibt-orders.xls")
+        df["Status"].value_counts()
+        installed_addresses_df = df[
+            (df["Next Activity"] == "Process completed") & (df["Status"] == "Inventory installed")]
+
+        installed_addresses_df = installed_addresses_df.fillna('')
+        installed_addresses = []
+        for i in range(len(installed_addresses_df)):
+            address = Address()
+            address.street = installed_addresses_df.iloc[i]["Street"]
+            address.house_number = installed_addresses_df.iloc[i]["House number"]
+            address.postal = installed_addresses_df.iloc[i]["Postal code"]
+            address.house_char = installed_addresses_df.iloc[i]["House number app."]
+            address.city = installed_addresses_df.iloc[i]["Place"]
+            # other columns are not used to create a unique id, but maybe we will use them later!
+            address.kls_id = installed_addresses_df.iloc[i]["KLS-ID"]
+            address.fold_id = installed_addresses_df.iloc[i]["FoL-Id"]
+            installed_addresses.append(address)
+        return installed_addresses
+
+    def get_installed_addresses(self):
+        self.move_to_ibt_order_page()
+        self.select_2500_option_in_ibt_order_page()
+        self.click_the_search_button()
+        self.download_ibt_excel()
+        installed_addresses = self.read_ibt_excel_and_get_installed_addresses()
+        # remove the file
+        Path("BAU/exploration_protocols/ibt-orders.xls").unlink()
+        return installed_addresses
+
 
 NAVIGATOR = Navigator("user_name", "password")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
