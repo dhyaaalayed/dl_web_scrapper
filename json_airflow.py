@@ -33,7 +33,7 @@ json_dag = DAG(
 
 json_main = BashOperator(
     task_id='json_main_task',
-    bash_command='python3 mg_json_main.py',
+    bash_command='cd /app && python3 mg_json_main.py',
     dag=json_dag,
 )
 
