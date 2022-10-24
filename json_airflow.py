@@ -26,7 +26,8 @@ json_dag = DAG(
     dag_id='json_main_dag',
     default_args=default_args,
     description='Updating Excels',
-    schedule_interval='0 0 * * *',
+    # schedule_interval='47 22 * * *',
+    schedule_interval=timedelta(days=1)
 )
 
 

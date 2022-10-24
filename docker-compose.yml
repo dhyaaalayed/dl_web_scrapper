@@ -4,8 +4,9 @@ services:
     build: .
     ports:
       - "80:8080"
-    # volumes:
-      # - ./:/app
+    volumes:
+      - ./web_airflow.py:/app/web_airflow.py
+      - ./json_airflow.py:/app/json_airflow.py
       # - /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
     environment:
        - AIRFLOW_HOME=~/airflow
@@ -13,6 +14,11 @@ services:
 
   airflow_excel_updater:
     build: .
+    ports:
+      - "8000:8080"
+    volumes:
+      - ./web_airflow.py:/app/web_airflow.py
+      - ./json_airflow.py:/app/json_airflow.py
     environment:
        - AIRFLOW_HOME=~/airflow
-    command: airflow scheduler
+    command: airflow standalone
