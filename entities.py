@@ -120,6 +120,15 @@ class Address:
             str(self.house_char)
         ])
 
+    def get_one_line_address(self):
+        return " ".join([
+            str(int(self.postal)),
+            str(self.city),
+            str(self.street),
+            str(self.house_number),
+            str(self.house_char)
+        ])
+
     def export_to_json(self):
         return json.dumps(self.__dict__)
 

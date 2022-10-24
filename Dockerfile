@@ -30,3 +30,5 @@ RUN pip install --upgrade pip
 
 RUN pip install -r requirements.txt
 
+Run pip install "apache-airflow[celery]==2.4.1" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.4.1/constraints-3.7.txt"
+

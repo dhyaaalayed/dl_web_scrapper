@@ -33,8 +33,13 @@ from city import City
 from my_functions import log, get_template_columns, write_bvh_dfs_to_excel, parse_master_excel, \
     get_old_column_data_for_master_list, create_unique_id_for_master_df
 from navigator import NAVIGATOR
+from notifier import NOTIFIER
 
 def main():
+    recipients = ["dhyaa.alayed@gmail.com", "hakan.uluer@dl-projects.de", "dieaa.aled@dl-projects.de"]
+    if Path("BAU").exists():
+        log("Removing BAU folder")
+        shutil.rmtree("BAU")
     log("Getting installed addresses")
     installed_addresses = NAVIGATOR.get_installed_addresses()
     with open('city_config.json') as json_file:
@@ -99,7 +104,7 @@ def main():
                         nvt.initialize_montage_excel_parser()
                         nvt.montage_excel_parser.update_addresses_from_web()
                         nvt.montage_excel_parser.update_addresses_from_telekom_excel()
-                        nvt.montage_excel_parser.update_from_installed_addresses(installed_addresses)
+                        nvt.montage_excel_parser.update_from_installed_addresses(nvt.nvt_number, installed_addresses)
                         # Now using the new template:
                         log("Using the new Montage Excel template")
                         # It's already downloaded for every nvt, we just need to copy it
@@ -149,15 +154,19 @@ def main():
             print(response.json())
         else:
             log("No Montageliste to generate the Masterlist for BVH {}".format(city_key))
-
+    if NOTIFIER.there_is_new_changes():
+        email_message = NOTIFIER.get_notifications_as_string()
+        log("The following email will be sent: \n {}".format(email_message))
+        graph_manager.send_email(email_message, recipients)
 
 if __name__ == "__main__":
     log("Starting updating excel files service")
     log("We will execute the service in the midnight")
+    # main()
     while True:
         current_time = datetime.datetime.now()
         current_time_number = current_time.hour + current_time.minute/100
-        if 1.1 < current_time_number < 1.2:
+        if 4.1 < current_time_number < 4.2:
             main()
 
 

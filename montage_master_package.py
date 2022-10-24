@@ -8,6 +8,9 @@ from excel_address import ExcelAddress
 from my_functions import log
 import os
 
+from notifier import NOTIFIER
+
+
 class MontageExcelParser:
 
     excel_df = None
@@ -136,6 +139,7 @@ class MontageExcelParser:
         excel_dict = {address.address.create_unique_key(): address for address in self.excel_addresses}
         print("web_dict keys: ", [key for key in web_dict.keys()])
         print("excel_dict keys: ", [key for key in excel_dict.keys()])
+        new_addresses_as_notifications = []
         for web_key in web_dict.keys():
             if web_key in excel_dict.keys():
                 # Update the information
@@ -145,13 +149,16 @@ class MontageExcelParser:
                 excel_dict[web_key].address.print()
                 excel_dict[web_key].address.kundentermin_start = web_dict[web_key].kundentermin_start
                 excel_dict[web_key].address.kundentermin_end = web_dict[web_key].kundentermin_end
-                excel_dict[web_key].address.status = web_dict[web_key].status
                 excel_dict[web_key].address.we = web_dict[web_key].we
                 excel_dict[web_key].address.gfap_inst_status = web_dict[web_key].gfap_inst_status
                 excel_dict[web_key].address.kls_id = web_dict[web_key].kls_id
                 excel_dict[web_key].address.fold_id = web_dict[web_key].fold_id
                 excel_dict[web_key].address.expl_necessary = web_dict[web_key].expl_necessary
                 excel_dict[web_key].address.expl_finished = web_dict[web_key].expl_finished
+                # To send email notification: The address is existed in the red color (taken from telekom addresses excels)
+                if excel_dict[web_key].address.status == "":
+                    new_addresses_as_notifications.append(excel_dict[web_key].address.get_one_line_address())
+                    excel_dict[web_key].address.status = web_dict[web_key].status
 
 
                 print("new address: ")
@@ -165,10 +172,21 @@ class MontageExcelParser:
                 web_dict[web_key].print()
                 excel_dict[web_key].address = web_dict[web_key]
                 excel_dict[web_key].datum_gbgs = date.today().strftime('%Y_%m_%d')
+                # To send email notification: the address does not exist in the excel at all!
+                new_addresses_as_notifications.append(excel_dict[web_key].address.get_one_line_address())
+
+
             excel_dict[web_key].htn = "ja" # since it's in gpgs, then ja
 
 
         self.excel_addresses = [excel_dict[key] for key in excel_dict.keys()]
+
+        # Adding notifications to the notifier
+        if len(new_addresses_as_notifications) > 0:
+            new_addresses_as_notifications = [self.path_to_excel.name] + new_addresses_as_notifications
+            new_addresses_as_notifications.append("_" * 40)
+            NOTIFIER.new_gbgs_addresses += new_addresses_as_notifications
+
     def update_addresses_from_telekom_excel(self):
         """
             Telekom addresses is an excel file inside each NVT
@@ -186,9 +204,16 @@ class MontageExcelParser:
                 excel_address.address.print()
                 self.excel_addresses.append(excel_address)
 
-    def update_from_installed_addresses(self, installed_addresses: "List of Address"):
+    def update_from_installed_addresses(self, nvt_number: str, installed_addresses: "List of Address"):
         installed_addresses_keys = [address.create_unique_key() for address in installed_addresses]
+        new_installed_addresses_as_notifications = []
         for excel_address in self.excel_addresses:
-            if excel_address.address.create_unique_key() in installed_addresses_keys:
-                log("Discovering an installed address")
+            if excel_address.address.create_unique_key() in installed_addresses_keys and excel_address.address.gfap_inst_status != "Installed":
+                logging_string = "Discovering an installed at NVT {}. The address: {}".format(nvt_number, excel_address.address.get_one_line_address())
+                log(logging_string)
+                new_installed_addresses_as_notifications.append(excel_address.address.get_one_line_address())
                 excel_address.address.gfap_inst_status = "Installed"
+        if len(new_installed_addresses_as_notifications) > 0:
+            new_installed_addresses_as_notifications = [self.path_to_excel.name] + new_installed_addresses_as_notifications
+            new_installed_addresses_as_notifications.append("_" * 40)
+            NOTIFIER.new_installed_addresses += new_installed_addresses_as_notifications

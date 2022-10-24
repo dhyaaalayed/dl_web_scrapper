@@ -97,7 +97,7 @@ class City:
         mg_nvts = graph_manager.get_nvt_ids(self.root_path)
         log("ATTENTION: Operations on this subcity will be on the following nvts: ")
         # To apply filter for test
-        # mg_nvts = [mg_nvt for mg_nvt in mg_nvts if mg_nvt["name"] == "NVT 42V1012"]
+        # mg_nvts = [mg_nvt for mg_nvt in mg_nvts if mg_nvt["name"] in ["NVT 42V1025", "NVT 42V1026"]]
 
         to_print_nvts = [mg_nvt["name"].replace("NVT ", "") for mg_nvt in mg_nvts]
 
@@ -131,12 +131,6 @@ class City:
             else:
                 nvt.generate_montage_excel()
 
-
-    def copy_master_liste_template(self):
-        saving_path_folder = Path(self.root_path) / "telekom_list"
-        saving_path_folder.mkdir(parents=True, exist_ok=True)
-        saving_path = saving_path_folder / "Masterliste_{}.xlsx".format(self.name)
-        shutil.copy("/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH/BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx", saving_path)
 
 
     def export_all_montage_to_one_df(self, montage_template_columns):

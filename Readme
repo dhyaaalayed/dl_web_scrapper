@@ -290,10 +290,85 @@ _______________________________________
 Current Problems:
 	
 	1- Uploading masterliste sometimes does not work and that proved!
+		Solved, because files were oppened
 
 	2- Apache airflow for web main, because it stops because of chrome crushing
 
 	3- Create notification class and integrate it with the email
+
+	4- Rebuild docker images on the cloud and rerun the code
+
+	5- Figure out the messing address of the 18 installed
+
+
+
+Steps:
+	/1- Add uploading conditions
+
+
+	/2- Delete BAU folder by finishing one of the main
+		/To start the new one on a clean...
+
+	3- Test sending emails:
+		new addresses
+		new changes
+		upload failed
+
+	4- Rebuild the docker images and rerun the code
+
+	
+
+	5- Add Airflow and make it visable in our cloud
+
+
+_________________
+
+Airflow Documentation
+# installation
+
+export AIRFLOW_HOME=~/airflow # we can choose another path
+pip install apache-airflow
+airflow db init
+
+# To run server: but this command does not show dags
+   airflow webserver -p 8080 
+
+# better to use
+	airflow standalone
+
+
+
+# Create a new user admin and password admin:
+airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
+
+No need for a config file until now :)
+
+# Create apache py file to define a dag and a task
+
+see this link: https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Apache%20Airflow/Build%20a%20DAG%20using%20Airflow/Build%20a%20DAG%20using%20Airflow.md.html
+
+# Submit the created dag to Airflow home folder:
+ cp airflow_file_name.py $AIRFLOW_HOME/dags
+ 
+
+
+
+
+#### For docker later
+export AIRFLOW_HOME=~/airflow
+cp airflow_manager.py AIRFLOW_HOME/dags
+
+# installation steps + creating user
+
+airflow standalone
+
+
+
+
+
+
+
+
 
 
 

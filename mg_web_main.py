@@ -1,16 +1,23 @@
 import json
 
 # Opening JSON file
+from pathlib import Path
+
 from GraphManager import GraphManager
 from city import City
 from my_functions import log
 from navigator import NAVIGATOR
+import shutil
 
 with open('city_config.json') as json_file:
     conf_dict = json.load(json_file)
 city_dict = conf_dict["cities"]
 
 
+
+if Path("BAU").exists():
+    log("Removing BAU folder")
+    shutil.rmtree("BAU")
 
 while True:
     for city_key in city_dict.keys(): # city_key is the city name
@@ -22,3 +29,24 @@ while True:
                 city.create_city_folder_tree()
                 city.initialize_nvt_dict_using_web_navigator_mg()
                 log("Finishing scrapping subcity of {} of path {}".format(city_key, path))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                

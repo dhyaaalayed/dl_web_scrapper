@@ -14,6 +14,7 @@ import msal
 import requests
 
 from my_functions import log
+from notifier import NOTIFIER
 from security_config import user_name, password
 
 # Drive id of Derla Device, where we have the BAU and other folders!
@@ -89,7 +90,9 @@ class GraphManager:
         if response.status_code == 200:
             log("Uploading succeded of {}".format(local_path.name))
         else:
-            log("Uploading failed of {}".format(local_path.name))
+            logging_string = "Uploading failed of {}".format(local_path.name)
+            NOTIFIER.add_failed_uploaded_file(local_path.name)
+            log(logging_string)
         return response
 
     def upload_small_file(self, file_name, media_content, drive_folder_id):
@@ -297,7 +300,7 @@ class GraphManager:
         # json.dumps with intend = 4 parameter just to print the json object in a pretty way
         print(json.dumps(response.json(), indent = 4) )
 
-    def send_email(self, message):
+    def send_email(self, message:str, recipients: list):
 
         request_body = {
             "message": {
@@ -307,19 +310,14 @@ class GraphManager:
                         "content": message
                     },
             "toRecipients": [
-                    {
-                        "emailAddress":
-                        {
-                            "address": "dhyaa.alayed@gmail.com"
-                        }
-                    }
+                    {"emailAddress":{"address": mail}} for mail in recipients
                     ],
                 },
 
             }
         return requests.post(
             self.GRAPH_API_ENDPOINT + '/me/sendMail',
-            headers=graph_manager.headers,
+            headers=self.headers,
             json=request_body
         )
 
@@ -435,9 +433,9 @@ class MicrosoftGraphNVTManager:
         path = self.nvt_path / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
         self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
 
-if __name__ == "__main__":
-    graph_manager = GraphManager()
-
+# if __name__ == "__main__":
+    # graph_manager = GraphManager()
+    # graph_manager.send_email("test_mail", ["dhyaa.alayed@gmail.com", "dieaa.aled@dl-projects.de"])
 
 
 

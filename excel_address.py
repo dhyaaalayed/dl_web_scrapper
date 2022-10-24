@@ -13,7 +13,7 @@ import pandas as pd
         1- Change the number of columns for both Montage and Master
 """
 class ExcelAddress:
-    address = None
+    address: Address = None
     hk = None
     htn = None
     datum_gbgs = None
