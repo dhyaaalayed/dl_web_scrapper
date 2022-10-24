@@ -1,19 +1,18 @@
 version: "3.3"
 services:
-  airflow_manager:
+  airflow_web_scrapper:
     build: .
     ports:
       - "80:8080"
-    volumes:
-      - ./:/app
+    # volumes:
+      # - ./:/app
       # - /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
     environment:
        - AIRFLOW_HOME=~/airflow
     command: airflow standalone
-    # command: bash
-#  excel_updater:
-#    build: .
-#    volumes:
-#      - ./:/app
-#    command: python mg_json_main.py
 
+  airflow_excel_updater:
+    build: .
+    environment:
+       - AIRFLOW_HOME=~/airflow
+    command: airflow scheduler
