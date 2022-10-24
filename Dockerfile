@@ -30,5 +30,23 @@ RUN pip install --upgrade pip
 
 RUN pip install -r requirements.txt
 
-Run pip install "apache-airflow[celery]==2.4.1" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.4.1/constraints-3.7.txt"
 
+# Airflow data \
+
+# Set the environment variable
+ARG AIRFLOW_HOME=~/airflow
+
+RUN pip install apache-airflow
+
+RUN airflow db init
+
+# Create a user to log in
+RUN airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
+
+# Copy our dags to Airflow directory
+
+RUN mkdir ~/airflow/dags
+
+RUN cp json_airflow.py ~/airflow/dags
+
+RUN cp web_airflow.py ~/airflow/dags
