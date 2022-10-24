@@ -30,7 +30,7 @@ web_dag = DAG(
 
 web_main = BashOperator(
     task_id='web_main_task',
-    bash_command='cd /Users/dlprojectsit/Desktop/Github_local/web_scrapper && python3 mg_web_main.py',
+    bash_command='python3 mg_web_main.py',
     dag=web_dag,
 )
 
