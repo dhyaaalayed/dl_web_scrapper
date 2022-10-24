@@ -2,7 +2,7 @@
     "templates": {
         "montage_template": {
             "path": "BAU/gbgs_config/Templates/Montageliste_Template_Final.xlsx"
-            , "number_of_columns": 39
+            , "number_of_columns": 38
         },
         "master_template": {
             "path": "BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx"
