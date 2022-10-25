@@ -37,6 +37,7 @@ web_main = BashOperator(
 trigger_self = TriggerDagRunOperator(
     task_id='repeat_web_main_task',
     trigger_dag_id=web_dag.dag_id,
+    trigger_rule='all_done',
     dag=web_dag
 )
 
