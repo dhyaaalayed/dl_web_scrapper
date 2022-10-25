@@ -84,6 +84,7 @@ class City:
                     self.navigator.click_reset_filter_button()
                     nvt_scrapping_done = True
                 except Exception as e:
+                    assert 1 == 2
                     NAVIGATOR.initialize_all()
                     print("Exception: ", str(e))
                     log("Repeat the scrapping process for NVT {}".format(mg_nvt["name"]))
