@@ -36,19 +36,19 @@ RUN pip install -r requirements.txt
 # Airflow data \
 
 # Set the environment variable
-ARG AIRFLOW_HOME=~/airflow
+# ARG AIRFLOW_HOME=~/airflow
 
-RUN pip install apache-airflow
+# RUN pip install apache-airflow
 
-RUN airflow db init
+# RUN airflow db init
 
 # Create a user to log in
-RUN airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
+# RUN airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
 
-# Copy our dags to Airflow directory
+#### Copy our dags to Airflow directory
 
-RUN mkdir ~/airflow/dags
+# RUN mkdir ~/airflow/dags
 
-RUN cp json_airflow.py ~/airflow/dags
+# RUN cp json_airflow.py ~/airflow/dags
 
-RUN cp web_airflow.py ~/airflow/dags
+# RUN cp web_airflow.py ~/airflow/dags

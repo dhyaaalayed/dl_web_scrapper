@@ -71,11 +71,11 @@
             "user_name": "ahmet.orla@dl-project.de",
             "password": "Ahmet2022!",
             "paths": [
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Bad Wilsnack",
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Garz-Hoppenrade",
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Lanz Cumlosen",
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Perleberg Kleinow",
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/Plettenburg Glöwen"
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/2. Bad Wilsnack",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/1. Garz-Hoppenrade",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/4. Lanz Cumlosen",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/3. Perleberg Kleinow",
+                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/5. Plettenburg Glöwen"
             ],
             "bvh_master_storing_path": "BAU/RV-08 Prignitz/BVH-01 Prignitz",
             "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"

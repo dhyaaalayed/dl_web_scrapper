@@ -1,24 +1,32 @@
 version: "3.3"
 services:
-  airflow_web_scrapper:
+  web_scrapper:
     build: .
-    ports:
-      - "80:8080"
-    volumes:
+    # ports:
+    #   - "80:8080"
+    volumes: # many copies in order not to include the BAU folder
+      - ./city_config.json:/app/city_config.json
+      - ./city.py:/app/city.py
+      - ./enities.py:/app/enities.py
+      - ./excel_address.py:/app/excel_address.py
+      - ./GraphManager.py:/app/GraphManager.py
+      - ./mg_web_main.py:/app/mg_web_main.py
+      - ./montage_master_package.py:/app/montage_master_package.py
+      - ./my_functions.py:/app/my_functions.py
+      - ./navigator.py:/app/navigator.py
+      - ./notifier.py:/app/notifier.py
+      - ./nvt.py:/app/nvt.py
+      - ./requirements.txt:/app/requirements.txt
       - ./web_airflow.py:/app/web_airflow.py
-      - ./json_airflow.py:/app/json_airflow.py
+      - ./web_main_shell.sh:/app/web_main_shell.sh
+      # - ./json_airflow.py:/app/json_airflow.py
       # - /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
-    environment:
-       - AIRFLOW_HOME=~/airflow
-    command: airflow standalone
+    # environment:
+    #    - AIRFLOW_HOME=~/airflow
+    command: ./web_main_shell.sh
 
-  airflow_excel_updater:
+  excel_updater:
     build: .
-    ports:
-      - "8000:8080"
     volumes:
-      - ./web_airflow.py:/app/web_airflow.py
-      - ./json_airflow.py:/app/json_airflow.py
-    environment:
-       - AIRFLOW_HOME=~/airflow
-    command: airflow standalone
+      - .:/app
+    command: python3 mg_json_main.py

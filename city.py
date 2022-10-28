@@ -16,7 +16,7 @@ from openpyxl.reader.excel import load_workbook
 
 from GraphManager import MicrosoftGraphNVTManager, GraphManager
 from my_functions import log
-from navigator import NAVIGATOR
+from navigator import Navigator
 from nvt import NVT
 
 
@@ -62,33 +62,34 @@ class City:
         # mg_nvts = [mg_nvt for mg_nvt in mg_nvts if mg_nvt["name"].replace("NVT ", "") in filtered_list]
 
         for mg_nvt in mg_nvts: # mg_nvt: a Microsoft Graph object contains id, name...
-            nvt_scrapping_done = False
-            while nvt_scrapping_done == False:
-                try:
-                    nvt_path = self.root_path / mg_nvt["name"]
-                    nvt_number = mg_nvt["name"].replace("NVT ", "")
-                    log("Start scrapping NVT: " + str(nvt_number))
-                    #### Now we need nvt and nvt_mgm objects
-                    nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt, nvt_path)
-                    nvt = NVT(nvt_number=nvt_number, city=self, nvt_mgm=nvt_mgm)
-                    automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
-                    if automated_folder_mg_obj != None:
-                        nvt_mgm.download_automated_data_folder(nvt.path)
-                        # if nvt.is_json_recently_updated():
-                        #     log("NVT {} is already updated".format(nvt_mgm.nvt_number))
-                        #     continue
-                    nvt.initialize_using_web_scrapper() # path is okay
-                    nvt_mgm.upload_nvt_json_file()
-                    nvt_mgm.upload_exploration_protocols_pdfs()
-                    self.nvt_list.append(nvt)
-                    self.navigator.click_reset_filter_button()
-                    nvt_scrapping_done = True
-                except Exception as e:
-                    assert 1 == 2
-                    NAVIGATOR.initialize_all()
-                    print("Exception: ", str(e))
-                    log("Repeat the scrapping process for NVT {}".format(mg_nvt["name"]))
-                    continue
+            # nvt_scrapping_done = False
+            # while nvt_scrapping_done == False:
+            try:
+                nvt_path = self.root_path / mg_nvt["name"]
+                nvt_number = mg_nvt["name"].replace("NVT ", "")
+                log("Start scrapping NVT: " + str(nvt_number))
+                #### Now we need nvt and nvt_mgm objects
+                nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt, nvt_path)
+                nvt = NVT(nvt_number=nvt_number, city=self, nvt_mgm=nvt_mgm)
+                automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
+                if automated_folder_mg_obj != None:
+                    nvt_mgm.download_automated_data_folder(nvt.path)
+                    if nvt.is_json_recently_updated():
+                        log("NVT {} is already updated".format(nvt_mgm.nvt_number))
+                        continue
+                nvt.initialize_using_web_scrapper() # path is okay
+                nvt_mgm.upload_nvt_json_file()
+                nvt_mgm.upload_exploration_protocols_pdfs()
+                self.nvt_list.append(nvt)
+                self.navigator.click_reset_filter_button()
+                # nvt_scrapping_done = True
+            except Exception as e:
+                assert 1 == 2 # quit the program, since we will not start with already updated nvts
+                self.navigator = Navigator('dieaa.aled@dl-projects.de', 'dieaaALED123#@')
+                self.navigator.take_screenshot()
+                print("Exception: ", str(e))
+                log("Repeat the scrapping process for NVT {}".format(mg_nvt["name"]))
+                continue
 
 
 

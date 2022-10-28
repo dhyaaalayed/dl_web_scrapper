@@ -31,14 +31,14 @@ class Navigator:
     browser = None
     exploration_protocols_download_path = None
     def __init__(self, user_name, password):
-        self.initialize_all()
+        self.initialize_all(user_name, password)
         # self.apply_first_filter() # Disabled upon Hakan request!
         # log("Applying Gap installation Filter")
 
-    def initialize_all(self):
+    def initialize_all(self, user_name, password):
         chrome_options = self.initialize_chrome_options()
         self.browser = Chrome(options = chrome_options)
-        self.login_with_dieaa()
+        self.login(user_name, password)
         log("Loging in")
         self.move_to_the_search_page()
         log("Moving to the search page")
@@ -51,8 +51,10 @@ class Navigator:
         chrome_options = Options()
 
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument("--disable-setuid-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
 
         self.exploration_protocols_download_path = Path('BAU/exploration_protocols')
         self.exploration_protocols_download_path.mkdir(parents=True, exist_ok=True)
@@ -80,7 +82,7 @@ class Navigator:
         URL = "https://glasfaser.telekom.de/auftragnehmerportal-ui/home?a-cid=50708"
         self.browser.get(URL)
         self.browser.find_element('id', 'username').send_keys('dieaa.aled@dl-projects.de')
-        self.browser.find_element('id', 'password').send_keys('Dieaa1234!')
+        self.browser.find_element('id', 'password').send_keys('dieaaALED123#@')
         self.browser.find_element('name', 'login').click()
 
 
@@ -107,7 +109,6 @@ class Navigator:
 
         select_elm = self.browser.find_element(By.ID, "searchCriteriaForm:nrOfResults_label")#//ul[@id="searchCriteriaForm:nrOfResults_items"]/li[@data-label="2500"]
         self.javascript_click(select_elm)
-        self.take_screenshot()
         WebDriverWait(self.browser, 100).until(
             EC.presence_of_element_located((By.XPATH, '//div[@id="searchCriteriaForm:nrOfResults" and @aria-expanded="true"]')))
 
@@ -181,7 +182,6 @@ class Navigator:
     def _enter_nvt_number(self, nvt_number):
         log(nvt_number)
         WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.ID,  "searchCriteriaForm:nvtArea")))
-        self.take_screenshot()
         # First we need to click on nvt div to show the input of entering nvt number:
         nvt_filter_div = self.browser.find_element("id", "searchCriteriaForm:nvtArea")
         self.browser.execute_script("arguments[0].click();", nvt_filter_div)
@@ -203,7 +203,7 @@ class Navigator:
         self.browser.execute_script("arguments[0].click();", nvt_span)
 
         log("Waiting for NVT Filtering until loading li element of NVT: {}".format(nvt_number))
-        # self.take_screenshot()
+
         WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.XPATH, '//li[@data-token-value="{}"]'.format(nvt_number))))
         log("Li element of NVT {} is loaded".format(nvt_number))
 

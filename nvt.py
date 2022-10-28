@@ -197,17 +197,17 @@ class NVT:
         creation_time = nvt_json["creation_time"]
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
-        return time_difference.seconds + time_difference.days * 24*3600  < 5000
+        return time_difference.seconds + time_difference.days * 24*3600  < 6000
 
     def get_already_download_exploration_protocols(self):
         nvt_json = self.read_existed_nvt_json()
         if not nvt_json: # there is no created json file yet
             return [] # then we return an empty list
         klses = nvt_json["kls_list"]
-        print("klses: ", klses)
+        # print("klses: ", klses)
         already_download_exploration_protocols = []
         for kls in klses:
-            print("kls: ", kls)
+            # print("kls: ", kls)
             kls = json.loads(kls)
             address = Address(kls["address"])
             if address.exploration_protocol_already_downloaded:

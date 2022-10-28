@@ -365,6 +365,11 @@ airflow standalone
 
 
 
+To open a bash in a RUNNING container:
+docker exec -ti <container name> /bin/bash
+
+
+
 
 
 
