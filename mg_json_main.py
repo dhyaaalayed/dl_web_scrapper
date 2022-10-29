@@ -165,7 +165,7 @@ if __name__ == "__main__":
     while True:
         current_time = datetime.datetime.now()
         current_time_number = current_time.hour + current_time.minute/100
-        if 22.0 < current_time_number < 22.05:
+        if 22.31 < current_time_number < 22.39:
             main()
 
 
