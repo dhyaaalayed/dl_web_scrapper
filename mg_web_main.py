@@ -19,17 +19,16 @@ navigator = Navigator('dieaa.aled@dl-projects.de', 'dieaaALED123#@')
 if Path("BAU").exists():
     log("Removing BAU folder")
     shutil.rmtree("BAU")
-while True:
-    for city_key in city_dict.keys(): # city_key is the city name
-        city_obj = city_dict[city_key]
-        if city_obj["scrapping_activated"] == True:
-            log("Scrapping activated for {}".format(city_key))
-            for path in city_obj["paths"]:
-                city = City(city_key, path, navigator)
-                city.create_city_folder_tree()
-                city.initialize_nvt_dict_using_web_navigator_mg()
-                log("Finishing scrapping subcity of {} of path {}".format(city_key, path))
-
+for city_key in city_dict.keys(): # city_key is the city name
+    city_obj = city_dict[city_key]
+    if city_obj["scrapping_activated"] == True:
+        log("Scrapping activated for {}".format(city_key))
+        for path in city_obj["paths"]:
+            city = City(city_key, path, navigator)
+            city.create_city_folder_tree()
+            city.initialize_nvt_dict_using_web_navigator_mg()
+            log("Finishing scrapping subcity of {} of path {}".format(city_key, path))
+navigator.browser.close()
 
 
 
