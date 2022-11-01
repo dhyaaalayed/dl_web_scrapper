@@ -42,6 +42,9 @@ def main():
         shutil.rmtree("BAU")
     log("Getting installed addresses")
     installed_addresses = NAVIGATOR.get_installed_addresses()
+    installed_addresses_to_print = [address.create_unique_key() for address in installed_addresses]
+    print("installed_addresses: ")
+    print(installed_addresses_to_print)
     with open('city_config.json') as json_file:
         conf_dict = json.load(json_file)
     #

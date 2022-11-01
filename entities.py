@@ -40,6 +40,7 @@ class Address:
     kundentermin_end = None
     status = None
     we = None
+    building_part = None
 
     # new columns:
     gfap_inst_status = None
@@ -64,6 +65,7 @@ class Address:
             "postal": self.postal,
             "city": self.city,
             "status": self.status,
+            "building_part": self.building_part,
             "kundentermin_start": self.kundentermin_start,
             "kundentermin_end": self.kundentermin_end,
             "we": self.we,
@@ -90,6 +92,7 @@ class Address:
         self.gfap_inst_status = address_json["gfap_inst_status"]
         self.expl_necessary = address_json["expl_necessary"]
         self.expl_finished = address_json["expl_finished"]
+        self.building_part = address_json["building_part"]
         if "exploration_protocol_already_downloaded" in address_json.keys():
             self.exploration_protocol_already_downloaded = address_json["exploration_protocol_already_downloaded"]
 
@@ -100,6 +103,7 @@ class Address:
         print("street: ", self.street)
         print("house_number: ", self.house_number)
         print("house_char: ", self.house_char)
+        print("building_part: ", self.building_part)
         print("postal: ", self.postal)
         print("city: ", self.city)
         print("status: ", self.status)

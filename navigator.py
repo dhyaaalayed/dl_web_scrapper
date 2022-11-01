@@ -396,6 +396,8 @@ class Navigator:
         address.postal = self.browser.find_element("id", "processPageForm:postalCode").text
         address.city = self.browser.find_element("id", "processPageForm:city").text
         address.house_char = self.browser.find_element("id", "processPageForm:houseNumberApp").text
+        address.building_part = self.browser.find_element("id", "processPageForm:buildingPart").text
+        
         return kls_id, address
 
     def navigate_to_contact_people_tab(self):
@@ -492,4 +494,4 @@ class Navigator:
         return installed_addresses
 
 
-NAVIGATOR = Navigator("user_name", "password")
+NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "Ahmet2022!")
