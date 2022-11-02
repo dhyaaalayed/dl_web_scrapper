@@ -38,7 +38,6 @@ class ExcelAddress:
     # New columns
     kunden_status = None
     nur_hup = None
-    vorderhaus_hinterhaus = None
 
     def init_from_excel_row(self, row: "Pandas Series"):
         print("rowrow: ", row)
@@ -106,7 +105,7 @@ class ExcelAddress:
             self.kunden_status = row["Kunden Status"]
 
         if "Vorderhaus/Hinterhaus" in row.index:
-            self.vorderhaus_hinterhaus = row["Vorderhaus/Hinterhaus"]
+            self.address.building_part = row["Vorderhaus/Hinterhaus"]
 
 
     def export_to_df_dict(self):
@@ -120,7 +119,7 @@ class ExcelAddress:
             'Straße': self.address.street,
             'Hausnr.': int(self.address.house_number),
             'Hauschar': self.address.house_char,
-            'Vorderhaus/Hinterhaus': self.vorderhaus_hinterhaus,
+            'Vorderhaus/Hinterhaus': self.address.building_part,
             'HK': self.hk,
             'HTN': self.htn,
             'WE': int(self.address.we) if not pd.isnull(self.address.we) else self.address.we,
