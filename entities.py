@@ -53,6 +53,9 @@ class Address:
     # in order not to download the pdf again if it's True!
     exploration_protocol_already_downloaded: bool = False
 
+    # 02.11.2022: a big string to store all peaple and owners with their numbers!
+    nummer_ansprechpartner: str = None
+
     def __init__(self, address_json=None):
         if address_json is not None:
             self.import_from_json(address_json)
@@ -92,7 +95,11 @@ class Address:
         self.gfap_inst_status = address_json["gfap_inst_status"]
         self.expl_necessary = address_json["expl_necessary"]
         self.expl_finished = address_json["expl_finished"]
-        self.building_part = address_json["building_part"]
+
+        if "building_part" in address_json.keys():
+            self.building_part = address_json["building_part"]
+        else:
+            print("No building_part for the current address!")
         if "exploration_protocol_already_downloaded" in address_json.keys():
             self.exploration_protocol_already_downloaded = address_json["exploration_protocol_already_downloaded"]
 

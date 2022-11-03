@@ -107,6 +107,8 @@ class ExcelAddress:
         if "Vorderhaus/Hinterhaus" in row.index:
             self.address.building_part = row["Vorderhaus/Hinterhaus"]
 
+        # No need to import nummer_ansprechpartner from excel, beause we already have it from gbgs
+
 
     def export_to_df_dict(self):
         """
@@ -119,6 +121,7 @@ class ExcelAddress:
             'Straße': self.address.street,
             'Hausnr.': int(self.address.house_number),
             'Hauschar': self.address.house_char,
+            'Nummer + Ansprechpartner': self.address.nummer_ansprechpartner,
             'Vorderhaus/Hinterhaus': self.address.building_part,
             'HK': self.hk,
             'HTN': self.htn,

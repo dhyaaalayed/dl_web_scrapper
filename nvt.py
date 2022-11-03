@@ -158,6 +158,22 @@ class NVT:
             )
             self.kls_list.append(kls)
         print('self.kls_list111: ', len(self.kls_list))
+
+    def copy_people_and_owners_to_address(self):
+        """
+        02.11.2022: I have been asked to create an attribute in address that have all
+        peaple and owners as a big string!
+        We only need a phone and a name from each object
+        """
+        for kls in self.kls_list:
+            kls.address.nummer_ansprechpartner = "" # init the variable
+            for person in kls.people:
+                kls.address.nummer_ansprechpartner += person.name + ": " + person.fixedline + ","
+            for owner in kls.owners:
+                kls.address.nummer_ansprechpartner += owner.name + ": " + owner.linenumber + ","
+
+
+
     def write_to_json(self):
         store_path = self.path / 'automated_data'
         json_obj = self.export_to_json()
