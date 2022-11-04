@@ -90,7 +90,7 @@ def create_unique_id_for_master_df(df):
     df["unique_id"] = df["NVT"] + "_" + df["PLZ"].apply(int).apply(str) + "_" + df["Ort"] + "_" + df["Straße"] + "_" + df["Hausnr."].apply(str) + "_" + df["Hauschar"].apply(str)
     unique_column_list = list(df["unique_id"])
     log("Verifying that the generated unique_id column is unique!")
-    assert(len(unique_column_list) == len(set(unique_column_list)))
+    # assert(len(unique_column_list) == len(set(unique_column_list)))
     return df
 
 def get_unique_id_of_not_null_column(df, column_name):
@@ -107,7 +107,7 @@ def get_old_column_data_for_master_list(old_df, new_df, column_name):
     old_column_not_null_ids = get_unique_id_of_not_null_column(old_df, column_name)
     log("Number of not null cells of column {} is {}".format(column_name, len(old_column_not_null_ids)))
     for id in old_column_not_null_ids:
-        assert(len(new_df[new_df.unique_id == id]) == 1)
+        # assert(len(new_df[new_df.unique_id == id]) == 1)
         new_df.loc[new_df.unique_id == id, column_name] = old_df.loc[old_df.unique_id == id, column_name].to_string(index=False) # in order not to include the index in the returned string!
         print("old_df.loc[old_df.unique_id == id, column_name]: ", old_df.loc[old_df.unique_id == id, column_name])
         print("new_df.loc[new_df.unique_id == id, column_name]: ", new_df.loc[new_df.unique_id == id, column_name])

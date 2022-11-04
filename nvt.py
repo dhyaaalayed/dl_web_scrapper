@@ -168,10 +168,13 @@ class NVT:
         for kls in self.kls_list:
             kls.address.nummer_ansprechpartner = "" # init the variable
             for person in kls.people:
-                kls.address.nummer_ansprechpartner += person.name + ": " + person.fixedline + ","
+                kls.address.nummer_ansprechpartner += person.fixedline +", "
+                kls.address.nummer_ansprechpartner += person.mobile + ", "
+                kls.address.nummer_ansprechpartner += "({});".format(person.name)
             for owner in kls.owners:
-                kls.address.nummer_ansprechpartner += owner.name + ": " + owner.linenumber + ","
-
+                kls.address.nummer_ansprechpartner += owner.linenumber + ", "
+                kls.address.nummer_ansprechpartner += owner.mobil + ", "
+                kls.address.nummer_ansprechpartner += "({});".format(owner.name)
 
 
     def write_to_json(self):

@@ -155,6 +155,12 @@ class MontageExcelParser:
                 excel_dict[web_key].address.fold_id = web_dict[web_key].fold_id
                 excel_dict[web_key].address.expl_necessary = web_dict[web_key].expl_necessary
                 excel_dict[web_key].address.expl_finished = web_dict[web_key].expl_finished
+
+                # added at 04.11.2022
+                excel_dict[web_key].address.nummer_ansprechpartner = web_dict[web_key].nummer_ansprechpartner
+                # added at 04.11.2022
+                excel_dict[web_key].address.building_part = web_dict[web_key].building_part
+
                 # To send email notification: The address is existed in the red color (taken from telekom addresses excels)
                 if excel_dict[web_key].address.status == "":
                     new_addresses_as_notifications.append(excel_dict[web_key].address.get_one_line_address())
