@@ -84,7 +84,9 @@ class City:
                 self.navigator.click_reset_filter_button()
                 # nvt_scrapping_done = True
             except Exception as e:
-                self.navigator.browser.close()
+                # self.navigator.browser.close()
+                self.navigator.browser.quit()
+                # self.navigator.browser.dispose()
                 assert 1 == 2 # quit the program, since we will not start with already updated nvts
                 self.navigator = Navigator('dieaa.aled@dl-projects.de', 'dieaaALED123#@')
                 self.navigator.take_screenshot()

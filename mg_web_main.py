@@ -9,6 +9,8 @@ from my_functions import log
 from navigator import Navigator
 import shutil
 
+print("quit is in use now to close the browser!")
+
 with open('city_config.json') as json_file:
     conf_dict = json.load(json_file)
 city_dict = conf_dict["cities"]
@@ -28,7 +30,9 @@ for city_key in city_dict.keys(): # city_key is the city name
             city.create_city_folder_tree()
             city.initialize_nvt_dict_using_web_navigator_mg()
             log("Finishing scrapping subcity of {} of path {}".format(city_key, path))
-navigator.browser.close()
+# navigator.browser.close()
+navigator.browser.quit()
+# navigator.browser.quit()
 
 
 
