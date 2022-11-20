@@ -92,7 +92,6 @@ class Address:
         self.kundentermin_start = address_json["kundentermin_start"]
         self.kundentermin_end = address_json["kundentermin_end"]
         self.we = address_json["we"]
-        self.gfap_inst_status = address_json["gfap_inst_status"]
         self.expl_necessary = address_json["expl_necessary"]
         self.expl_finished = address_json["expl_finished"]
 
@@ -133,7 +132,7 @@ class Address:
 
     def get_one_line_address(self):
         return " ".join([
-            str(int(self.postal)),
+            str(self.postal),
             str(self.city),
             str(self.street),
             str(self.house_number),

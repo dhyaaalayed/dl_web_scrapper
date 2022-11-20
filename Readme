@@ -188,8 +188,8 @@ to get logs:
 	docker-compose logs <name of service>
 	example:
 	docker-compose logs excel_updater
-	sudo docker-compose logs -t --tail 1000 excel_updater
-	sudo docker-compose logs -t --tail 1000 web_scrapper_navigator
+	sudo docker-compose logs -t --tail 100 excel_updater
+	sudo docker-compose logs -t --tail 300 web_scrapper
 	-t # to show the timestamp
 
 get running containers:

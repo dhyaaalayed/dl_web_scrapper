@@ -35,8 +35,11 @@ from my_functions import log, get_template_columns, write_bvh_dfs_to_excel, pars
 from navigator import NAVIGATOR
 from notifier import NOTIFIER
 
+UPLOAD_MASTERLISTE = True
+SEND_EMAIL = True
+
 def main():
-    recipients = ["dhyaa.alayed@gmail.com", "hakan.uluer@dl-projects.de", "dieaa.aled@dl-projects.de"]
+    recipients = ["hakan.uluer@dl-projects.de", "dieaa.aled@dl-projects.de", "it@dl-projects.de"]
     if Path("BAU").exists():
         log("Removing BAU folder")
         shutil.rmtree("BAU")
@@ -152,24 +155,27 @@ def main():
 
             shutil.copy(master_template_path, bvh_storing_path)
             write_bvh_dfs_to_excel(bvh_storing_path, city_key, bvh_df) # Including copying template to the same path
-            response = graph_manager.upload_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
-            log("Uploading Masterlist response: ")
-            print(response.json())
+            if UPLOAD_MASTERLISTE:
+                response = graph_manager.upload_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
+                log("Uploading Masterlist response: ")
+                print(response.json())
         else:
             log("No Montageliste to generate the Masterlist for BVH {}".format(city_key))
     if NOTIFIER.there_is_new_changes():
         email_message = NOTIFIER.get_notifications_as_string()
         log("The following email will be sent: \n {}".format(email_message))
-        graph_manager.send_email(email_message, recipients)
+        if SEND_EMAIL:
+            graph_manager.send_email(email_message, recipients)
 
 if __name__ == "__main__":
     log("Starting updating excel files service")
     log("We will execute the service in the midnight")
-    while True:
-        current_time = datetime.datetime.now()
-        current_time_number = current_time.hour + current_time.minute/100
-        if 22.31 < current_time_number < 22.39:
-            main()
+    main()
+    # while True:
+    #     current_time = datetime.datetime.now()
+    #     current_time_number = current_time.hour + current_time.minute/100
+    #     if 22.31 < current_time_number < 22.39:
+    #         main()
 
 
 

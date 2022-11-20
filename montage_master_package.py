@@ -113,6 +113,8 @@ class MontageExcelParser:
     def export_current_data_to_excel(self, nvt_number, montage_template_columns):
 #       # function to copy the file to a new one, return excel_path
         log("calling export_current_data_to_excel")
+        #tmp_print
+        print("current_nvt: ", nvt_number)
         df = self.export_updated_addresses_to_df(montage_template_columns)
 
         df = df.fillna('').reset_index(drop=True)
@@ -150,7 +152,8 @@ class MontageExcelParser:
                 excel_dict[web_key].address.kundentermin_start = web_dict[web_key].kundentermin_start
                 excel_dict[web_key].address.kundentermin_end = web_dict[web_key].kundentermin_end
                 excel_dict[web_key].address.we = web_dict[web_key].we
-                excel_dict[web_key].address.gfap_inst_status = web_dict[web_key].gfap_inst_status
+                if excel_dict[web_key].address.gfap_inst_status != "Installed":
+                    excel_dict[web_key].address.gfap_inst_status = web_dict[web_key].gfap_inst_status
                 excel_dict[web_key].address.kls_id = web_dict[web_key].kls_id
                 excel_dict[web_key].address.fold_id = web_dict[web_key].fold_id
                 excel_dict[web_key].address.expl_necessary = web_dict[web_key].expl_necessary
@@ -217,6 +220,10 @@ class MontageExcelParser:
             if excel_address.address.create_unique_key() in installed_addresses_keys and excel_address.address.gfap_inst_status != "Installed":
                 logging_string = "Discovering an installed at NVT {}. The address: {}".format(nvt_number, excel_address.address.get_one_line_address())
                 log(logging_string)
+                print("The key: ", excel_address.address.create_unique_key())
+                print("The installed: ", excel_address.address.gfap_inst_status)
+                print("excel_address.address.create_unique_key() in installed_addresses_keys: ", excel_address.address.create_unique_key() in installed_addresses_keys)
+                print("installed_addresses_keys: ", installed_addresses_keys)
                 new_installed_addresses_as_notifications.append(excel_address.address.get_one_line_address())
                 excel_address.address.gfap_inst_status = "Installed"
         if len(new_installed_addresses_as_notifications) > 0:
