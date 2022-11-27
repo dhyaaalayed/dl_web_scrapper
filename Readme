@@ -370,6 +370,9 @@ docker exec -ti <container name> /bin/bash
 
 
 
+________________________________________________
+sudo bash web_docker_trigger.sh &
+then run: disown
 
 
 
