@@ -173,7 +173,7 @@ class Navigator:
 
     def take_screenshot(self):
         self.browser.set_window_size(1920, 1400)
-        self.browser.save_screenshot('/Users/dlprojectsit/Desktop/Github_local/web_scrapper/screenshot.png')
+        self.browser.save_screenshot('screenshot.png')
 
     def refresh_page(self):
         self.browser.refresh()
@@ -485,6 +485,7 @@ class Navigator:
 
     def get_installed_addresses(self):
         self.move_to_ibt_order_page()
+        self.take_screenshot()
         self.select_2500_option_in_ibt_order_page()
         self.click_the_search_button()
         self.download_ibt_excel()
@@ -494,4 +495,4 @@ class Navigator:
         return installed_addresses
 
 
-NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "Ahmet2022!")
+NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "ahmetORLA123!")#ahmetORLA123!
