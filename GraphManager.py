@@ -190,7 +190,7 @@ class GraphManager:
         return response
 
     def get_nvt_ids(self, subcity_path):
-        """
+        """ this is a gbgs function
             city folder
         """
         subcity_id = self.get_path_id(subcity_path)
@@ -203,6 +203,39 @@ class GraphManager:
             iter_nvt_folders = [folder for folder in iter_nvt_folders if "NVT" in folder["name"]]
             nvt_folders += iter_nvt_folders
         return nvt_folders
+
+    # Non gbgs function
+    def get_nvt_ids_and_hk_city_bvh_rv_for_project_one(self, subcity_path):
+        """
+            This function does not belong to gbgs, it's just to migrate the data to projects-one
+            Example:
+                {
+                    hk1:{
+                        nvt1:{},
+                        nvt2:{}
+                    },
+                    hk2:{
+                        nvt3:{},
+                        nvt4:{}
+                    }
+                }
+
+        """
+        subcity_id = self.get_path_id(subcity_path)
+
+        hks_dict = {} # contains dict of hks as keys and for each key we have dict of nvts
+        hk_folders = self.get_folder_subfolders_by_id(subcity_id)
+        hk_folders = [folder for folder in hk_folders if "NVT" in folder["name"]]
+        for hk_folder in hk_folders:
+
+            iter_nvt_folders = self.get_folder_subfolders_by_id(hk_folder["id"])
+            iter_nvt_folders = [folder for folder in iter_nvt_folders if "NVT" in folder["name"]]
+
+            # adding the hk with it's nvts together
+            hk_name = hk_folder["name"].split(" ")[1] # Ex. "HK 1R22 + NVT 1100" then we take only 1R22
+            hks_dict[hk_name] = {nvt_folder["name"].replace("NVT ", ""): {} for nvt_folder in iter_nvt_folders}
+
+        return hks_dict
 
 
 
