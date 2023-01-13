@@ -371,12 +371,24 @@ docker exec -ti <container name> /bin/bash
 
 
 ________________________________________________
-sudo bash web_docker_trigger.sh &
-then run: disown
+nohup is more correct than disown, because it shows the process with S state, unlike disown that shows it with T state
 
-However, it worked without disown with:
-sudo bash excel_docker_trigger.sh &
-!!!!!!!!!!!!!!!!!!!!!!!!!
+nohup bash excel_docker_trigger.sh &
+
+
+
+
+What I though firstly but that was wrong!!!!
+	sudo bash web_docker_trigger.sh &
+	then run: disown
+	
+	However, it worked without disown with:
+	sudo bash excel_docker_trigger.sh &
+	!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
 ________________________________________________
 GOLD: to list all running bash scripts:
 
