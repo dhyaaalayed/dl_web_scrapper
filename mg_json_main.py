@@ -39,7 +39,7 @@ UPLOAD_MASTERLISTE = True
 SEND_EMAIL = True
 
 def main():
-    recipients = ["hakan.uluer@dl-projects.de", "dieaa.aled@dl-projects.de", "it@dl-projects.de"]
+    recipients = ["hakan.uluer@dl.de", "dieaa.aled@dl.de", "it@dl.de"]
     if Path("BAU").exists():
         log("Removing BAU folder")
         shutil.rmtree("BAU")

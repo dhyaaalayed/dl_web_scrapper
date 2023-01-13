@@ -18,10 +18,10 @@
             "user_name": "markus.lora@dl-projects.de",
             "password": "Markus2022!",
             "paths": [
-                "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)",
-                "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
+                "BAU/10-02 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)",
+                "BAU/10-02 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
             ],
-            "bvh_master_storing_path": "BAU/RV-07 Dresden-Cottbus/BVH-01 Dresden Cotta",
+            "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-01 Dresden Cotta",
             "master_storing_folder_id": "01A6QGC55DPQV75GHFYNALMTB5RLTWQYU3"
         },
         "Bautzen": {
@@ -32,9 +32,9 @@
             "user_name": "David.peterson@dl-projects.de",
             "password": "David2022!",
             "paths": [
-                "BAU/RV-09 Bautzen-Mitte/BVH-01 Bautzen/Baupläne (HK+NVT)"
+                "BAU/10-01 Bautzen-Mitte/BVH-01 Bautzen/Baupläne (HK+NVT)"
             ],
-            "bvh_master_storing_path": "BAU/RV-09 Bautzen-Mitte/BVH-01 Bautzen",
+            "bvh_master_storing_path": "BAU/10-01 Bautzen-Mitte/BVH-01 Bautzen",
             "master_storing_folder_id": "01A6QGC5ZMZCRSH4MKEZB3Y2HATRLG6E2D"
         },
         "Pulsnitz": {
@@ -45,9 +45,9 @@
             "user_name": "ahmet.orla@dl-project.de",
             "password": "Ahmet2022!",
             "paths": [
-                "BAU/RV-09 Bautzen-Mitte/BVH-02 Pulsnitz/Baupläne (HK+NVT)"
+                "BAU/10-01 Bautzen-Mitte/BVH-02 Pulsnitz/Baupläne (HK+NVT)"
             ],
-            "bvh_master_storing_path": "BAU/RV-09 Bautzen-Mitte/BVH-02 Pulsnitz",
+            "bvh_master_storing_path": "BAU/10-01 Bautzen-Mitte/BVH-02 Pulsnitz",
             "master_storing_folder_id": "01A6QGC54PGFPMKNH73VCY4RY3XVT5BNXB"
         },
         "Cottbus": {
@@ -58,9 +58,9 @@
             "user_name": "dieaa.aled@dl-projects.de",
             "password": "Dieaa1234!",
             "paths": [
-                "BAU/RV-07 Dresden-Cottbus/BVH-02 Cottbus/Baupläne (HK+NVT)"
+                "BAU/10-02 Dresden-Cottbus/BVH-02 Cottbus/Baupläne (HK+NVT)"
             ],
-            "bvh_master_storing_path": "BAU/RV-07 Dresden-Cottbus/BVH-02 Cottbus",
+            "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-02 Cottbus",
             "master_storing_folder_id": "01A6QGC53CHKYNQLNVPJD2E6HRBHM4NJN2"
         },
         "Prignitz": {
@@ -71,12 +71,12 @@
             "user_name": "ahmet.orla@dl-project.de",
             "password": "Ahmet2022!",
             "paths": [
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/2. Bad Wilsnack",
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/1. Garz-Hoppenrade",
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/4. Lanz Cumlosen",
-                "BAU/RV-08 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/3. Perleberg Kleinow"
+                "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/2. Bad Wilsnack",
+                "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/1. Garz-Hoppenrade",
+                "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/4. Lanz Cumlosen",
+                "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/3. Perleberg Kleinow"
             ],
-            "bvh_master_storing_path": "BAU/RV-08 Prignitz/BVH-01 Prignitz",
+            "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz",
             "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"
         }
     }
