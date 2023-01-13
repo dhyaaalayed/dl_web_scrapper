@@ -2,10 +2,13 @@
     Just to migrate the data to a json dict
 """
 import json
-
+from pathlib import Path
 
 from GraphManager import GraphManager
 from city import City
+from my_functions import parse_master_excel
+
+import joblib
 
 def get_city_from_path(path):
     """
@@ -43,7 +46,8 @@ def main():
         conf_dict = json.load(json_file)
 
     city_dict = conf_dict["cities"]
-
+    templates_dict = conf_dict["templates"]
+    master_number_of_columns = templates_dict["master_template"]["number_of_columns"] + 1 # + 1 because of the ansprechpartner cell :)
     migrated_data = {}
     """
         this contains the whole data in hirarichal format
@@ -62,12 +66,13 @@ def main():
             }
         }
     """
-    for city_key in city_dict.keys(): # city key is for the whole BVH area
-        city_obj = city_dict[city_key]
-        if city_obj["loading_json_activated"] == False:
+    for bvh_key in city_dict.keys(): # city key is for the whole BVH area
+        # city_key means bvh_key :)
+        bvh_cfg = city_dict[bvh_key]
+        if bvh_cfg["loading_json_activated"] == False:
             continue
-        print("after continue city: {}".format(city_key))
-        paths = city_obj["paths"]
+        print("after continue city: {}".format(bvh_key))
+        paths = bvh_cfg["paths"]
         for path in paths:
 
 
@@ -95,9 +100,27 @@ def main():
             # 3- Get the hk and nvt dict from graph manager
             bvh_dict[city] = graph_manager.get_nvt_ids_and_hk_city_bvh_rv_for_project_one(path)
 
+
+            graph_manager.download_folder_files_by_id(id=bvh_cfg["master_storing_folder_id"],
+                                                      path=bvh_cfg["bvh_master_storing_path"])
+            bvh_storing_path: Path = Path(bvh_cfg["bvh_master_storing_path"]) / "Masterliste_{}.xlsx".format(bvh_key)
+            bvh_df = parse_master_excel(bvh_storing_path, master_number_of_columns)
+
+            for hk_key in bvh_dict[city].keys():
+                hk_dict = bvh_dict[city][hk_key]
+                for nvt_key in hk_dict.keys():
+                    # gapminder[gapminder['year']==2002]
+                    hk_dict[nvt_key] = bvh_df[bvh_df["NVT"] == nvt_key]
+                    # get_nvt_df_from_bvh_df using pandas df features
+
     print("Finish:")
     print("migrated_data: ")
     print(migrated_data)
+    with open("migrated_data.joblib", "wb") as handler:
+        joblib.dump(migrated_data, handler)
+
+
+    # To Load it: joblib.load("migrated_data.joblib")
 
 if __name__ == "__main__":
     main()
