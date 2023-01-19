@@ -32,16 +32,23 @@ class Navigator:
     exploration_protocols_download_path = None
     def __init__(self, user_name, password):
         self.initialize_all(user_name, password)
-        # self.apply_first_filter() # Disabled upon Hakan request!
-        # log("Applying Gap installation Filter")
+
+
+    # def __init__(self):
+    #     self.initialize_browser()
+
 
     def initialize_all(self, user_name, password):
+        self.initialize_browser()
+        self.login(user_name, password)
+        # log("Loging in")
+        # self.move_to_the_search_page()
+        # log("Moving to the search page")
+
+    def initialize_browser(self):
         chrome_options = self.initialize_chrome_options()
         self.browser = Chrome(options = chrome_options)
-        self.login(user_name, password)
-        log("Loging in")
-        self.move_to_the_search_page()
-        log("Moving to the search page")
+
 
     def initialize_chrome_options(self):
         """
@@ -119,6 +126,9 @@ class Navigator:
         WebDriverWait(self.browser, 100).until(
             EC.presence_of_element_located((By.XPATH, '//label[@id="searchCriteriaForm:nrOfResults_label" and text()="2500"]')))
 
+    def wait_by_element(self, elm, query):
+        WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((elm, query)))
+
     def download_ibt_excel(self):
         download_button = self.browser.find_element(By.ID, "searchResultForm:orderSRT:exportData")
         self.browser.execute_script("arguments[0].click();", download_button)
@@ -172,7 +182,8 @@ class Navigator:
         self.click_the_search_button()
 
     def take_screenshot(self):
-        self.browser.set_window_size(1920, 1400)
+        # self.browser.set_window_size(1920, 1400)
+        
         self.browser.save_screenshot('screenshot.png')
 
     def refresh_page(self):
@@ -493,6 +504,3 @@ class Navigator:
         # remove the file
         Path("BAU/exploration_protocols/ibt-orders.xls").unlink()
         return installed_addresses
-
-
-NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "ahmetORLA123!")#ahmetORLA123!

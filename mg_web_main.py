@@ -16,7 +16,8 @@ with open('city_config.json') as json_file:
 city_dict = conf_dict["cities"]
 
 navigator = Navigator('dieaa.aled@dl-projects.de', 'dieaaALED123#@')
-
+navigator.browser.set_window_size(1920, 1400)
+navigator.move_to_the_search_page()
 
 if Path("BAU").exists():
     log("Removing BAU folder")

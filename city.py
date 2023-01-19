@@ -89,7 +89,8 @@ class City:
                 # self.navigator.browser.dispose()
                 assert 1 == 2 # quit the program, since we will not start with already updated nvts
                 self.navigator = Navigator('dieaa.aled@dl-projects.de', 'dieaaALED123#@')
-                self.navigator.take_screenshot()
+                self.navigator.browser.set_window_size(1920, 1400)
+                self.navigator.move_to_the_search_page()
                 print("Exception: ", str(e))
                 log("Repeat the scrapping process for NVT {}".format(mg_nvt["name"]))
                 continue

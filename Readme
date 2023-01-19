@@ -189,7 +189,7 @@ to get logs:
 	example:
 	docker-compose logs excel_updater
 	sudo docker-compose logs -t --tail 100 excel_updater
-	sudo docker-compose logs -t --tail 300 web_scrapper
+	sudo docker-compose logs -t --tail 100 web_scrapper
 	-t # to show the timestamp
 
 get running containers:
@@ -376,6 +376,15 @@ nohup is more correct than disown, because it shows the process with S state, un
 nohup bash excel_docker_trigger.sh &
 
 
+And for web main
+nohup bash web_docker_trigger.sh &
+
+
+then we check if a the docker container is working by calling the tail of the container
+	once we see the time minutes of the last logs is the same of the current minute on our device, then the container is working fine :)
+
+Another method to check, by checking out the date of the uploaded json files in the automated_data folders :)
+
 
 
 What I though firstly but that was wrong!!!!
@@ -433,7 +442,9 @@ kill -9 the_id_of_excel_trigger_for_example
 
 
 
-
+______________________
+ATTENTION
+	navigator.browser.set_window_size function is important to view the page in a big screen view in order not to make the page colapse the items in tablet or laptop modes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 

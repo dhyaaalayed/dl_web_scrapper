@@ -32,11 +32,15 @@ from GraphManager import GraphManager
 from city import City
 from my_functions import log, get_template_columns, write_bvh_dfs_to_excel, parse_master_excel, \
     get_old_column_data_for_master_list, create_unique_id_for_master_df
-from navigator import NAVIGATOR
+from navigator import Navigator
 from notifier import NOTIFIER
 
 UPLOAD_MASTERLISTE = True
 SEND_EMAIL = True
+
+NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "ahmetORLA123!")#ahmetORLA123!
+NAVIGATOR.browser.set_window_size(1920, 1400)
+NAVIGATOR.move_to_the_search_page()
 
 def main():
     recipients = ["hakan.uluer@dl.de", "dieaa.aled@dl.de", "it@dl.de"]

@@ -32,5 +32,6 @@ if __name__ == "__main__":
     user_name = "David.peterson@dl-projects.de"
     password = "David2022!"
     navigator = Navigator(user_name, password)
+    navigator.move_to_the_search_page()
     nvt = NVT("42V1018", "", city = "DockerCity", navigator = navigator)
     nvt.initialize_using_web_scrapper()

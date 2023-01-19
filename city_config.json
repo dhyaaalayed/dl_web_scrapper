@@ -16,7 +16,7 @@
             "updating_montage_activated": true,
             "generating_ansprechpartner": true,
             "user_name": "markus.lora@dl-projects.de",
-            "password": "Markus2022!",
+            "password": "Markus1234!",
             "paths": [
                 "BAU/10-02 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta Ost/Baupläne (HK+NVT)",
                 "BAU/10-02 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
@@ -78,6 +78,18 @@
             ],
             "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz",
             "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"
+        },
+        "Sarrasanistr": {
+            "scrapping_activated": false,
+            "loading_json_activated": false,
+            "updating_montage_activated": false,
+            "generating_ansprechpartner": false,
+            "user_name": "ahmet.orla@dl-project.de",
+            "password": "Ahmet2022!",
+            "paths": [
+                "BAU/10-02 Dresden-Cottbus/BVH-04 Sarrasanistr/Baupläne (HK+NVT)"
+            ],
+            "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz"
         }
     }
 }
