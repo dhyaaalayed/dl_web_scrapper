@@ -353,6 +353,15 @@ class GraphManager:
             headers=self.headers,
             json=request_body
         )
+    def download_bulk_addresses_json(self):
+        BULK_ADDRESSES_STORE_PATH = Path('BAU') / 'gbgs_bulk_addresses'
+        BULK_ADDRESSES_JSON_FILE_NAME = "gbgs_bulk_addresses.json"
+
+        download_folder = Path("BAU") / "downloaded_gbgs_bulk_addresses"
+
+        download_folder.mkdir(parents=True, exist_ok=True)
+        json_mg_obj = self.get_path_mg_obj(BULK_ADDRESSES_STORE_PATH / BULK_ADDRESSES_JSON_FILE_NAME)
+        self.download_file(json_mg_obj, download_folder)
 
 class MicrosoftGraphNVTManager:
     """

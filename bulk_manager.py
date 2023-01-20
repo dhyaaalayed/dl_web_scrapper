@@ -7,14 +7,17 @@ from pathlib import Path
 import json
 
 
+BULK_ADDRESSES_STORE_PATH = Path('gbgs_bulk_addresses')
+BULK_ADDRESSES_JSON_FILE_NAME = "gbgs_bulk_addresses.json"
+
 
 class BulkManager:
     # navigator: Navigator = Navigator("markus.lora@dl-projects.de", "Markus1234!")
     navigator = Navigator("markus.lora@dl-projects.de", "Markus1234!")
     # Navigator.login("markus.lora@dl-projects.de", "Markus1234!")
     graph_manager: GraphManager = None
-    store_path = Path('gbgs_bulk_addresses')
-    json_file_name = "gbgs_bulk_addresses.json"
+    store_path = BULK_ADDRESSES_STORE_PATH
+    json_file_name = BULK_ADDRESSES_JSON_FILE_NAME
 
     def get_bulk_addressses(self):
         """ Calling all function of the process :)
