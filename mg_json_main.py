@@ -47,6 +47,7 @@ def main():
     if Path("BAU").exists():
         log("Removing BAU folder")
         shutil.rmtree("BAU")
+
     log("Getting installed addresses")
     installed_addresses = NAVIGATOR.get_installed_addresses()
     installed_addresses_to_print = [address.create_unique_key() for address in installed_addresses]
@@ -63,6 +64,10 @@ def main():
     master_number_of_columns = templates_dict["master_template"]["number_of_columns"]
     # TODO: Download Montage and Master templates in the same path of the config or change the path...
     graph_manager = GraphManager()
+    log("Getting bulk addresses")
+    bulk_addresses = graph_manager.get_bulk_addresses()
+    bulk_addresses_keys = [address.create_unique_key() for address in bulk_addresses]
+    print("bulk_addresses: ", bulk_addresses)
     # 1- Getting templates objects of microsoft graph
     master_template_mg_obj = graph_manager.get_path_mg_obj(master_template_path)
     montage_template_mg_obj = graph_manager.get_path_mg_obj(montage_template_path)
@@ -115,6 +120,8 @@ def main():
                         nvt.montage_excel_parser.update_addresses_from_web()
                         nvt.montage_excel_parser.update_addresses_from_telekom_excel()
                         nvt.montage_excel_parser.update_from_installed_addresses(nvt.nvt_number, installed_addresses)
+                        log("Starting the bulk process")
+                        nvt.montage_excel_parser.update_from_bulk_addresses(nvt.nvt_number, bulk_addresses_keys)
                         # Now using the new template:
                         log("Using the new Montage Excel template")
                         # It's already downloaded for every nvt, we just need to copy it
@@ -165,7 +172,14 @@ def main():
                 print(response.json())
         else:
             log("No Montageliste to generate the Masterlist for BVH {}".format(city_key))
+    log("Failed matching bulk addresses: ")
+    print(bulk_addresses_keys)
+
+    # Disabling the failed addresses from the email, because our bauleiter are not interested in it
+    # NOTIFIER.failed_matching_bulk_addresses += ["0" + " ".join(address.split("_")) if len("_".split(address)[0]) < 5 else " ".join(address.split("_")) for address in bulk_addresses_keys]
+    log("Before calling there is new changes")
     if NOTIFIER.there_is_new_changes():
+        log("Inside there is new changes")
         email_message = NOTIFIER.get_notifications_as_string()
         log("The following email will be sent: \n {}".format(email_message))
         if SEND_EMAIL:

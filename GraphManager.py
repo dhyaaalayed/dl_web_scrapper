@@ -16,6 +16,7 @@ import requests
 from my_functions import log
 from notifier import NOTIFIER
 from security_config import user_name, password
+from entities import Address
 
 # Drive id of Derla Device, where we have the BAU and other folders!
 DRIVE_ID = "b!t3YEe8U8mkSNKqGW2Jx1iTQpNwrZTC5Bob7-032a29z3_1Qd4gMtTo_N_SKBLQH0"
@@ -362,6 +363,29 @@ class GraphManager:
         download_folder.mkdir(parents=True, exist_ok=True)
         json_mg_obj = self.get_path_mg_obj(BULK_ADDRESSES_STORE_PATH / BULK_ADDRESSES_JSON_FILE_NAME)
         self.download_file(json_mg_obj, download_folder)
+
+    def get_bulk_addresses(self):
+        """
+            1- Call download_bulk_addresses_json
+            2- Read the json and return an array of addresses as dicts
+        """
+        self.download_bulk_addresses_json()
+        with open(Path("BAU") / "downloaded_gbgs_bulk_addresses" / "gbgs_bulk_addresses.json") as handler:
+            addresses_dict = json.load(handler)
+
+        json_format_addresses = addresses_dict["bulk_addresses"]
+        parsed_addresses = []
+        for json_address in json_format_addresses:
+            address = Address()
+            address.street = json_address["street"]
+            address.house_number = json_address["number"]
+            address.house_char = json_address["char"]
+            address.postal = json_address["postal"]
+            address.city = json_address["city"]
+            parsed_addresses.append(address)
+        return parsed_addresses
+
+
 
 class MicrosoftGraphNVTManager:
     """

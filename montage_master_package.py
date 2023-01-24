@@ -230,3 +230,65 @@ class MontageExcelParser:
             new_installed_addresses_as_notifications = [self.path_to_excel.name] + new_installed_addresses_as_notifications
             new_installed_addresses_as_notifications.append("_" * 40)
             NOTIFIER.new_installed_addresses += new_installed_addresses_as_notifications
+
+
+    def update_from_bulk_addresses(self, nvt_number: str, bulk_addresses_keys: "List of Address"):
+        bulk_auftrag_str = "BULK Auftrag"        
+        new_bulk_addresses_as_notifications = []
+        for excel_address in self.excel_addresses:
+            if excel_address.address.create_unique_key() in bulk_addresses_keys:
+                
+                if bulk_auftrag_str.lower() not in str(excel_address.Kommentare).lower():
+                    logging_string = "Discovering a bulk address at NVT {}. The address: {}".format(nvt_number, excel_address.address.get_one_line_address())
+                    log(logging_string)
+                    print("The key: ", excel_address.address.create_unique_key())
+                    print("excel_address.address.create_unique_key() in bulk_addresses_keys: ", excel_address.address.create_unique_key() in bulk_addresses_keys)
+                    print("bulk_addresses_keys: ", bulk_addresses_keys)
+                    new_bulk_addresses_as_notifications.append(excel_address.address.get_one_line_address())
+                    excel_address.Kommentare = bulk_auftrag_str + ", " + str(excel_address.Kommentare)
+                    excel_address.htn = "ja"
+                if "Bulk Auftrag, nan" in str(excel_address.Kommentare):
+                    excel_address.Kommentare = str(excel_address.Kommentare).replace("Bulk Auftrag, nan", "BULK Auftrag")
+                
+                if "Bulk Auftrag, BULK Auftrag" in str(excel_address.Kommentare):
+                    excel_address.Kommentare = str(excel_address.Kommentare).replace("Bulk Auftrag, BULK Auftrag", "BULK Auftrag")
+
+                if "Bulk Auftrag" in str(excel_address.Kommentare):
+                    excel_address.Kommentare = str(excel_address.Kommentare).replace("Bulk Auftrag", "BULK Auftrag")
+                log("Removing bulk address after matching one in excel")
+                bulk_addresses_keys.remove(excel_address.address.create_unique_key())
+        if len(new_bulk_addresses_as_notifications) > 0:
+            new_bulk_addresses_as_notifications = [self.path_to_excel.name] + new_bulk_addresses_as_notifications
+            new_bulk_addresses_as_notifications.append("_" * 40)
+            NOTIFIER.new_bulk_addresses += new_bulk_addresses_as_notifications
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -22,7 +22,7 @@ class BulkManager:
     def get_bulk_addressses(self):
         """ Calling all function of the process :)
         """
-        self.navigator.browser.set_window_size(1600, 1000)
+        self.navigator.browser.set_window_size(1600, 1200)
         # self.login("markus.lora@dl-projects.de", "Markus1234!")
         # log("Has logged in")
 
@@ -61,7 +61,6 @@ class BulkManager:
         for company_button in companies_buttons:
             log("Clicking on a company button {}".format(company_button.text))
             company_button.click()
-            # self.navigator.javascript_click(company_button)
             log("Waiting for loading the addresses paginations and the addresses")
             self.navigator.take_screenshot()
             self.navigator.wait_by_element(By.CSS_SELECTOR, "building-order")
@@ -84,10 +83,15 @@ class BulkManager:
                 # self.navigator.javascript_click(page_button)
                 page_button.click()
                 # TODO implement wait
-
+                self.navigator.take_screenshot()
                 if pagination_type == "COMPANY":
                     log("After clicking on companies page link")
-                    self.navigator.wait_by_element(By.XPATH, '//div[@class="bulk-installation-order-list-wrapper"]//ngb-pagination//ul//li[@class="page-item active ng-star-inserted"]//a[text()=" {} "]'.format(page_number))
+                    # Firstly we wait until the button is active
+                    self.navigator.wait_by_element(By.XPATH, '//div[@class="bulk-installation-order-list-wrapper"]//ngb-pagination//ul//li[contains(@class,"active")]//a[text()=" {} "]'.format(page_number))
+                    print("Finish waiting until page numer {} is active".format(page_number))
+                    self.navigator.take_screenshot()
+                    # then we wait until the load of the company list
+                    self.navigator.wait_by_element(By.CSS_SELECTOR, "bulk-installation-order")
                 elif pagination_type == "ADDRESS":
                     # TODO: implement
                     log("After clicking on addresses page link")
@@ -117,9 +121,9 @@ class BulkManager:
 
             # print("end try")
 
-            page_button = self.navigator.browser.find_elements("xpath", '//div[@class="bulk-installation-order-list-wrapper"]//ngb-pagination//ul//li//a[text()=" {} "]'.format(page_number))
+            page_button: list = self.navigator.browser.find_elements("xpath", '//div[@class="bulk-installation-order-list-wrapper"]//ngb-pagination//ul//li//a[text()=" {} "]'.format(page_number))
         elif pagination_type == "ADDRESS":
-            page_button = self.navigator.browser.find_elements("xpath", '//div[@class="pagination-container ligth"]//ngb-pagination//ul//li//a[text()=" {} "]'.format(page_number))
+            page_button: list = self.navigator.browser.find_elements("xpath", '//div[@class="pagination-container ligth"]//ngb-pagination//ul//li//a[text()=" {} "]'.format(page_number))
         return page_button[0] if len(page_button) > 0 else None
 
 
