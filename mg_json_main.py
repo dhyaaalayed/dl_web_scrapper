@@ -79,6 +79,13 @@ def main():
     master_template_columns = get_template_columns(master_template_path, master_number_of_columns)
     kommentar_telekom_column_name = '          Kommentar Telekom'
     kommentar_montage_column_name = 'Kommentar Montage'
+    he_aufmass_column_name = "HE Aufmaß"
+    hc_aufmass_column_name = "HC Aufmaß"
+    kabel_aufmass_column_name = "Kabel Aufmaß"
+    montage_aufmass_column_name = "Montage Aufmaß"
+    vermessung_aufmass_column_name = "Vermessung Aufmaß"
+    schluss_aufmass_column_name = "Schluss Aufmaß"
+
     #
     city_dict = conf_dict["cities"]
     #
@@ -158,6 +165,12 @@ def main():
             # Get old data from Masterliste
             bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_telekom_column_name)
             bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_montage_column_name)
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=he_aufmass_column_name)
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=hc_aufmass_column_name)
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kabel_aufmass_column_name)
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=montage_aufmass_column_name)
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=vermessung_aufmass_column_name)
+            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=schluss_aufmass_column_name)
 
             # Delete the unique id column before exporting the df
             del bvh_df["unique_id"]
