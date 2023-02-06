@@ -373,11 +373,11 @@ docker exec -ti <container name> /bin/bash
 ________________________________________________
 nohup is more correct than disown, because it shows the process with S state, unlike disown that shows it with T state
 
-nohup bash excel_docker_trigger.sh &
+sudo nohup bash excel_docker_trigger.sh &
 
 
 And for web main
-nohup bash web_docker_trigger.sh &
+sudo nohup bash web_docker_trigger.sh &
 
 
 then we check if a the docker container is working by calling the tail of the container

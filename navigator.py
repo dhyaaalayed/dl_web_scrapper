@@ -89,7 +89,7 @@ class Navigator:
         URL = "https://glasfaser.telekom.de/auftragnehmerportal-ui/home?a-cid=50708"
         self.browser.get(URL)
         self.browser.find_element('id', 'username').send_keys('dieaa.aled@dl-projects.de')
-        self.browser.find_element('id', 'password').send_keys('dieaaALED123#@')
+        self.browser.find_element('id', 'password').send_keys('S8jN##BUq_y6zbu')
         self.browser.find_element('name', 'login').click()
 
 

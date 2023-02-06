@@ -15,7 +15,7 @@ with open('city_config.json') as json_file:
     conf_dict = json.load(json_file)
 city_dict = conf_dict["cities"]
 
-navigator = Navigator('dieaa.aled@dl-projects.de', 'dieaaALED123#@')
+navigator = Navigator('dieaa.aled@dl-projects.de', 'S8jN##BUq_y6zbu')
 navigator.browser.set_window_size(1920, 1400)
 navigator.move_to_the_search_page()
 
