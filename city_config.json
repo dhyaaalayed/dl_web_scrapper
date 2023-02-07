@@ -6,7 +6,7 @@
         },
         "master_template": {
             "path": "BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx"
-            , "number_of_columns": 47
+            , "number_of_columns": 48
         }
     },
     "cities": {
