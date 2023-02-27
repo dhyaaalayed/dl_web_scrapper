@@ -90,6 +90,8 @@ class GraphManager:
         print("response.status_code: ", response.status_code)
         if response.status_code == 200:
             log("Uploading succeded of {}".format(local_path.name))
+        elif response.status_code == 201:
+            log("Uploading succeded of {} for the FIRST TIME!".format(local_path.name))
         else:
             logging_string = "Uploading failed of {}".format(local_path.name)
             NOTIFIER.add_failed_uploaded_file(local_path.name)
@@ -407,7 +409,7 @@ class MicrosoftGraphNVTManager:
         self.graph_manager = graph_manager
         self.nvt_mg_obj = nvt_mg_obj
         self.nvt_number = self.nvt_mg_obj["name"].replace("NVT ", "")
-        self.automated_data_folder_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "automated_data")
+        self.automated_data_folder_mg_obj = self.graph_manager.create_or_get_mg_folder_if_existed(self.nvt_mg_obj["id"], "automated_data")
         self.montage_excel_mg_obj = self.get_montage_excel_mg_obj()
         self.archive_folder_mg_obj = self.graph_manager.create_or_get_mg_folder_if_existed(self.nvt_mg_obj["id"], "Archive")
         # paths

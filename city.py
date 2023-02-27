@@ -71,6 +71,7 @@ class City:
                 #### Now we need nvt and nvt_mgm objects
                 nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt, nvt_path)
                 nvt = NVT(nvt_number=nvt_number, city=self, nvt_mgm=nvt_mgm)
+                # We get the automated_folder_mg_obj just to check if the json is updated recently or not!
                 automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
                 if automated_folder_mg_obj != None:
                     nvt_mgm.download_automated_data_folder(nvt.path)

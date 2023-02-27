@@ -387,16 +387,18 @@ Another method to check, by checking out the date of the uploaded json files in 
 
 
 
+DO NOT USE THIS:
 What I though firstly but that was wrong!!!!
 	sudo bash web_docker_trigger.sh &
 	then run: disown
-	
+
+DO NOT USE THIS:
 	However, it worked without disown with:
 	sudo bash excel_docker_trigger.sh &
 	!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-
+Schluss Aufmaß
 
 ________________________________________________
 GOLD: to list all running bash scripts:
