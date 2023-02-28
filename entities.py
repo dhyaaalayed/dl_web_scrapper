@@ -127,7 +127,8 @@ class Address:
             str(self.city),
             str(self.street),
             str(self.house_number),
-            str(self.house_char)
+            str(self.house_char),
+            str(self.building_part)
         ])
 
     def get_one_line_address(self):
@@ -136,7 +137,8 @@ class Address:
             str(self.city),
             str(self.street),
             str(self.house_number),
-            str(self.house_char)
+            str(self.house_char),
+            str(self.building_part)
         ])
 
     def export_to_json(self):
