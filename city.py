@@ -143,7 +143,11 @@ class City:
 
     def export_all_montage_to_one_df(self, montage_template_columns):
         dfs = []
+        print("nvt_list before export: ", self.nvt_list)
         for nvt in self.nvt_list:
+            if nvt.montage_excel_parser == None:
+                # means that the nvt is not included in the filtering operation that we are applying sometimes for some test
+                continue
             df = nvt.montage_excel_parser.export_updated_addresses_to_df(montage_template_columns)
             df = df.fillna('').reset_index(drop=True)
             # df.insert(0, "NVT", [nvt.nvt_number for i in range(len(df))])
@@ -179,7 +183,7 @@ class City:
         writer.save()
 
     def export_every_nvt_montage_telekom_excel_from_city_montage_telekom_excel(self):
-        city_df = pd.read_excel(Path(self.root_path) / "telekom_list" / "telekom_addresses.xlsx", dtype={'postal': str})
+        city_df = pd.read_csv(Path(self.root_path).parent / "telekom_list" / "telekom_addresses.csv", sep=";", dtype={'postal': str})
 
         print(city_df)
 
@@ -198,6 +202,7 @@ class City:
 
                 nvt_df = pd.DataFrame(nvt_dict[nvt.nvt_number])
                 nvt_df.to_excel(nvt.path / "automated_data" / "telekom_addresses.xlsx", index=False)
+                nvt.nvt_mgm.upload_nvt_telekom_addresses_excel()
             else:
                 log("NVT {} is not existed in the city Telekom montage file!".format(nvt.nvt_number))
 
