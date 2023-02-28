@@ -79,17 +79,44 @@
             "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz",
             "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"
         },
+        "Wilsdruff": {
+            "scrapping_activated": true,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
+            "user_name": "ahmet.orla@dl-project.de",
+            "password": "Ahmet2022!",
+            "paths": [
+                "BAU/10-02 Dresden-Cottbus/BVH-03 Wilsdruff/Baupläne (HK+NVT)"
+            ],
+            "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-03 Wilsdruff",
+            "master_storing_folder_id": "01A6QGC542DYRQLEDNWJFLE2NBAVIQS2GE"
+        },
         "Sarrasanistr": {
-            "scrapping_activated": false,
-            "loading_json_activated": false,
-            "updating_montage_activated": false,
-            "generating_ansprechpartner": false,
+            "scrapping_activated": true,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
             "user_name": "ahmet.orla@dl-project.de",
             "password": "Ahmet2022!",
             "paths": [
                 "BAU/10-02 Dresden-Cottbus/BVH-04 Sarrasanistr/Baupläne (HK+NVT)"
             ],
-            "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz"
+            "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-04 Sarrasanistr",
+            "master_storing_folder_id": "01A6QGC524EPQAJ5VJEBGIHPEED272MCU6"
+        },
+        "Pieschen": {
+            "scrapping_activated": true,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
+            "user_name": "ahmet.orla@dl-project.de",
+            "password": "Ahmet2022!",
+            "paths": [
+                "BAU/10-02 Dresden-Cottbus/BVH-05 Pieschen/Baupläne (HK+NVT)"
+            ],
+            "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-05 Pieschen",
+            "master_storing_folder_id": "01A6QGC52TRE4FS5OZ3FBIUTQXCOYSOUQ3"
         }
     }
 }
