@@ -74,17 +74,20 @@ class MontageExcelParser:
                            sheet_name="Sheet1", dtype={"postal":str})
         df.fillna("", inplace = True)
         addresses = []
-        for i in range(len(df)):
+
+        for idx, row in df.iterrows():
             address = Address()
-            address.postal = df.iloc[i, 1]
+            address.postal = row["postal"]
             if len(address.postal) < 5:
                 number_of_zeros = 5 - len(address.postal)
                 zeros = "0" * number_of_zeros
                 address.postal = zeros + address.postal
-            address.city = df.iloc[i, 2]
-            address.street = df.iloc[i, 3]
-            address.house_number = df.iloc[i, 4]
-            address.house_char = df.iloc[i, 5]
+            if "dp_name" in row.index: # because other telekom bvh do not have this column
+                address.building_part = row["dp_name"]
+            address.street = row["street"]
+            address.city = row["city"]
+            address.house_number = row["house_number"]
+            address.house_char = row["house_char"]
             addresses.append(address)
         return addresses
 
