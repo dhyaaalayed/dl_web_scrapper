@@ -366,6 +366,14 @@ class GraphManager:
         json_mg_obj = self.get_path_mg_obj(BULK_ADDRESSES_STORE_PATH / BULK_ADDRESSES_JSON_FILE_NAME)
         self.download_file(json_mg_obj, download_folder)
 
+    def download_bvh_telekom_addresses(self, bvh_root_path):
+        download_folder = Path(bvh_root_path) / "telekom_list"
+        file_name = "telekom_addresses.csv"
+        download_folder.mkdir(parents=True, exist_ok=True)
+        telekom_addresses_mg_obj = self.get_path_mg_obj(download_folder / file_name)
+        self.download_file(telekom_addresses_mg_obj, download_folder)
+        
+
     def get_bulk_addresses(self):
         """
             1- Call download_bulk_addresses_json
@@ -483,6 +491,15 @@ class MicrosoftGraphNVTManager:
         else:
             log("No generated gpgs json file to upload")
 
+    def upload_nvt_telekom_addresses_excel(self):
+        path = self.nvt_path / "automated_data" / "telekom_addresses.xlsx"
+        if os.path.exists(path):
+            self.graph_manager.upload_file(local_path=path, drive_folder_id=self.automated_data_folder_mg_obj["id"])
+            log("uploading telekom_addresses.xlsx to one drive of nvt: {}".format(self.nvt_number))
+        else:
+            log("No telekom_addresses.xlsx file to upload of nvt: {}".format(self.nvt_number))
+
+
     def get_exploration_protocol_mg_obj(self):
         folder_mg_obj = self.graph_manager.get_next_item_in_path(self.nvt_mg_obj["id"], "Auskundungsprotokolle")
         if folder_mg_obj == None: # then we need to create a new folder
@@ -501,8 +518,10 @@ class MicrosoftGraphNVTManager:
         path = self.nvt_path / "AnsprechpartnerListe_{}.xlsx".format(self.nvt_number)
         self.graph_manager.upload_file(local_path=path, drive_folder_id=self.nvt_mg_obj["id"])
 
-# if __name__ == "__main__":
-    # graph_manager = GraphManager()
+if __name__ == "__main__":
+    graph_manager = GraphManager()
+    graph_manager.print_all_shared_folders_with_their_ids()
+    # "DL Projects - Telekom Wilsdruff"
     # graph_manager.send_email("test_mail", ["dhyaa.alayed@gmail.com", "dieaa.aled@dl-projects.de"])
 
 
