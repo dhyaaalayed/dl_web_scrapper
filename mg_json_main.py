@@ -37,6 +37,7 @@ from notifier import NOTIFIER
 
 UPLOAD_MASTERLISTE = True
 SEND_EMAIL = True
+EXPORT_TELEKOM_ADDRESSES = False
 
 NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "ahmetORLA123!")#ahmetORLA123!
 NAVIGATOR.browser.set_window_size(1920, 1400)
@@ -104,7 +105,12 @@ def main():
             city = City(name=city_key, path=path, navigator=None)
             graph_manager = GraphManager()
             city.load_nvt_dict_from_stored_json_mg(graph_manager)
+            if EXPORT_TELEKOM_ADDRESSES:
+                graph_manager.download_bvh_telekom_addresses(bvh_root_path=city_obj["bvh_master_storing_path"])
+                city.export_every_nvt_montage_telekom_excel_from_city_montage_telekom_excel()
+                assert 1 == 0
             for nvt in city.nvt_list:
+                print("nownow nvt_number: ", nvt.nvt_number)
                 if nvt.nvt_number not in []:
                     if city_obj["generating_ansprechpartner"] == True:
                         log("Operation on NVT {}:".format(nvt.nvt_number))
@@ -154,29 +160,33 @@ def main():
                 # 1- Download it.
             graph_manager.download_folder_files_by_id(id=city_obj["master_storing_folder_id"], path=city_obj["bvh_master_storing_path"])
             # We use this path to read the master excel and to generate the new one
+
             bvh_storing_path: Path = Path(city_obj["bvh_master_storing_path"]) / "Masterliste_{}.xlsx".format(city_key)
+            if bvh_storing_path.exists():
+                log("Saving some information from the current masterlist of {}".format(city_key))
                 # 2- Read it according to the right columns
-            current_df = parse_master_excel(bvh_storing_path, master_number_of_columns)
+                current_df = parse_master_excel(bvh_storing_path, master_number_of_columns)
 
-            # Create unique ids for the dfs
-            bvh_df = create_unique_id_for_master_df(bvh_df)
-            current_df = create_unique_id_for_master_df(current_df)
+                # Create unique ids for the dfs
+                bvh_df = create_unique_id_for_master_df(bvh_df)
+                current_df = create_unique_id_for_master_df(current_df)
 
-            # Get old data from Masterliste
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_telekom_column_name)
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_montage_column_name)
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=he_aufmass_column_name)
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=hc_aufmass_column_name)
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kabel_aufmass_column_name)
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=montage_aufmass_column_name)
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=vermessung_aufmass_column_name)
-            bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=schluss_aufmass_column_name)
+                # Get old data from Masterliste
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_telekom_column_name)
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kommentar_montage_column_name)
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=he_aufmass_column_name)
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=hc_aufmass_column_name)
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=kabel_aufmass_column_name)
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=montage_aufmass_column_name)
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=vermessung_aufmass_column_name)
+                bvh_df = get_old_column_data_for_master_list(old_df=current_df, new_df=bvh_df, column_name=schluss_aufmass_column_name)
 
-            # Delete the unique id column before exporting the df
-            del bvh_df["unique_id"]
+                # Delete the unique id column before exporting the df
+                del bvh_df["unique_id"]
+            else:
+                log("Exporting the master list for the bvh {} first time".format(city_key))
 
             # Exporting and uploading the new bvh_df
-
             shutil.copy(master_template_path, bvh_storing_path)
             write_bvh_dfs_to_excel(bvh_storing_path, city_key, bvh_df) # Including copying template to the same path
             if UPLOAD_MASTERLISTE:
