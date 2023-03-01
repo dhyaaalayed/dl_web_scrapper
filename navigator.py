@@ -488,6 +488,7 @@ class Navigator:
             address.postal = installed_addresses_df.iloc[i]["Postal code"]
             address.house_char = installed_addresses_df.iloc[i]["House number app."]
             address.city = installed_addresses_df.iloc[i]["Place"]
+            address.building_part = "" # TODO: change to a value after implementing a navigator to click on the eye button to get the building part
             # other columns are not used to create a unique id, but maybe we will use them later!
             address.kls_id = installed_addresses_df.iloc[i]["KLS-ID"]
             address.fold_id = installed_addresses_df.iloc[i]["FoL-Id"]
@@ -501,6 +502,5 @@ class Navigator:
         self.click_the_search_button()
         self.download_ibt_excel()
         installed_addresses = self.read_ibt_excel_and_get_installed_addresses()
-        # remove the file
         Path("BAU/exploration_protocols/ibt-orders.xls").unlink()
         return installed_addresses

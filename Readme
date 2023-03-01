@@ -448,7 +448,16 @@ ______________________
 ATTENTION
 	navigator.browser.set_window_size function is important to view the page in a big screen view in order not to make the page colapse the items in tablet or laptop modes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+______________________
+Steps to add a new bvh project:
+	1- Add it to config.json
+		This more than enouph for web_main to get the json files
 
+	telekom_addresses phase:
+		1- Get the telekom_list file and put it in:
+			bvh_name/Baupläne (HK+NVT)/telekom_list/telekom_addresses.csv
+		2- Run mg_json_main after setting EXPORT_TELEKOM_ADDRESSES = True
+			but this works only for one bvh at a time 
 
 
 

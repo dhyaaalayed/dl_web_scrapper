@@ -392,6 +392,7 @@ class GraphManager:
             address.house_char = json_address["char"]
             address.postal = json_address["postal"]
             address.city = json_address["city"]
+            address.building_part = "" # TODO: must stay like that! because telekom does not offer building part for this kind of addresses
             parsed_addresses.append(address)
         return parsed_addresses
 
@@ -472,6 +473,35 @@ class MicrosoftGraphNVTManager:
         self.graph_manager.copy_item(self.montage_excel_mg_obj["id"]
                                      ,   "Montageliste_{}_{}.xlsx".format(self.nvt_number, generated_unique_key)
                                      , date_archive_folder_mg_obj["id"])
+
+    def get_archived_montage_mg_obj(self, date, archived_montage_name):
+        archive_montage_liste_folder = self.graph_manager.get_next_item_in_path(self.archive_folder_mg_obj["id"], "montage_liste")
+        archive_date_folder_mg_obj = self.graph_manager.get_next_item_in_path(archive_montage_liste_folder["id"], date)
+        return self.graph_manager.get_next_item_in_path(archive_date_folder_mg_obj["id"], archived_montage_name)
+
+    # def download_archived_montage(self, date, archived_montage_name):
+
+    def unarchive_montage_excel(self, date, key):
+        """
+            date: "2023-02-28" as an example
+            key: "f4df0ce5_252d_4ab3_9508_1547949a047a"
+        """
+        # 1- download the archived file
+        archived_montage_name = "Montageliste_{}_{}.xlsx".format(self.nvt_number, key)
+        download_archived_file_folder_path = self.nvt_path / date
+        download_archived_file_path = download_archived_file_folder_path / archived_montage_name
+        archived_montage_mg_obj = self.get_archived_montage_mg_obj(date, archived_montage_name)
+        download_archived_file_folder_path.mkdir(parents=True, exist_ok=True)
+        self.graph_manager.download_file(archived_montage_mg_obj, download_archived_file_folder_path)
+
+        # 2- rename the archived file to delete the key
+        archived_montage_path_without_key = download_archived_file_path.rename("Montageliste_{}.xlsx".format(self.nvt_number))
+
+        # 3- replace the current montage with this one
+        self.graph_manager.upload_file(local_path=archived_montage_path_without_key, drive_folder_id=self.nvt_mg_obj["id"])
+
+
+
 
     def create_dated_archive_folder(self, archive_date: str):
         """

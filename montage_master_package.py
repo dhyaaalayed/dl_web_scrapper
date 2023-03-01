@@ -62,6 +62,7 @@ class MontageExcelParser:
         # Drop header row
         df = df[1:]
         df["Hauschar"] = df["Hauschar"].fillna("") # fill na for hauschr for comparision
+        df["Vorderhaus/Hinterhaus"] = df["Vorderhaus/Hinterhaus"].fillna("")
         print("dfdf after: ", df.columns)
         return df
 
@@ -84,6 +85,8 @@ class MontageExcelParser:
                 address.postal = zeros + address.postal
             if "dp_name" in row.index: # because other telekom bvh do not have this column
                 address.building_part = row["dp_name"]
+            else:
+                address.building_part = ""
             address.street = row["street"]
             address.city = row["city"]
             address.house_number = row["house_number"]
@@ -170,7 +173,9 @@ class MontageExcelParser:
                 # To send email notification: The address is existed in the red color (taken from telekom addresses excels)
                 if excel_dict[web_key].address.status == "":
                     new_addresses_as_notifications.append(excel_dict[web_key].address.get_one_line_address())
-                    excel_dict[web_key].address.status = web_dict[web_key].status
+                excel_dict[web_key].address.status = web_dict[web_key].status
+
+
 
 
                 print("new address: ")
@@ -236,7 +241,7 @@ class MontageExcelParser:
 
 
     def update_from_bulk_addresses(self, nvt_number: str, bulk_addresses_keys: "List of Address"):
-        bulk_auftrag_str = "BULK Auftrag"        
+        bulk_auftrag_str = "BULK Auftrag"
         new_bulk_addresses_as_notifications = []
         for excel_address in self.excel_addresses:
             if excel_address.address.create_unique_key() in bulk_addresses_keys:

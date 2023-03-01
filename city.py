@@ -131,6 +131,11 @@ class City:
             self.nvt_list.append(nvt)
 
 
+    def unarchive_montage_excel(self, date, key):
+        for nvt in self.nvt_list:
+            log("Unarchiving nvt: {}".format(nvt.nvt_number))
+            nvt.nvt_mgm.unarchive_montage_excel(date, key)
+
     def update_montage_lists(self, nvts_to_update):
         for nvt in self.nvt_list:
             if len(nvts_to_update) > 0:

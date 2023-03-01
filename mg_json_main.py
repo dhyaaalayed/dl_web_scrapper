@@ -38,6 +38,7 @@ from notifier import NOTIFIER
 UPLOAD_MASTERLISTE = True
 SEND_EMAIL = True
 EXPORT_TELEKOM_ADDRESSES = False
+UNARCHIVE_MONTAGE = False
 
 NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "ahmetORLA123!")#ahmetORLA123!
 NAVIGATOR.browser.set_window_size(1920, 1400)
@@ -105,15 +106,20 @@ def main():
             city = City(name=city_key, path=path, navigator=None)
             graph_manager = GraphManager()
             city.load_nvt_dict_from_stored_json_mg(graph_manager)
+            if UNARCHIVE_MONTAGE:
+                log("Unarchiving for BVH: {}".format(city_key))
+                city.unarchive_montage_excel(date="2023_02_28", key="f4df0ce5_252d_4ab3_9508_1547949a047a")
+                log("Finish Unarchiving for BVH: {}".format(city_key))
+                continue
             if EXPORT_TELEKOM_ADDRESSES:
                 graph_manager.download_bvh_telekom_addresses(bvh_root_path=city_obj["bvh_master_storing_path"])
                 city.export_every_nvt_montage_telekom_excel_from_city_montage_telekom_excel()
                 assert 1 == 0
             for nvt in city.nvt_list:
-                print("nownow nvt_number: ", nvt.nvt_number)
+
                 if nvt.nvt_number not in []:
+                    log("Operation on NVT {}:".format(nvt.nvt_number))
                     if city_obj["generating_ansprechpartner"] == True:
-                        log("Operation on NVT {}:".format(nvt.nvt_number))
                         log("Generating ansprechpartner liste")
                         nvt.export_and_upload_anshprechpartner_to_excel() # checking for non existed addresses is an internal operation
                     if city_obj["updating_montage_activated"] == True:
