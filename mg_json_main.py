@@ -40,7 +40,7 @@ SEND_EMAIL = True
 EXPORT_TELEKOM_ADDRESSES = False
 UNARCHIVE_MONTAGE = False
 
-NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "ahmetORLA123!")#ahmetORLA123!
+NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "!sS2uDT?8k@b39b")#ahmetORLA123!
 NAVIGATOR.browser.set_window_size(1920, 1400)
 NAVIGATOR.move_to_the_search_page()
 
