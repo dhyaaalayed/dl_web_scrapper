@@ -38,6 +38,9 @@ class ExcelAddress:
     # New columns
     kunden_status = None
     nur_hup = None
+    # New columns taking from beauftrag suche: 15.03.2023
+    beauftrag_id = None
+    phase = None
 
     def init_from_excel_row(self, row: "Pandas Series"):
         print("rowrow: ", row)
@@ -107,13 +110,18 @@ class ExcelAddress:
         if "Vorderhaus/Hinterhaus" in row.index:
             self.address.building_part = row["Vorderhaus/Hinterhaus"]
 
+        if "Bauauftrag-ID" in row.index:
+            self.beauftrag_id = row["Bauauftrag-ID"]
+
+        if "Phase" in row.index:
+            self.phase = row["Phase"]
+
         # No need to import nummer_ansprechpartner from excel, beause we already have it from gbgs
 
 
     def export_to_df_dict(self):
         """
-            ATTENTION: these columns must be sorted as they in the Excel template
-            , otherwise, we will write the data on wrong columns
+            ATTENTION: No problem if the order is not the same as in the excel
         """
         #tmp_print
         print(self.address.postal, self.address.city, self.address.street, self.address.house_number)
@@ -157,7 +165,11 @@ class ExcelAddress:
             'Auskundung erforderlich': "Ja" if self.address.expl_necessary == "true" else "Nein",
             'Auskundung erfolgt': "Ja" if self.address.expl_finished == "true" else "Nein",
             'Kunden Status': self.kunden_status,
-            'nur HÜP': self.nur_hup
+            'nur HÜP': self.nur_hup,
+            # new columns from Beauftrage Suche 15.03.2023 
+            'Bauauftrag-ID': self.beauftrag_id,
+            'Phase': self.phase
+
             }
 
 

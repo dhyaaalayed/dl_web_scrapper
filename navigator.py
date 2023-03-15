@@ -473,8 +473,34 @@ class Navigator:
         WebDriverWait(self.browser, 100).until(
             EC.presence_of_element_located((By.ID, "searchResultForm:propertySearchSRT:col_klsId:filter_label")))
 
-    def read_ibt_excel_and_get_installed_addresses(self):
-        df = pd.read_excel("BAU/exploration_protocols/ibt-orders.xls")
+    def read_ibt_excel_as_df(self):
+        return pd.read_excel("BAU/exploration_protocols/ibt-orders.xls")
+
+    def get_ibt_addresses_from_ibt_df(self, df):
+        """
+            We need to get the Order ID and the Status
+        """
+        df = df.fillna('')
+        ibt_addresses = []
+        for i in range(len(df)):
+            address = Address()
+            address.street = df.iloc[i]["Street"]
+            address.house_number = df.iloc[i]["House number"]
+            address.postal = df.iloc[i]["Postal code"]
+            address.house_char = df.iloc[i]["House number app."]
+            address.city = df.iloc[i]["Place"]
+            address.building_part = ""  # TODO: change to a value after implementing a navigator to click on the eye button to get the building part
+            # other columns are not used to create a unique id, but maybe we will use them later!
+            address.kls_id = df.iloc[i]["KLS-ID"]
+            address.fold_id = df.iloc[i]["FoL-Id"]
+            #### Adding new attributes that are not existed in the object!
+            address.beauftrag_id = df.iloc[i]["Order ID"]
+            address.phase = df.iloc[i]["Status"]
+            ibt_addresses.append(address)
+        return ibt_addresses
+
+
+    def get_installed_addresses_from_ibt_df(self, df):
         df["Status"].value_counts()
         installed_addresses_df = df[
             (df["Next Activity"] == "Process completed") & (df["Status"] == "Inventory installed")]
@@ -492,15 +518,22 @@ class Navigator:
             # other columns are not used to create a unique id, but maybe we will use them later!
             address.kls_id = installed_addresses_df.iloc[i]["KLS-ID"]
             address.fold_id = installed_addresses_df.iloc[i]["FoL-Id"]
+            #### Adding new attributes that are not existed in the object!
+            address.beauftrag_id = installed_addresses_df.iloc[i]["Order ID"]
+            address.phase = installed_addresses_df.iloc[i]["Status"]
             installed_addresses.append(address)
         return installed_addresses
 
-    def get_installed_addresses(self):
+
+    def get_installed_addresses_and_ibt_addresses(self):
         self.move_to_ibt_order_page()
         self.take_screenshot()
         self.select_2500_option_in_ibt_order_page()
         self.click_the_search_button()
-        self.download_ibt_excel()
-        installed_addresses = self.read_ibt_excel_and_get_installed_addresses()
+        self.download_ibt_excel() # this is the bauaftrage suche excel
+        ibt_df = self.read_ibt_excel_as_df()
+        installed_addresses = self.get_installed_addresses_from_ibt_df(ibt_df)
+        ibt_addresses = self.get_ibt_addresses_from_ibt_df(ibt_df)
+
         Path("BAU/exploration_protocols/ibt-orders.xls").unlink()
-        return installed_addresses
+        return ibt_addresses, installed_addresses

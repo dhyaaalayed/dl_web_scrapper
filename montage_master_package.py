@@ -222,23 +222,38 @@ class MontageExcelParser:
                 self.excel_addresses.append(excel_address)
 
     def update_from_installed_addresses(self, nvt_number: str, installed_addresses: "List of Address"):
-        installed_addresses_keys = [address.create_unique_key() for address in installed_addresses]
+        # installed_addresses_keys = [address.create_unique_key() for address in installed_addresses]
+        installed_addresses_dict = {address.create_unique_key(): address for address in installed_addresses}
         new_installed_addresses_as_notifications = []
         for excel_address in self.excel_addresses:
-            if excel_address.address.create_unique_key() in installed_addresses_keys and excel_address.address.gfap_inst_status != "Installed":
+            excel_address_key = excel_address.address.create_unique_key()
+            if excel_address_key in installed_addresses_dict.keys() and excel_address.address.gfap_inst_status != "Installed":
                 logging_string = "Discovering an installed at NVT {}. The address: {}".format(nvt_number, excel_address.address.get_one_line_address())
                 log(logging_string)
-                print("The key: ", excel_address.address.create_unique_key())
+                print("The key: ", excel_address_key)
                 print("The installed: ", excel_address.address.gfap_inst_status)
-                print("excel_address.address.create_unique_key() in installed_addresses_keys: ", excel_address.address.create_unique_key() in installed_addresses_keys)
-                print("installed_addresses_keys: ", installed_addresses_keys)
+                print("excel_address.address.create_unique_key() in installed_addresses_keys: ", excel_address_key in installed_addresses_dict.keys())
+                print("installed_addresses_keys: ", installed_addresses_dict.keys())
                 new_installed_addresses_as_notifications.append(excel_address.address.get_one_line_address())
                 excel_address.address.gfap_inst_status = "Installed"
+                # new columns from beauftrag
+                excel_address.phase = installed_addresses_dict[excel_address_key].phase
+                excel_address.beauftrag_id = installed_addresses_dict[excel_address_key].phase
+
         if len(new_installed_addresses_as_notifications) > 0:
             new_installed_addresses_as_notifications = [self.path_to_excel.name] + new_installed_addresses_as_notifications
             new_installed_addresses_as_notifications.append("_" * 40)
             NOTIFIER.new_installed_addresses += new_installed_addresses_as_notifications
 
+    def update_from_ibt_addresses(self, nvt_number: str, ibt_addresses: "List of Address"):
+        log("updating from ibt_addresses for nvt {}".format(nvt_number))
+        ibt_addresses_dict = {address.create_unique_key(): address for address in ibt_addresses}
+
+        for excel_address in self.excel_addresses:
+            excel_address_key = excel_address.address.create_unique_key()
+            if excel_address_key in ibt_addresses_dict.keys():
+                excel_address.phase = ibt_addresses_dict[excel_address_key].phase
+                excel_address.beauftrag_id = ibt_addresses_dict[excel_address_key].beauftrag_id
 
     def update_from_bulk_addresses(self, nvt_number: str, bulk_addresses_keys: "List of Address"):
         bulk_auftrag_str = "BULK Auftrag"

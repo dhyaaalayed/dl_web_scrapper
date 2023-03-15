@@ -2,11 +2,11 @@
     "templates": {
         "montage_template": {
             "path": "BAU/gbgs_config/Templates/Montageliste_Template_Final.xlsx"
-            , "number_of_columns": 38
+            , "number_of_columns": 40
         },
         "master_template": {
             "path": "BAU/gbgs_config/Templates/Montageliste_Template_Final - Master.xlsx"
-            , "number_of_columns": 49
+            , "number_of_columns": 51
         }
     },
     "cities": {
@@ -74,7 +74,8 @@
                 "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/2. Bad Wilsnack",
                 "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/1. Garz-Hoppenrade",
                 "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/4. Lanz Cumlosen",
-                "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/3. Perleberg Kleinow"
+                "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/3. Perleberg Kleinow",
+                "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/5. Plattenburg Glöwen"
             ],
             "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz",
             "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"

@@ -51,7 +51,7 @@ def main():
         shutil.rmtree("BAU")
 
     log("Getting installed addresses")
-    installed_addresses = NAVIGATOR.get_installed_addresses()
+    ibt_addresses, installed_addresses = NAVIGATOR.get_installed_addresses_and_ibt_addresses()
     installed_addresses_to_print = [address.create_unique_key() for address in installed_addresses]
     print("installed_addresses: ")
     print(installed_addresses_to_print)
@@ -69,7 +69,7 @@ def main():
     log("Getting bulk addresses")
     bulk_addresses = graph_manager.get_bulk_addresses()
     bulk_addresses_keys = [address.create_unique_key() for address in bulk_addresses]
-    print("bulk_addresses: ", bulk_addresses)
+    print("bulk_addresses: ", bulk_addresses_keys)
     # 1- Getting templates objects of microsoft graph
     master_template_mg_obj = graph_manager.get_path_mg_obj(master_template_path)
     montage_template_mg_obj = graph_manager.get_path_mg_obj(montage_template_path)
@@ -108,8 +108,9 @@ def main():
             city.load_nvt_dict_from_stored_json_mg(graph_manager)
             if UNARCHIVE_MONTAGE:
                 log("Unarchiving for BVH: {}".format(city_key))
-                city.unarchive_montage_excel(date="2023_02_28", key="f4df0ce5_252d_4ab3_9508_1547949a047a")
+                city.unarchive_montage_excel(date="2023_03_15", key="fc737db1_f9ea_4eb0_abe0_889f08ce7d2c")
                 log("Finish Unarchiving for BVH: {}".format(city_key))
+                assert 1 == 0
                 continue
             if EXPORT_TELEKOM_ADDRESSES:
                 graph_manager.download_bvh_telekom_addresses(bvh_root_path=city_obj["bvh_master_storing_path"])
@@ -139,6 +140,7 @@ def main():
                         nvt.montage_excel_parser.update_addresses_from_web()
                         nvt.montage_excel_parser.update_addresses_from_telekom_excel()
                         nvt.montage_excel_parser.update_from_installed_addresses(nvt.nvt_number, installed_addresses)
+                        nvt.montage_excel_parser.update_from_ibt_addresses(nvt.nvt_number, ibt_addresses)
                         log("Starting the bulk process")
                         nvt.montage_excel_parser.update_from_bulk_addresses(nvt.nvt_number, bulk_addresses_keys)
                         # Now using the new template:

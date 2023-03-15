@@ -30,4 +30,4 @@ services:
     build: .
     volumes:
       - .:/app
-    command: python3 mg_json_main.py
+    command: python3 -u mg_json_main.py
