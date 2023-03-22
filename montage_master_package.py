@@ -24,9 +24,13 @@ class AnspreschpartnerExcelGenerator:
     def __init__(self, kls_list):
         self.kls_list = kls_list
 
-    def set_bulk_addresses(self, bulk_addresses_dict):
-        bulk_addresses = [bulk_addresses_dict[key] for key in bulk_addresses_dict.keys()]
-        self.bulk_addresses = bulk_addresses
+    def match_addresses_from_bulk_addresses(self, bulk_addresses_dict):
+        # bulk_addresses = [bulk_addresses_dict[key] for key in bulk_addresses_dict.keys()]
+        # self.bulk_addresses = bulk_addresses
+        for kls in self.kls_list:
+            address_key = kls.address.create_unique_key()
+            if address_key in bulk_addresses_dict.keys():
+                self.bulk_addresses.append(bulk_addresses_dict[address_key])
 
     def export_current_data_to_excel(self):
         klsid = []

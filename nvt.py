@@ -92,7 +92,7 @@ class NVT:
 
     def initialize_anspreschpartner_excel_generator(self, bulk_addresses_dict):
         self.anspreschpartner_excel_generator = AnspreschpartnerExcelGenerator(self.kls_list)
-        self.anspreschpartner_excel_generator.set_bulk_addresses(bulk_addresses_dict)
+        self.anspreschpartner_excel_generator.match_addresses_from_bulk_addresses(bulk_addresses_dict)
 
 
     def initialize_montage_excel_parser(self):

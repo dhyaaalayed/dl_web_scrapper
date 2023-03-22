@@ -66,7 +66,7 @@ def main():
     graph_manager = GraphManager()
     log("Getting bulk addresses")
     bulk_addresses = graph_manager.get_bulk_addresses()
-    # bulk_addresses_keys = [address.create_unique_key() for address in bulk_addresses]
+    bulk_addresses_keys = [address.create_unique_key() for address in bulk_addresses]
     bulk_addresses_dict = {address.create_unique_key(): address for address in bulk_addresses}
 
     print("bulk_addresses: ", bulk_addresses_dict)
