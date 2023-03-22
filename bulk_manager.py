@@ -143,7 +143,55 @@ class BulkManager:
 
     def get_page_addresses(self):
         addresses_rows = self.navigator.browser.find_elements("xpath", '//building-order')
-        parsed_addresses_rows = [self.parse_address_array(row.text.split('\n')[:2]) for row in addresses_rows]
+        parsed_addresses_rows_full_text = [row.get_attribute('innerHTML') for row in addresses_rows]
+        parsed_addresses_rows_full = [row.text.split('\n') for row in addresses_rows]
+        print("parsed_addresses_rows_full_text: ", parsed_addresses_rows_full_text)
+        print("parsed_addresses_rows_full: ", parsed_addresses_rows_full)
+
+
+
+        parsed_addresses_rows = []
+        for row in addresses_rows:
+            parsed_address = self.parse_address_array(row.text.split('\n')[:2])
+            # Now we have the address as this example: {street: "Dr.-Ernst-Mucke-Str.", number: 4, char: "", postal: 02625, city: Bautzen}
+            #, then we need to add more attributes like name(company_name + person_name), phone, mobil, kls_id, fold_id
+
+            try:
+                mobile = row.find_element("xpath", './/div[@data-cy="contactMedium_phoneNumberFixed"]').get_attribute('innerHTML')
+            except:
+                log("Exception occures while reading mobile element")
+
+                mobile = row.find_element("xpath", './/div[@data-cy="contactMedium_phoneNumberMobile"]').get_attribute('innerHTML')
+                log("Mobile element after catching the exception: " + mobile)
+            
+            company_name = row.find_element("xpath", './/div[@data-cy="organizationDetails_organizationName"]').get_attribute('innerHTML')
+            person_name = row.find_elements("xpath", './/div[@class="common-column"]//div[@class="content-text ng-star-inserted"]')[1].get_attribute('innerHTML')
+            mail = row.find_element("xpath", ".//a[contains(@href, 'mailto')]").get_attribute('href')
+            mail = mail.replace("mailto:", "")
+
+
+            kls_id_fold_id_spans = row.find_elements("xpath", './/div[@class="common-column"]//span')
+            kls_id = kls_id_fold_id_spans[0].get_attribute("innerHTML")
+            fold_id = kls_id_fold_id_spans[1].get_attribute("innerHTML")
+            
+
+            more_attributes = {
+                "mobile": mobile,
+                "person_name": person_name,
+                "company_name": company_name,
+                "mail": mail,
+                "kls_id": kls_id,
+                "fold_id": fold_id
+
+            }
+            print("more_attributes: ", more_attributes)
+
+            
+
+            parsed_addresses_rows.append({**parsed_address, **more_attributes})
+
+        # The next commented row to be deleted!
+        # parsed_addresses_rows = [self.parse_address_array(row.text.split('\n')[:2]) for row in addresses_rows]
         print("getting addresses of array length {}: ".format(len(parsed_addresses_rows)), parsed_addresses_rows)
         return parsed_addresses_rows
 

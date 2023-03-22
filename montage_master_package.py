@@ -11,6 +11,94 @@ import os
 from notifier import NOTIFIER
 
 
+
+class AnspreschpartnerExcelGenerator:
+    """
+        The owners and people are taken from the nvt from its kls object
+        we get bulk_addresses once we call set_bulk_addresses
+    """
+
+    kls_list = []
+    bulk_addresses = []
+
+    def __init__(self, kls_list):
+        self.kls_list = kls_list
+
+    def set_bulk_addresses(self, bulk_addresses_dict):
+        bulk_addresses = [bulk_addresses_dict[key] for key in bulk_addresses_dict.keys()]
+        self.bulk_addresses = bulk_addresses
+
+    def export_current_data_to_excel(self):
+        klsid = []
+        ort = []
+        strasse = []
+        rolle = []
+        name = []
+        person_ort = []
+        person_street = []
+        telefon = []
+        mobile = []
+        email = []
+ 
+        for kls in self.kls_list:
+            address = kls.address
+            people = kls.people
+            owners_list = kls.owners
+            for person in people:
+                klsid.append(kls.id)
+                ort.append(address.postal + " " + address.city)
+                strasse.append(address.street + " " + address.house_number + address.house_char)
+
+                rolle.append(person.role)
+                name.append(person.name)
+                person_ort.append("")  # no ort for contact person!
+                person_street.append("")  # no street
+                telefon.append(person.fixedline)
+                mobile.append(person.mobile)
+                email.append(person.email)
+
+            for owner in owners_list:
+                klsid.append(kls.id)
+                ort.append(address.postal + " " + address.city)
+                strasse.append(address.street + " " + address.house_number + address.house_char)
+
+                rolle.append("Inhaber")
+                name.append(owner.name)
+                person_ort.append(owner.postcode + " " + owner.city)
+                person_street.append(owner.street + " " + owner.housenumber)
+                telefon.append(owner.linenumber)
+                mobile.append(owner.mobil)
+                email.append(owner.email)
+
+        for bulk_address in self.bulk_addresses:
+            log("Adding bulk address to Anspreschpartner excel: " + bulk_address.get_one_line_address())
+            klsid.append(bulk_address.kls_id)
+            ort.append(bulk_address.postal + " " + bulk_address.city)
+            strasse.append(bulk_address.street + " " + bulk_address.house_number + bulk_address.house_char)
+            rolle.append("Inhaber")
+            name.append(bulk_address.company_name + " | " + bulk_address.person_name)
+            person_ort.append("")  # no ort for contact bulk_address!
+            person_street.append("")  # no street
+            telefon.append("")
+            mobile.append(bulk_address.mobile)
+            email.append(bulk_address.email)
+
+
+        return pd.DataFrame(data={
+            "KLSID": klsid,
+            "Ort": ort,
+            "Strasse": strasse,
+            "Rolle": rolle,
+            "Name": name,
+            "Ort2": person_ort,
+            "Strasse2": person_street,
+            "Telefon": telefon,
+            "Mobile": mobile,
+            "email": email
+        })
+##################################################
+
+
 class MontageExcelParser:
 
     excel_df = None
@@ -255,21 +343,21 @@ class MontageExcelParser:
                 excel_address.phase = ibt_addresses_dict[excel_address_key].phase
                 excel_address.beauftrag_id = ibt_addresses_dict[excel_address_key].beauftrag_id
 
-    def update_from_bulk_addresses(self, nvt_number: str, bulk_addresses_keys: "List of Address"):
+    def update_from_bulk_addresses(self, nvt_number: str, bulk_addresses_dict: "List of Address"):
         bulk_auftrag_str = "BULK Auftrag"
         new_bulk_addresses_as_notifications = []
         for excel_address in self.excel_addresses:
-            if excel_address.address.create_unique_key() in bulk_addresses_keys:
+            excel_address_key = excel_address.address.create_unique_key()
+            if excel_address_key in bulk_addresses_dict.keys():
                 
                 if bulk_auftrag_str.lower() not in str(excel_address.Kommentare).lower():
                     logging_string = "Discovering a bulk address at NVT {}. The address: {}".format(nvt_number, excel_address.address.get_one_line_address())
                     log(logging_string)
-                    print("The key: ", excel_address.address.create_unique_key())
-                    print("excel_address.address.create_unique_key() in bulk_addresses_keys: ", excel_address.address.create_unique_key() in bulk_addresses_keys)
-                    print("bulk_addresses_keys: ", bulk_addresses_keys)
+                    print("The key: ", excel_address_key)
                     new_bulk_addresses_as_notifications.append(excel_address.address.get_one_line_address())
                     excel_address.Kommentare = bulk_auftrag_str + ", " + str(excel_address.Kommentare)
                     excel_address.htn = "ja"
+
                 if "Bulk Auftrag, nan" in str(excel_address.Kommentare):
                     excel_address.Kommentare = str(excel_address.Kommentare).replace("Bulk Auftrag, nan", "BULK Auftrag")
                 
@@ -278,8 +366,14 @@ class MontageExcelParser:
 
                 if "Bulk Auftrag" in str(excel_address.Kommentare):
                     excel_address.Kommentare = str(excel_address.Kommentare).replace("Bulk Auftrag", "BULK Auftrag")
+
+                # Update to be added to Montage files:
+                excel_address.address.kls_id = bulk_addresses_dict[excel_address_key].kls_id
+                excel_address.address.fold_id = bulk_addresses_dict[excel_address_key].fold_id
+                excel_address.address.status = "Complete GfAP-Installation"
+
                 log("Removing bulk address after matching one in excel")
-                bulk_addresses_keys.remove(excel_address.address.create_unique_key())
+                del bulk_addresses_dict[excel_address_key]
         if len(new_bulk_addresses_as_notifications) > 0:
             new_bulk_addresses_as_notifications = [self.path_to_excel.name] + new_bulk_addresses_as_notifications
             new_bulk_addresses_as_notifications.append("_" * 40)

@@ -462,4 +462,51 @@ Steps to add a new bvh project:
 
 
 
+FINALLY To see logs on docker :)
+	python -u file.py
+
+
+
+
+________________________________________________
+New Requirements:
+
+
+
+1- For bulk address
+	1- Set the status to be complete gfap...
+	2- Get it's fold and kls ids
+	3- Add it also to ansprechpartnerlist
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

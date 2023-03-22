@@ -7,7 +7,7 @@ import json
 
 from GraphManager import MicrosoftGraphNVTManager
 from entities import Kls, Address, Person, Owner
-from montage_master_package import MontageExcelParser
+from montage_master_package import MontageExcelParser, AnspreschpartnerExcelGenerator
 import numpy as np
 from datetime import date, datetime
 from uuid import uuid4
@@ -22,6 +22,7 @@ class NVT:
     navigator = None
     montage_excel_path = None
     montage_excel_parser = None
+    anspreschpartner_excel_generator = None
     nvt_mgm: MicrosoftGraphNVTManager = None # MicrosoftGraphNVTManager objcet, used only by mg_json_main when we run the code in the cloud
 
     def __init__(self, nvt_number: str, city: "City", nvt_mgm: MicrosoftGraphNVTManager):
@@ -33,6 +34,7 @@ class NVT:
         self.navigator = city.navigator
         self.montage_excel_path = self._get_montage_excel_path()
         self.montage_excel_parser = None
+        self.anspreschpartner_excel_generator = None
         self.nvt_mgm = nvt_mgm
         
 
@@ -87,6 +89,11 @@ class NVT:
         montage_file = "Montageliste_{}.xlsx".format(self.nvt_number)
         montage_path = Path(self.path) / montage_file
         return montage_path
+
+    def initialize_anspreschpartner_excel_generator(self, bulk_addresses_dict):
+        self.anspreschpartner_excel_generator = AnspreschpartnerExcelGenerator(self.kls_list)
+        self.anspreschpartner_excel_generator.set_bulk_addresses(bulk_addresses_dict)
+
 
     def initialize_montage_excel_parser(self):
         montage_file = "Montageliste_{}.xlsx".format(self.nvt_number)
@@ -265,11 +272,11 @@ class NVT:
         ansprechpartnerListe_dest_path = ansprechpartnerListe_dest_path / "AnsprechpartnerListe_{}_{}.xlsx".format(self.nvt_number, str(uuid4()).replace("-", "_"))
         shutil.copy(ansprechpartnerListe_src_path, ansprechpartnerListe_dest_path)
 
-    def export_and_upload_anshprechpartner_to_excel(self):
+    def export_and_upload_anshprechpartner_to_excel(self, df):
         """
             This function also checks if we have addresses
         """
-        df = self.get_anshprechpartner_dataframe()
+        # df = self.get_anshprechpartner_dataframe()
         if len(df) > 0:
             self.export_anshprechpartner_to_excel(df)
             self.nvt_mgm.upload_ansprechspartner_excel()
@@ -289,56 +296,56 @@ class NVT:
 
 
 
-    def get_anshprechpartner_dataframe(self):
-        klsid = []
-        ort = []
-        strasse = []
-        rolle = []
-        name = []
-        person_ort = []
-        person_street = []
-        telefon = []
-        mobile = []
-        email = []
-        for kls in self.kls_list:
-            address = kls.address
-            people = kls.people
-            owners_list = kls.owners
-            for person in people:
-                klsid.append(kls.id)
-                ort.append(address.postal + " " + address.city)
-                strasse.append(address.street + " " + address.house_number + address.house_char)
+    # def get_anshprechpartner_dataframe(self):
+    #     klsid = []
+    #     ort = []
+    #     strasse = []
+    #     rolle = []
+    #     name = []
+    #     person_ort = []
+    #     person_street = []
+    #     telefon = []
+    #     mobile = []
+    #     email = []
+    #     for kls in self.kls_list:
+    #         address = kls.address
+    #         people = kls.people
+    #         owners_list = kls.owners
+    #         for person in people:
+    #             klsid.append(kls.id)
+    #             ort.append(address.postal + " " + address.city)
+    #             strasse.append(address.street + " " + address.house_number + address.house_char)
 
-                rolle.append(person.role)
-                name.append(person.name)
-                person_ort.append("")  # no ort for contact person!
-                person_street.append("")  # no street
-                telefon.append(person.fixedline)
-                mobile.append(person.mobile)
-                email.append(person.email)
+    #             rolle.append(person.role)
+    #             name.append(person.name)
+    #             person_ort.append("")  # no ort for contact person!
+    #             person_street.append("")  # no street
+    #             telefon.append(person.fixedline)
+    #             mobile.append(person.mobile)
+    #             email.append(person.email)
 
-            for owner in owners_list:
-                klsid.append(kls.id)
-                ort.append(address.postal + " " + address.city)
-                strasse.append(address.street + " " + address.house_number + address.house_char)
+    #         for owner in owners_list:
+    #             klsid.append(kls.id)
+    #             ort.append(address.postal + " " + address.city)
+    #             strasse.append(address.street + " " + address.house_number + address.house_char)
 
-                rolle.append("Inhaber")
-                name.append(owner.name)
-                person_ort.append(owner.postcode + " " + owner.city)
-                person_street.append(owner.street + " " + owner.housenumber)
-                telefon.append(owner.linenumber)
-                mobile.append(owner.mobil)
-                email.append(owner.email)
+    #             rolle.append("Inhaber")
+    #             name.append(owner.name)
+    #             person_ort.append(owner.postcode + " " + owner.city)
+    #             person_street.append(owner.street + " " + owner.housenumber)
+    #             telefon.append(owner.linenumber)
+    #             mobile.append(owner.mobil)
+    #             email.append(owner.email)
 
-        return pd.DataFrame(data={
-            "KLSID": klsid,
-            "Ort": ort,
-            "Strasse": strasse,
-            "Rolle": rolle,
-            "Name": name,
-            "Ort2": person_ort,
-            "Strasse2": person_street,
-            "Telefon": telefon,
-            "Mobile": mobile,
-            "email": email
-        })
+    #     return pd.DataFrame(data={
+    #         "KLSID": klsid,
+    #         "Ort": ort,
+    #         "Strasse": strasse,
+    #         "Rolle": rolle,
+    #         "Name": name,
+    #         "Ort2": person_ort,
+    #         "Strasse2": person_street,
+    #         "Telefon": telefon,
+    #         "Mobile": mobile,
+    #         "email": email
+    #     })

@@ -20,6 +20,7 @@ services:
       - ./web_airflow.py:/app/web_airflow.py
       - ./web_main_shell.sh:/app/web_main_shell.sh
       - ./bulk_manager.py:/app/bulk_manager.py
+      - ./screenshot.png:/app/screenshot.png
       # - ./json_airflow.py:/app/json_airflow.py
       # - /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
     # environment:

@@ -393,6 +393,15 @@ class GraphManager:
             address.postal = json_address["postal"]
             address.city = json_address["city"]
             address.building_part = "" # TODO: must stay like that! because telekom does not offer building part for this kind of addresses
+
+            # other fields
+            address.mobile = json_address["mobile"]
+            address.person_name = json_address["person_name"]
+            address.company_name = json_address["company_name"]
+            address.email = json_address["mail"]
+            address.kls_id = json_address["kls_id"]
+            address.fold_id = json_address["fold_id"]
+            
             parsed_addresses.append(address)
         return parsed_addresses
 

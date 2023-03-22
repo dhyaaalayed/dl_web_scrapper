@@ -17,7 +17,6 @@
         1- test the current without uploading
         2- check out the generated files and the archive folders
 """
-import datetime
 import json
 
 import shutil
@@ -26,7 +25,6 @@ from pathlib import Path
 from uuid import uuid4
 
 import pandas as pd
-import sys
 
 from GraphManager import GraphManager
 from city import City
@@ -68,8 +66,10 @@ def main():
     graph_manager = GraphManager()
     log("Getting bulk addresses")
     bulk_addresses = graph_manager.get_bulk_addresses()
-    bulk_addresses_keys = [address.create_unique_key() for address in bulk_addresses]
-    print("bulk_addresses: ", bulk_addresses_keys)
+    # bulk_addresses_keys = [address.create_unique_key() for address in bulk_addresses]
+    bulk_addresses_dict = {address.create_unique_key(): address for address in bulk_addresses}
+
+    print("bulk_addresses: ", bulk_addresses_dict)
     # 1- Getting templates objects of microsoft graph
     master_template_mg_obj = graph_manager.get_path_mg_obj(master_template_path)
     montage_template_mg_obj = graph_manager.get_path_mg_obj(montage_template_path)
@@ -122,7 +122,11 @@ def main():
                     log("Operation on NVT {}:".format(nvt.nvt_number))
                     if city_obj["generating_ansprechpartner"] == True:
                         log("Generating ansprechpartner liste")
-                        nvt.export_and_upload_anshprechpartner_to_excel() # checking for non existed addresses is an internal operation
+
+                        nvt.initialize_anspreschpartner_excel_generator(bulk_addresses_dict)
+                        anspreschpartner_df = nvt.anspreschpartner_excel_generator.export_current_data_to_excel()
+                        nvt.export_and_upload_anshprechpartner_to_excel(anspreschpartner_df) # checking for non existed addresses is an internal operation
+
                     if city_obj["updating_montage_activated"] == True:
                         log("Archiving current montage")
 
@@ -142,7 +146,7 @@ def main():
                         nvt.montage_excel_parser.update_from_installed_addresses(nvt.nvt_number, installed_addresses)
                         nvt.montage_excel_parser.update_from_ibt_addresses(nvt.nvt_number, ibt_addresses)
                         log("Starting the bulk process")
-                        nvt.montage_excel_parser.update_from_bulk_addresses(nvt.nvt_number, bulk_addresses_keys)
+                        nvt.montage_excel_parser.update_from_bulk_addresses(nvt.nvt_number, bulk_addresses_dict)
                         # Now using the new template:
                         log("Using the new Montage Excel template")
                         # It's already downloaded for every nvt, we just need to copy it
