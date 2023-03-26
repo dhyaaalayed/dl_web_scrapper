@@ -90,9 +90,9 @@ class NVT:
         montage_path = Path(self.path) / montage_file
         return montage_path
 
-    def initialize_anspreschpartner_excel_generator(self, bulk_addresses_dict):
+    def initialize_anspreschpartner_excel_generator(self, bulk_addresses_dict, montage_excel_addresses):
         self.anspreschpartner_excel_generator = AnspreschpartnerExcelGenerator(self.kls_list)
-        self.anspreschpartner_excel_generator.match_addresses_from_bulk_addresses(bulk_addresses_dict)
+        self.anspreschpartner_excel_generator.match_addresses_from_bulk_addresses(bulk_addresses_dict, montage_excel_addresses)
 
 
     def initialize_montage_excel_parser(self):

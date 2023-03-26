@@ -18,17 +18,13 @@ class AnspreschpartnerExcelGenerator:
         we get bulk_addresses once we call set_bulk_addresses
     """
 
-    kls_list = []
-    bulk_addresses = []
-
     def __init__(self, kls_list):
         self.kls_list = kls_list
+        self.bulk_addresses = []
 
-    def match_addresses_from_bulk_addresses(self, bulk_addresses_dict):
-        # bulk_addresses = [bulk_addresses_dict[key] for key in bulk_addresses_dict.keys()]
-        # self.bulk_addresses = bulk_addresses
-        for kls in self.kls_list:
-            address_key = kls.address.create_unique_key()
+    def match_addresses_from_bulk_addresses(self, bulk_addresses_dict, montage_excel_addresses):
+        for excel_address in montage_excel_addresses:
+            address_key = excel_address.address.create_unique_key()
             if address_key in bulk_addresses_dict.keys():
                 self.bulk_addresses.append(bulk_addresses_dict[address_key])
 
@@ -104,13 +100,6 @@ class AnspreschpartnerExcelGenerator:
 
 
 class MontageExcelParser:
-
-    excel_df = None
-    path_to_excel = None
-
-    excel_addresses = []
-    web_addresses = []
-    telekom_addresses = []
 
     def __init__(self, path_to_excel, web_addresses):
         self.path_to_excel = path_to_excel
@@ -250,8 +239,9 @@ class MontageExcelParser:
                 excel_dict[web_key].address.kundentermin_start = web_dict[web_key].kundentermin_start
                 excel_dict[web_key].address.kundentermin_end = web_dict[web_key].kundentermin_end
                 excel_dict[web_key].address.we = web_dict[web_key].we
-                if excel_dict[web_key].address.gfap_inst_status != "Installed":
-                    excel_dict[web_key].address.gfap_inst_status = web_dict[web_key].gfap_inst_status
+                # Disable the installed from Grundstuek suche
+                # if excel_dict[web_key].address.gfap_inst_status != "Installed":
+                #     excel_dict[web_key].address.gfap_inst_status = web_dict[web_key].gfap_inst_status
                 excel_dict[web_key].address.kls_id = web_dict[web_key].kls_id
                 excel_dict[web_key].address.fold_id = web_dict[web_key].fold_id
                 excel_dict[web_key].address.expl_necessary = web_dict[web_key].expl_necessary
@@ -377,6 +367,7 @@ class MontageExcelParser:
                 excel_address.address.status = "Complete GfAP-Installation"
 
                 log("Removing bulk address after matching one in excel")
+                # we do that just to know which addresses did not match :)
                 del bulk_addresses_dict[excel_address_key]
         if len(new_bulk_addresses_as_notifications) > 0:
             new_bulk_addresses_as_notifications = [self.path_to_excel.name] + new_bulk_addresses_as_notifications

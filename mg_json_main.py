@@ -68,6 +68,8 @@ def main():
     bulk_addresses = graph_manager.get_bulk_addresses()
     bulk_addresses_keys = [address.create_unique_key() for address in bulk_addresses]
     bulk_addresses_dict = {address.create_unique_key(): address for address in bulk_addresses}
+    # just a copy
+    bulk_addresses_dict_for_anspresch_partner = {address.create_unique_key(): address for address in bulk_addresses}
 
     print("bulk_addresses: ", bulk_addresses_dict)
     # 1- Getting templates objects of microsoft graph
@@ -120,12 +122,6 @@ def main():
 
                 if nvt.nvt_number not in []:
                     log("Operation on NVT {}:".format(nvt.nvt_number))
-                    if city_obj["generating_ansprechpartner"] == True:
-                        log("Generating ansprechpartner liste")
-
-                        nvt.initialize_anspreschpartner_excel_generator(bulk_addresses_dict)
-                        anspreschpartner_df = nvt.anspreschpartner_excel_generator.export_current_data_to_excel()
-                        nvt.export_and_upload_anshprechpartner_to_excel(anspreschpartner_df) # checking for non existed addresses is an internal operation
 
                     if city_obj["updating_montage_activated"] == True:
                         log("Archiving current montage")
@@ -154,6 +150,14 @@ def main():
                         nvt.montage_excel_parser.export_current_data_to_excel(nvt.nvt_number, montage_template_columns)
                         log("Finally: Uploading Generated Montage Excel")
                         nvt.nvt_mgm.upload_montage_excel()
+
+                        if city_obj["generating_ansprechpartner"] == True:
+                            log("Generating ansprechpartner liste")
+                            nvt.initialize_anspreschpartner_excel_generator(bulk_addresses_dict_for_anspresch_partner, nvt.montage_excel_parser.excel_addresses)
+                            anspreschpartner_df = nvt.anspreschpartner_excel_generator.export_current_data_to_excel()
+                            nvt.export_and_upload_anshprechpartner_to_excel(anspreschpartner_df) # checking for non existed addresses is an internal operation
+
+
             # log("Exporting Masterliste for {}".format(city.name))
             # Old code do not activate the next two new lines:
             # city.copy_master_liste_template()

@@ -90,6 +90,7 @@ class ExcelAddress:
 
         if "Installiert" in row.index:
             self.address.gfap_inst_status = "Installed" if row["Installiert"] == "✔" else ""
+            # self.address.gfap_inst_status = "" # To stop taking it from excel, we use this line to clean the excel data once we have wrong data
         if "KLS-ID" in row.index:
             self.address.kls_id = row["KLS-ID"]
         if "FOL-ID" in row.index:
