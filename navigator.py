@@ -28,9 +28,9 @@ Finding eye_link inside eye_row using css selector, by using xpath, it will find
 
 class Navigator:
 
-    browser = None
-    exploration_protocols_download_path = None
     def __init__(self, user_name, password):
+        self.browser = None
+        self.exploration_protocols_download_path = None
         self.initialize_all(user_name, password)
 
 

@@ -481,7 +481,10 @@ New Requirements:
 
 
 
-
+_______________________________________________
+To update my ssh keys for github authantication:
+Run:
+	ssh-keygen -R github.com
 
 
 
