@@ -28,23 +28,47 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 """
 
 class City:
-    name = None
-    root_path = None
-    navigator = None
-
-    # list of nvts with their elements
-    nvt_list = None # key: nvt_number, value: {path, place, nvt_telekom_list}
-    nvt_path_list = None # contains all paths to nvt_folders
-
     def __init__(self, name, path, navigator):
         self.name = name
         self.root_path = Path(path)
         self.navigator = navigator
-        self.nvt_list = []
-        self.nvt_path_list = []
+
+        # list of nvts with their elements
+        self.nvt_list = [] # key: nvt_number, value: {path, place, nvt_telekom_list}
+        self.nvt_path_list = [] # contains all paths to nvt_folders
 
     def create_city_folder_tree(self):
         self.root_path.mkdir(parents=True, exist_ok=True)
+
+    def initialize_ibt_nvt_dict_using_web_navigator_mg(self):
+        graph_manager = GraphManager()
+        mg_nvts = graph_manager.get_nvt_ids(self.root_path)
+
+        for mg_nvt in mg_nvts:
+            try:
+                nvt_path = self.root_path / mg_nvt["name"]
+                nvt_number = mg_nvt["name"].replace("NVT ", "")
+                log("Start scrapping NVT: " + str(nvt_number))
+                #### Now we need nvt and nvt_mgm objects
+                nvt_mgm = MicrosoftGraphNVTManager(graph_manager, mg_nvt, nvt_path)
+                nvt = NVT(nvt_number=nvt_number, city=self, nvt_mgm=nvt_mgm)
+                # We get the automated_folder_mg_obj just to check if the json is updated recently or not!
+                automated_folder_mg_obj = graph_manager.get_next_item_in_path(mg_nvt["id"], "automated_data")
+                if automated_folder_mg_obj != None:
+                    nvt_mgm.download_automated_data_folder(nvt.path)
+                    if nvt.is_ibt_json_recently_updated():
+                        log("NVT IBT {} is already updated".format(nvt_mgm.nvt_number))
+                        continue
+                nvt.initialize_ibt_using_web_scrapper() # path is okay
+                nvt_mgm.upload_nvt_ibt_json_file()
+                self.nvt_list.append(nvt)
+                self.navigator.click_reset_filter_button()
+                # nvt_scrapping_done = True
+            except Exception as e:
+                self.navigator.browser.quit()
+                assert 1 == 2 # quit the program, since we will not start with already updated nvts
+
+
 
     def initialize_nvt_dict_using_web_navigator_mg(self):
         """

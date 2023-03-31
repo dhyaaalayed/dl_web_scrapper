@@ -4,11 +4,6 @@ import json
 
 
 class Kls:
-    id = None
-    address = None
-    people = None
-    owners = None
-
     def __init__(self, id=None, address=None, people=None, owners=None):
         self.id = id
         self.address = address
@@ -31,32 +26,31 @@ class Kls:
         return json.dumps(kls_json)
 
 class Address:
-    street = None
-    house_number = None
-    house_char = ""
-    postal = None
-    city = None
-    kundentermin_start = None
-    kundentermin_end = None
-    status = None
-    we = None
-    building_part = None
 
-    # new columns:
-    gfap_inst_status = None
-    kls_id = None
-    fold_id = None
-    expl_necessary = None
-    expl_finished = None
-
-    # exploration_protocol (Auskundigung Protocol) boolean variable
-    # in order not to download the pdf again if it's True!
-    exploration_protocol_already_downloaded: bool = False
-
-    # 02.11.2022: a big string to store all peaple and owners with their numbers!
-    nummer_ansprechpartner: str = None
 
     def __init__(self, address_json=None):
+        self.street = None
+        self.house_number = None
+        self.house_char = ""
+        self.postal = None
+        self.city = None
+        self.kundentermin_start = None
+        self.kundentermin_end = None
+        self.status = None
+        self.we = None
+        self.building_part = None
+        # new columns:
+        self.gfap_inst_status = None
+        self.kls_id = None
+        self.fold_id = None
+        self.expl_necessary = None
+        self.expl_finished = None
+        # exploration_protocol (Auskundigung Protocol) boolean variable
+        # in order not to download the pdf again if it's True!
+        self.exploration_protocol_already_downloaded: bool = False
+        # 02.11.2022: a big string to store all peaple and owners with their numbers!
+        self.nummer_ansprechpartner: str = None
+
         if address_json is not None:
             self.import_from_json(address_json)
 
@@ -145,15 +139,14 @@ class Address:
         return json.dumps(self.__dict__)
 
 class Person:
-    name = None
-    role = None
-    fixedline = None
-    mobile = None
-    email = None
-    sms = None
-    preferred = None
-
     def __init__(self, person_json=None):
+        self.name = None
+        self.role = None
+        self.fixedline = None
+        self.mobile = None
+        self.email = None
+        self.sms = None
+        self.preferred = None
         if person_json is not None:
             self.import_from_json(person_json)
 
@@ -193,17 +186,16 @@ class Person:
         return json.dumps(self.__dict__)
 
 class Owner:
-    name = None
-    email = None
-    mobil = None
-    linenumber = None
-    postcode = None
-    city = None
-    street = None
-    housenumber = None
-    decisionmaker = None
-
     def __init__(self, owner_json=None):
+        self.name = None
+        self.email = None
+        self.mobil = None
+        self.linenumber = None
+        self.postcode = None
+        self.city = None
+        self.street = None
+        self.housenumber = None
+        self.decisionmaker = None
 
         if owner_json is not None:
             self.import_from_json(owner_json)

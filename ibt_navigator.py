@@ -5,6 +5,7 @@ import time
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import json
 
 class IBTNavigator(Navigator):
 
@@ -19,7 +20,7 @@ class IBTNavigator(Navigator):
 
 
     def get_eyes_data(self, nvt_number, nvt_path, already_downloaded_exploration_protocols):
-        kls_list = []
+        addresses = []
         eyes_rows = self.get_and_refresh_eyes_rows()
         number_of_rows = len(eyes_rows)
         for eye_row_index in range(number_of_rows):
@@ -49,61 +50,46 @@ class IBTNavigator(Navigator):
             eye_link = html_columns[0].find_element("css selector", 'a')
             print("eye_link: ", eye_link.get_attribute("outerHTML"))
             # Creating Kls object
-            kls = self.get_eye_data(eye_link, nvt_path, already_downloaded_exploration_protocols) # here an eye link should be given
+            address = self.get_eye_data(eye_link, nvt_path, already_downloaded_exploration_protocols) # here an eye link should be given
 
-            kls.address.postal = postal
-            kls.address.city = city
-            kls.address.street = street
-            kls.address.house_number = house_number
-            kls.address.house_char = house_char
-            kls.address.status = status
-            kls.address.next_activity = next_activity
+            address["postal"] = postal
+            address["city"] = city
+            address["street"] = street
+            address["house_number"] = house_number
+            address["house_char"] = house_char
+            address["status"] = status
+            address["next_activity"] = next_activity
 
-            kls_list.append(kls)
+            addresses.append(address)
             # Just to refresh
             eyes_rows = self.get_and_refresh_eyes_rows()
-        return kls_list
+        return addresses
 
 
     def get_eye_data(self, eye_button, nvt_path, already_downloaded_exploration_protocols: list):
-        """
-            eye_date: means one kls record that contains:
-                    kls_id
-                    address
-                    list of people
-                    list of owners
 
-            nvt_path: very important parameter to store Auskundigung protocol!
-            already_downloaded_exploration_protocols: a list parsed from the stored json of the nvt
-                to check if the exploration protocol is included in the list or not
-        """
-
-        kls = Kls()
         self.browser.find_elements("xpath", '//a[contains(@id,":viewSelectedRowItem")]')
         self.navigate_to_address_page(eye_button)
         self.wait_by_element("xpath", '//div[@id="processPageForm:addressPanel_header"]')
         print("after waiting")
         self.take_screenshot()
-        kls_id, address = self.get_address_data_with_kls_id()
+        address = self.get_address()
         self.take_screenshot()
-        kls.id = kls_id
-        kls.address = address
-
     
         self.close_address_page()
-        return kls
+        return address
 
 
-    def get_address_data_with_kls_id(self):
-        address = Address()
+    def get_address(self):
+        address = {}
         kls_element = WebDriverWait(self.browser, 100).until(EC.presence_of_element_located((By.ID, 'processPageForm:klsId')))
         kls_id = kls_element.text
         log("Starting with kls: " + kls_id)
-        address.kls_id = kls_element.text
-        address.fold_id = self.browser.find_element("id", "processPageForm:folId").text
-        address.building_part = self.browser.find_element("id", "processPageForm:buildingPart").text
+        address["kls_id"] = kls_element.text
+        address["fold_id"] = self.browser.find_element("id", "processPageForm:folId").text
+        address["building_part"] = self.browser.find_element("id", "processPageForm:buildingPart").text
         
-        return kls_id, address
+        return address
 
     def close_address_page(self):
         log("Pressing close button of address page")
@@ -120,10 +106,8 @@ def main():
     ibt_navigator = IBTNavigator('dieaa.aled@dl-projects.de', 'S8jN##BUq_y6zbu')
     ibt_navigator.browser.set_window_size(1920, 1400)
     ibt_navigator.move_to_the_search_page()
-    kls_list = ibt_navigator.get_all_nvt_data("42V1020", "", [])
-    print("The whole list")
-    print([kls.export_to_json() for kls in kls_list])
-
+    addresses = ibt_navigator.get_all_nvt_data("42V1010", "", [])
+    print(addresses)
 
 if __name__ == "__main__":
     main()

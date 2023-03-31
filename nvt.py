@@ -52,6 +52,14 @@ class NVT:
         self.print()
         self.write_to_json()
 
+
+    def initialize_ibt_using_web_scrapper(self):
+        addresses = self.navigator.get_all_nvt_data(self.nvt_number, "", [])
+        if addresses == None:
+            return
+        self.write_ibt_to_json(addresses)
+
+
     def download_automated_data_folder(self):
         automated_data_path = self.path / "automated_data"
         automated_data_path.mkdir(parents=True, exist_ok=True)
@@ -192,6 +200,17 @@ class NVT:
             json.dump(json_obj, f)
         log("Storing nvt json at: " + str(store_path / 'nvt_telekom_data.json'))
 
+    def write_ibt_to_json(self, addresses):
+        ibt_json_obj = {
+            "data": addresses,
+            "creation_time": str(datetime.now())
+        }
+        store_path = self.path / 'automated_data'
+        Path(store_path).mkdir(parents=True, exist_ok=True)
+        with open(store_path / 'nvt_telekom_ibt_data.json', 'w') as f:
+            json.dump(ibt_json_obj, f)
+        log("Storing nvt ibt json at: " + str(store_path / 'nvt_telekom_ibt_data.json'))
+
 
     def read_from_json(self):
         log("Start reading nvt {} from json file".format(self.nvt_number))
@@ -211,6 +230,16 @@ class NVT:
             nvt_json = json.load(json_file)
         return nvt_json
 
+    def read_existed_nvt_ibt_json(self):
+        json_path = self.path / 'automated_data' / 'nvt_telekom_ibt_data.json'
+        if not os.path.exists(json_path):
+            return False
+        with open(json_path) as json_file:
+            print("json_path: ", json_path)
+            nvt_json = json.load(json_file)
+        return nvt_json
+
+
     def is_json_recently_updated(self):
         nvt_json = self.read_existed_nvt_json()
 
@@ -223,7 +252,24 @@ class NVT:
         creation_time = nvt_json["creation_time"]
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
-        return time_difference.seconds + time_difference.days * 24*3600  < 6000
+        return time_difference.seconds + time_difference.days * 24*3600  < 15000
+
+
+    def is_ibt_json_recently_updated(self):
+        nvt_json = self.read_existed_nvt_ibt_json()
+
+        if not nvt_json: # there is no created json file
+            return False
+
+        if "creation_time" not in nvt_json.keys():
+            return False
+
+        creation_time = nvt_json["creation_time"]
+        creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
+        time_difference = datetime.now() - creation_time
+        return time_difference.seconds + time_difference.days * 24*3600  < 15000
+
+
 
     def get_already_download_exploration_protocols(self):
         nvt_json = self.read_existed_nvt_json()

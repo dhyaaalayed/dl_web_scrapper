@@ -530,6 +530,15 @@ class MicrosoftGraphNVTManager:
         else:
             log("No generated gpgs json file to upload")
 
+    def upload_nvt_ibt_json_file(self):
+        path = self.nvt_path / "automated_data" / "nvt_telekom_ibt_data.json"
+        if os.path.exists(path):
+            self.graph_manager.upload_file(local_path=path, drive_folder_id=self.automated_data_folder_mg_obj["id"])
+            log("uploading generated gpgs json to one drive")
+        else:
+            log("No generated gpgs json file to upload")
+
+
     def upload_nvt_telekom_addresses_excel(self):
         path = self.nvt_path / "automated_data" / "telekom_addresses.xlsx"
         if os.path.exists(path):
