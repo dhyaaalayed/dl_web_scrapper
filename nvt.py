@@ -26,8 +26,8 @@ class NVT:
         self.montage_excel_parser = None
         self.anspreschpartner_excel_generator = None
         self.nvt_mgm: MicrosoftGraphNVTManager = nvt_mgm # MicrosoftGraphNVTManager objcet, used only by mg_json_main when we run the code in the cloud
-        self.ibt_addresses = None
-        self.ibt_installed_addresses = None
+        self.ibt_addresses = []
+        self.ibt_installed_addresses = []
 
     def initialize_using_web_scrapper(self):
 
