@@ -37,6 +37,7 @@ class IBTNavigator(Navigator):
             house_number = html_columns[12].find_element("css selector", "span").text
             house_char = html_columns[13].find_element("css selector", "span").text
 
+            order_id = html_columns[1].find_element("css selector", "span").text
             next_activity = html_columns[2].find_element("css selector", "span").text
             status = html_columns[3].find_element("css selector", "span").text
             print("status: ", status)
@@ -57,8 +58,9 @@ class IBTNavigator(Navigator):
             address["street"] = street
             address["house_number"] = house_number
             address["house_char"] = house_char
-            address["status"] = status
+            address["phase"] = status # we call the status phase
             address["next_activity"] = next_activity
+            address["order_id"] = order_id
 
             addresses.append(address)
             # Just to refresh
