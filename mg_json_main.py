@@ -30,7 +30,6 @@ from GraphManager import GraphManager
 from city import City
 from my_functions import log, get_template_columns, write_bvh_dfs_to_excel, parse_master_excel, \
     get_old_column_data_for_master_list, create_unique_id_for_master_df
-from navigator import Navigator
 from notifier import NOTIFIER
 
 UPLOAD_MASTERLISTE = True
@@ -38,9 +37,6 @@ SEND_EMAIL = True
 EXPORT_TELEKOM_ADDRESSES = False
 UNARCHIVE_MONTAGE = False
 
-NAVIGATOR = Navigator("ahmet.orla@dl-project.de", "!sS2uDT?8k@b39b")#ahmetORLA123!
-NAVIGATOR.browser.set_window_size(1920, 1400)
-NAVIGATOR.move_to_the_search_page()
 
 def main():
     recipients = ["hakan.uluer@dl.de", "dieaa.aled@dl.de", "it@dl.de"]
@@ -48,11 +44,6 @@ def main():
         log("Removing BAU folder")
         shutil.rmtree("BAU")
 
-    log("Getting installed addresses")
-    ibt_addresses, installed_addresses = NAVIGATOR.get_installed_addresses_and_ibt_addresses()
-    installed_addresses_to_print = [address.create_unique_key() for address in installed_addresses]
-    print("installed_addresses: ")
-    print(installed_addresses_to_print)
     with open('city_config.json') as json_file:
         conf_dict = json.load(json_file)
     #
@@ -97,6 +88,7 @@ def main():
     archive_date = date.today().strftime('%Y_%m_%d')
     #
     #
+    all_installed_addresses = []
     for city_key in city_dict.keys(): # city key is for the whole BVH area
         try:
             city_obj = city_dict[city_key]
@@ -135,8 +127,10 @@ def main():
                             nvt.initialize_montage_excel_parser()
                             nvt.montage_excel_parser.update_addresses_from_web()
                             nvt.montage_excel_parser.update_addresses_from_telekom_excel()
-                            nvt.montage_excel_parser.update_from_installed_addresses(nvt.nvt_number, installed_addresses)
-                            nvt.montage_excel_parser.update_from_ibt_addresses(nvt.nvt_number, ibt_addresses)
+                            print("adding installed addresses to the big list: {}".format(len(nvt.ibt_installed_addresses)) )
+                            all_installed_addresses += nvt.ibt_installed_addresses
+                            nvt.montage_excel_parser.update_from_installed_addresses(nvt.nvt_number, nvt.ibt_installed_addresses)
+                            nvt.montage_excel_parser.update_from_ibt_addresses(nvt.nvt_number, nvt.ibt_addresses)
                             log("Starting the bulk process")
                             nvt.montage_excel_parser.update_from_bulk_addresses(nvt.nvt_number, bulk_addresses_dict)
                             # Now using the new template:
@@ -203,7 +197,8 @@ def main():
             log("Failed updating BVH {}".format(city_key))
             log("The exception: {}".format(str(e)))
             NOTIFIER.add_failed_updated_bvh("{} because of the following exception: {}".format(city_key, str(e)))
-
+    print("all_installed_addresses: ")
+    print(all_installed_addresses)
     log("Failed matching bulk addresses: ")
     print(bulk_addresses_keys)
 

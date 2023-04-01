@@ -151,6 +151,7 @@ class City:
                 nvt.create_empty_content()
             else:
                 nvt.read_from_json()
+                nvt.read_ibt_and_installed_addresses_json()
                 nvt.copy_people_and_owners_to_address()
             self.nvt_list.append(nvt)
 

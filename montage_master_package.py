@@ -306,6 +306,10 @@ class MontageExcelParser:
     def update_from_installed_addresses(self, nvt_number: str, installed_addresses: "List of Address"):
         # installed_addresses_keys = [address.create_unique_key() for address in installed_addresses]
         installed_addresses_dict = {address.create_unique_key(): address for address in installed_addresses}
+        if len(installed_addresses_dict.keys()) != len(installed_addresses):
+            print("Strange: mismatch length")
+        print("installed_addresses: ", [address.create_unique_key() for address in installed_addresses])
+        print("installed_addresses_dict: ", [key for key in installed_addresses_dict.keys()])
         new_installed_addresses_as_notifications = []
         for excel_address in self.excel_addresses:
             excel_address_key = excel_address.address.create_unique_key()
@@ -321,6 +325,11 @@ class MontageExcelParser:
                 # new columns from beauftrag
                 excel_address.phase = installed_addresses_dict[excel_address_key].phase
                 excel_address.beauftrag_id = installed_addresses_dict[excel_address_key].phase
+            if excel_address_key in installed_addresses_dict.keys():
+                del installed_addresses_dict[excel_address_key]
+
+        print("IMPORTANT: these installed addresses are not in excel of nvt {}: ".format(nvt_number))
+        print([installed_addresses_dict[key].get_one_line_address() for key in installed_addresses_dict.keys()])
 
         if len(new_installed_addresses_as_notifications) > 0:
             new_installed_addresses_as_notifications = [self.path_to_excel.name] + new_installed_addresses_as_notifications

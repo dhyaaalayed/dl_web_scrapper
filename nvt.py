@@ -15,16 +15,6 @@ from my_functions import log
 
 
 class NVT:
-    nvt_number = None
-    path = None
-    city = None
-    kls_list = None
-    navigator = None
-    montage_excel_path = None
-    montage_excel_parser = None
-    anspreschpartner_excel_generator = None
-    nvt_mgm: MicrosoftGraphNVTManager = None # MicrosoftGraphNVTManager objcet, used only by mg_json_main when we run the code in the cloud
-
     def __init__(self, nvt_number: str, city: "City", nvt_mgm: MicrosoftGraphNVTManager):
         log("Start NVT Constructor")
         self.nvt_number = nvt_number
@@ -35,8 +25,9 @@ class NVT:
         self.montage_excel_path = self._get_montage_excel_path()
         self.montage_excel_parser = None
         self.anspreschpartner_excel_generator = None
-        self.nvt_mgm = nvt_mgm
-        
+        self.nvt_mgm: MicrosoftGraphNVTManager = nvt_mgm # MicrosoftGraphNVTManager objcet, used only by mg_json_main when we run the code in the cloud
+        self.ibt_addresses = None
+        self.ibt_installed_addresses = None
 
     def initialize_using_web_scrapper(self):
 
@@ -219,6 +210,39 @@ class NVT:
         with open(json_path) as json_file:
             kls_json = json.load(json_file)
         self.import_from_json(kls_json)
+
+    def read_ibt_and_installed_addresses_json(self):
+        log("Start reading nvt {} from json file".format(self.nvt_number))
+        json_path = self.path / 'automated_data' / 'nvt_telekom_ibt_data.json'
+        self.ibt_addresses = []
+        self.ibt_installed_addresses = []
+
+        if not json_path.exists():
+            return
+
+        log("path: " + str(json_path))
+        with open(json_path) as json_file:
+            json_obj = json.load(json_file)
+
+        ibt_json_addresses = json_obj["data"]
+
+        for json_address in ibt_json_addresses:
+            address = Address()
+            address.street = json_address["street"]
+            address.house_number = json_address["house_number"]
+            address.house_char = json_address["house_char"]
+            address.postal = json_address["postal"]
+            address.city = json_address["city"]
+            address.phase = json_address["phase"]
+            address.next_activity = json_address["next_activity"]
+            address.beauftrag_id = json_address["order_id"]
+            address.kls_id = json_address["kls_id"]
+            address.fold_id = json_address["fold_id"]
+            address.building_part = json_address["building_part"]
+            self.ibt_addresses.append(address)
+        self.ibt_installed_addresses = [address for address in self.ibt_addresses if address.next_activity == "Process completed" and address.phase == "Inventory installed"]
+
+
 
     def read_existed_nvt_json(self):
         json_path = self.path / 'automated_data' / 'nvt_telekom_data.json'
