@@ -91,6 +91,7 @@ def main():
     all_installed_addresses = []
     for city_key in city_dict.keys(): # city key is for the whole BVH area
         try:
+            bvh_installed_addresses = []
             city_obj = city_dict[city_key]
             if city_obj["loading_json_activated"] == False:
                 continue
@@ -129,6 +130,7 @@ def main():
                             nvt.montage_excel_parser.update_addresses_from_telekom_excel()
                             print("adding installed addresses to the big list: {}".format(len(nvt.ibt_installed_addresses)) )
                             all_installed_addresses += nvt.ibt_installed_addresses
+                            bvh_installed_addresses += nvt.ibt_installed_addresses
                             nvt.montage_excel_parser.update_from_installed_addresses(nvt.nvt_number, nvt.ibt_installed_addresses)
                             nvt.montage_excel_parser.update_from_ibt_addresses(nvt.nvt_number, nvt.ibt_addresses)
                             log("Starting the bulk process")
@@ -185,7 +187,7 @@ def main():
                     log("Exporting the master list for the bvh {} first time".format(city_key))
                 # Exporting and uploading the new bvh_df
                 shutil.copy(master_template_path, bvh_storing_path)
-                write_bvh_dfs_to_excel(bvh_storing_path, city_key, bvh_df) # Including copying template to the same path
+                write_bvh_dfs_to_excel(bvh_storing_path, city_key, bvh_df, len(bvh_installed_addresses)) # Including copying template to the same path
                 if UPLOAD_MASTERLISTE:
                     response = graph_manager.upload_file(local_path=bvh_storing_path, drive_folder_id=city_obj["master_storing_folder_id"])
                     log("Uploading Masterlist response: ")

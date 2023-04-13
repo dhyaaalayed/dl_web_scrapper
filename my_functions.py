@@ -28,7 +28,7 @@ def get_template_columns(template_path, number_of_columns):
 
     return columns
 
-def write_bvh_dfs_to_excel(path, bvh_city_name, df):
+def write_bvh_dfs_to_excel(path, bvh_city_name, df, bvh_installed_addresses_length):
     book = load_workbook(path)  # assuming that the new template is there
     writer = pd.ExcelWriter(path, engine='openpyxl')
     writer.book = book
@@ -38,6 +38,7 @@ def write_bvh_dfs_to_excel(path, bvh_city_name, df):
 
     sheet = book["HA_Auswertung"]
     sheet["A1"] = "All Montage: " + bvh_city_name
+    sheet["AD4"] = bvh_installed_addresses_length
 
     df.to_excel(writer, index=False, startrow=7, startcol=0, sheet_name='HA_Auswertung', header=False)
     writer.save()
