@@ -373,7 +373,7 @@ class MontageExcelParser:
                 # Update to be added to Montage files:
                 excel_address.address.kls_id = bulk_addresses_dict[excel_address_key].kls_id
                 excel_address.address.fold_id = bulk_addresses_dict[excel_address_key].fold_id
-                excel_address.address.status = "Complete GfAP-Installation"
+                excel_address.address.status = bulk_auftrag_str
 
                 log("Removing bulk address after matching one in excel")
                 # we do that just to know which addresses did not match :)
