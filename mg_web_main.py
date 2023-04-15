@@ -29,7 +29,7 @@ for city_key in city_dict.keys(): # city_key is the city name
         for path in city_obj["paths"]:
             city = City(city_key, path, navigator)
             city.create_city_folder_tree()
-            city.initialize_nvt_dict_using_web_navigator_mg()
+            city.initialize_nvt_dict_using_web_navigator_mg(city_obj["cities_filters"])
             log("Finishing scrapping subcity of {} of path {}".format(city_key, path))
 # navigator.browser.close()
 navigator.browser.quit()

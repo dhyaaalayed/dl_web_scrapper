@@ -41,15 +41,18 @@ class NVT:
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
-        self.write_to_json()
 
+    def filter_in_property_search_result_according_to_bvh_filters(self, cities_filters):
+        self.kls_list = [kls for kls in self.kls_list if kls.address.city in cities_filters]
 
     def initialize_ibt_using_web_scrapper(self):
         addresses = self.navigator.get_all_nvt_data(self.nvt_number, "", [])
         if addresses == None:
             return
-        self.write_ibt_to_json(addresses)
+        return addresses
 
+    def filter_in_ibt_addresses_according_to_bvh_cities(self, ibt_addresses, cities_filters):
+        return [address for address in ibt_addresses if address["city"] in cities_filters]
 
     def download_automated_data_folder(self):
         automated_data_path = self.path / "automated_data"

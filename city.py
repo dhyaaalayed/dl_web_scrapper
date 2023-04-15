@@ -40,7 +40,7 @@ class City:
     def create_city_folder_tree(self):
         self.root_path.mkdir(parents=True, exist_ok=True)
 
-    def initialize_ibt_nvt_dict_using_web_navigator_mg(self):
+    def initialize_ibt_nvt_dict_using_web_navigator_mg(self, cities_filters):
         graph_manager = GraphManager()
         mg_nvts = graph_manager.get_nvt_ids(self.root_path)
 
@@ -59,7 +59,10 @@ class City:
                     if nvt.is_ibt_json_recently_updated():
                         log("NVT IBT {} is already updated".format(nvt_mgm.nvt_number))
                         continue
-                nvt.initialize_ibt_using_web_scrapper() # path is okay
+                ibt_addresses = nvt.initialize_ibt_using_web_scrapper() # path is okay
+                if cities_filters: # we don't filter if we have an empty list
+                    ibt_addresses = nvt.filter_in_ibt_addresses_according_to_bvh_cities(ibt_addresses, cities_filters)
+                nvt.write_ibt_to_json(ibt_addresses)
                 nvt_mgm.upload_nvt_ibt_json_file()
                 self.nvt_list.append(nvt)
                 self.navigator.click_reset_filter_button()
@@ -70,7 +73,7 @@ class City:
 
 
 
-    def initialize_nvt_dict_using_web_navigator_mg(self):
+    def initialize_nvt_dict_using_web_navigator_mg(self, cities_filters):
         """
             Here we are only talking about the json files:
             So what we need:
@@ -103,6 +106,9 @@ class City:
                         log("NVT {} is already updated".format(nvt_mgm.nvt_number))
                         continue
                 nvt.initialize_using_web_scrapper() # path is okay
+                if cities_filters:
+                    nvt.filter_in_property_search_result_according_to_bvh_filters(cities_filters=cities_filters)
+                nvt.write_to_json()
                 nvt_mgm.upload_nvt_json_file()
                 nvt_mgm.upload_exploration_protocols_pdfs()
                 self.nvt_list.append(nvt)

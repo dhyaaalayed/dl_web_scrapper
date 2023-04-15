@@ -181,10 +181,11 @@ class Navigator:
         log("Clicking the search button")
         self.click_the_search_button()
 
-    def take_screenshot(self):
-        # self.browser.set_window_size(1920, 1400)
-        
-        self.browser.save_screenshot('screenshot.png')
+    def take_screenshot(self, img_name=None):
+        if img_name:
+            self.browser.save_screenshot('{}.png'.format(img_name))
+        else:
+            self.browser.save_screenshot('screenshot.png')
 
     def refresh_page(self):
         self.browser.refresh()

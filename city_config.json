@@ -10,6 +10,22 @@
         }
     },
     "cities": {
+        "Altenberg": {
+            "scrapping_activated": true,
+            "loading_json_activated": true,
+            "updating_montage_activated": true,
+            "generating_ansprechpartner": true,
+            "user_name": "markus.lora@dl-projects.de",
+            "password": "Markus1234!",
+            "paths": [
+                "BAU/10-02 Dresden-Cottbus/BVH-06 Altenberg/Baupläne (HK+NVT)"
+            ],
+            "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-06 Altenberg",
+            "master_storing_folder_id": "01A6QGC5674WLLSMSODJBIM263SIXFGLRQ",
+            "cities_filters": [
+                "Altenberg"
+            ]
+        },
         "Dresden": {
             "scrapping_activated": true,
             "loading_json_activated": true,
@@ -22,7 +38,8 @@
                 "BAU/10-02 Dresden-Cottbus/BVH-01 Dresden Cotta/Cotta West/Baupläne (HK+NVT)"
             ],
             "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-01 Dresden Cotta",
-            "master_storing_folder_id": "01A6QGC55DPQV75GHFYNALMTB5RLTWQYU3"
+            "master_storing_folder_id": "01A6QGC55DPQV75GHFYNALMTB5RLTWQYU3",
+            "cities_filters": []
         },
         "Bautzen": {
             "scrapping_activated": true,
@@ -35,7 +52,8 @@
                 "BAU/10-01 Bautzen-Mitte/BVH-01 Bautzen/Baupläne (HK+NVT)"
             ],
             "bvh_master_storing_path": "BAU/10-01 Bautzen-Mitte/BVH-01 Bautzen",
-            "master_storing_folder_id": "01A6QGC5ZMZCRSH4MKEZB3Y2HATRLG6E2D"
+            "master_storing_folder_id": "01A6QGC5ZMZCRSH4MKEZB3Y2HATRLG6E2D",
+            "cities_filters": []
         },
         "Pulsnitz": {
             "scrapping_activated": true,
@@ -48,7 +66,8 @@
                 "BAU/10-01 Bautzen-Mitte/BVH-02 Pulsnitz/Baupläne (HK+NVT)"
             ],
             "bvh_master_storing_path": "BAU/10-01 Bautzen-Mitte/BVH-02 Pulsnitz",
-            "master_storing_folder_id": "01A6QGC54PGFPMKNH73VCY4RY3XVT5BNXB"
+            "master_storing_folder_id": "01A6QGC54PGFPMKNH73VCY4RY3XVT5BNXB",
+            "cities_filters": []
         },
         "Cottbus": {
             "scrapping_activated": true,
@@ -61,7 +80,8 @@
                 "BAU/10-02 Dresden-Cottbus/BVH-02 Cottbus/Baupläne (HK+NVT)"
             ],
             "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-02 Cottbus",
-            "master_storing_folder_id": "01A6QGC53CHKYNQLNVPJD2E6HRBHM4NJN2"
+            "master_storing_folder_id": "01A6QGC53CHKYNQLNVPJD2E6HRBHM4NJN2",
+            "cities_filters": []
         },
         "Prignitz": {
             "scrapping_activated": true,
@@ -78,7 +98,8 @@
                 "BAU/10-04 Prignitz/BVH-01 Prignitz/Baupläne (HK+NVT)/5. Plattenburg Glöwen"
             ],
             "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz",
-            "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ"
+            "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ",
+            "cities_filters": ["Plattenburg", "Legde/Quitzöbel", "Rühstädt", "Altenberg", "Bad Wilsnack"]
         },
         "Wilsdruff": {
             "scrapping_activated": true,
@@ -91,7 +112,8 @@
                 "BAU/10-02 Dresden-Cottbus/BVH-03 Wilsdruff/Baupläne (HK+NVT)"
             ],
             "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-03 Wilsdruff",
-            "master_storing_folder_id": "01A6QGC542DYRQLEDNWJFLE2NBAVIQS2GE"
+            "master_storing_folder_id": "01A6QGC542DYRQLEDNWJFLE2NBAVIQS2GE",
+            "cities_filters": []
         },
         "Sarrasanistr": {
             "scrapping_activated": true,
@@ -104,7 +126,8 @@
                 "BAU/10-02 Dresden-Cottbus/BVH-04 Sarrasanistr/Baupläne (HK+NVT)"
             ],
             "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-04 Sarrasanistr",
-            "master_storing_folder_id": "01A6QGC524EPQAJ5VJEBGIHPEED272MCU6"
+            "master_storing_folder_id": "01A6QGC524EPQAJ5VJEBGIHPEED272MCU6",
+            "cities_filters": []
         },
         "Pieschen": {
             "scrapping_activated": true,
@@ -117,7 +140,8 @@
                 "BAU/10-02 Dresden-Cottbus/BVH-05 Pieschen/Baupläne (HK+NVT)"
             ],
             "bvh_master_storing_path": "BAU/10-02 Dresden-Cottbus/BVH-05 Pieschen",
-            "master_storing_folder_id": "01A6QGC52TRE4FS5OZ3FBIUTQXCOYSOUQ3"
+            "master_storing_folder_id": "01A6QGC52TRE4FS5OZ3FBIUTQXCOYSOUQ3",
+            "cities_filters": []
         }
     }
 }
