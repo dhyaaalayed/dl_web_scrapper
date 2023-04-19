@@ -3,6 +3,8 @@ from pathlib import Path
 
 import pandas as pd
 from openpyxl.reader.excel import load_workbook
+from openpyxl.styles import PatternFill, Alignment
+
 
 
 def get_template_columns(template_path, number_of_columns):
@@ -39,6 +41,14 @@ def write_bvh_dfs_to_excel(path, bvh_city_name, df, bvh_installed_addresses_leng
     sheet = book["HA_Auswertung"]
     sheet["A1"] = "All Montage: " + bvh_city_name
     sheet["AD4"] = bvh_installed_addresses_length
+
+    fill = PatternFill(start_color='FCD5B4', end_color='FCD5B4', fill_type='solid')
+    sheet["AD4"].fill = fill
+
+    alignment = Alignment(horizontal='center', vertical='center')
+    sheet["AD4"].alignment = alignment
+
+
 
     df.to_excel(writer, index=False, startrow=7, startcol=0, sheet_name='HA_Auswertung', header=False)
     writer.save()
