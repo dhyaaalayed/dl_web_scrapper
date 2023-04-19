@@ -99,7 +99,7 @@
             ],
             "bvh_master_storing_path": "BAU/10-04 Prignitz/BVH-01 Prignitz",
             "master_storing_folder_id": "01A6QGC55ATH5NI67C7NCIUKRCNU35Y7QJ",
-            "cities_filters": ["Plattenburg", "Legde/Quitzöbel", "Rühstädt", "Altenberg", "Bad Wilsnack"]
+            "cities_filters": ["Plattenburg", "Legde/Quitzöbel", "Rühstädt", "Bad Wilsnack"]
         },
         "Wilsdruff": {
             "scrapping_activated": true,
