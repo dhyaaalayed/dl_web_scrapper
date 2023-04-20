@@ -40,13 +40,13 @@ def write_bvh_dfs_to_excel(path, bvh_city_name, df, bvh_installed_addresses_leng
 
     sheet = book["HA_Auswertung"]
     sheet["A1"] = "All Montage: " + bvh_city_name
-    sheet["AD4"] = bvh_installed_addresses_length
+    sheet["AF4"] = bvh_installed_addresses_length
 
     fill = PatternFill(start_color='FCD5B4', end_color='FCD5B4', fill_type='solid')
-    sheet["AD4"].fill = fill
+    sheet["AF4"].fill = fill
 
     alignment = Alignment(horizontal='center', vertical='center')
-    sheet["AD4"].alignment = alignment
+    sheet["AF4"].alignment = alignment
 
 
 
