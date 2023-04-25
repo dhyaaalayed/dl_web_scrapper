@@ -367,7 +367,7 @@ class GraphManager:
         self.download_file(json_mg_obj, download_folder)
 
     def download_bvh_telekom_addresses(self, bvh_root_path):
-        download_folder = Path(bvh_root_path) / "telekom_list"
+        download_folder = Path(bvh_root_path) / "Baupläne (HK+NVT)" / "telekom_list"
         file_name = "telekom_addresses.csv"
         download_folder.mkdir(parents=True, exist_ok=True)
         telekom_addresses_mg_obj = self.get_path_mg_obj(download_folder / file_name)
