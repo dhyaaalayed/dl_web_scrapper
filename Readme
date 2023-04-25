@@ -488,6 +488,13 @@ Run:
 
 
 
+_________________________________________________
+I changed the download folder of the telekom addresses from:
+download_folder = Path(bvh_root_path) / "telekom_list"
+to:
+download_folder = Path(bvh_root_path) / "Baupläne (HK+NVT)" / "telekom_list"
+because the was the true path of Prignitz
+need to check for other BVHs as well!
 
 
 
