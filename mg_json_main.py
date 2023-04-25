@@ -18,6 +18,7 @@
         2- check out the generated files and the archive folders
 """
 import json
+import traceback
 
 import shutil
 from datetime import date
@@ -198,6 +199,7 @@ def main():
         except Exception as e:
             log("Failed updating BVH {}".format(city_key))
             log("The exception: {}".format(str(e)))
+            traceback.print_exc()
             NOTIFIER.add_failed_updated_bvh("{} because of the following exception: {}".format(city_key, str(e)))
     print("all_installed_addresses: ")
     print(all_installed_addresses)
