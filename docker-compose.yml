@@ -25,7 +25,8 @@ services:
       - ./bulk_manager.py:/app/bulk_manager.py
       - ./mg_web_ibt_main.py:/app/mg_web_ibt_main.py
       - ./ibt_navigator.py:/app/ibt_navigator.py
-      - ./screenshot.png:/app/screenshot.png
+      - ./screenshots:/app/screenshots
+      # - ./screenshot.png:/app/screenshot.png
       # - ./json_airflow.py:/app/json_airflow.py
       # - /Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH:/Users/dlprojectsit/Library/CloudStorage/OneDrive-DLProjectsGmbH
     # environment:

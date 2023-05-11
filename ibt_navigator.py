@@ -105,7 +105,7 @@ class IBTNavigator(Navigator):
 
 def main():
     print("starting")
-    ibt_navigator = IBTNavigator('dieaa.aled@dl-projects.de', 'S8jN##BUq_y6zbu')
+    ibt_navigator = IBTNavigator('dieaa.aled@dl-projects.de', 'KXfv*u4wWGT9n#8')
     ibt_navigator.browser.set_window_size(1920, 1400)
     ibt_navigator.move_to_the_search_page()
     addresses = ibt_navigator.get_all_nvt_data("42V1010", "", [])

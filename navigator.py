@@ -89,7 +89,7 @@ class Navigator:
         URL = "https://glasfaser.telekom.de/auftragnehmerportal-ui/home?a-cid=50708"
         self.browser.get(URL)
         self.browser.find_element('id', 'username').send_keys('dieaa.aled@dl-projects.de')
-        self.browser.find_element('id', 'password').send_keys('S8jN##BUq_y6zbu')
+        self.browser.find_element('id', 'password').send_keys('KXfv*u4wWGT9n#8')
         self.browser.find_element('name', 'login').click()
 
 
@@ -183,9 +183,9 @@ class Navigator:
 
     def take_screenshot(self, img_name=None):
         if img_name:
-            self.browser.save_screenshot('{}.png'.format(img_name))
+            self.browser.save_screenshot('screenshots/{}.png'.format(img_name))
         else:
-            self.browser.save_screenshot('screenshot.png')
+            self.browser.save_screenshot('screenshots/screenshot.png')
 
     def refresh_page(self):
         self.browser.refresh()
