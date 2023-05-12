@@ -269,7 +269,7 @@ class MontageExcelParser:
                 excel_dict[web_key] = ExcelAddress()
                 print("before exporting: ", web_dict[web_key])
                 web_dict[web_key].print()
-                excel_dict[web_key].address = web_dict[web_key]
+                excel_dict[web_key].address = web_dict[web_key] # this gives us all attribute of web address like kundentermin_start...
                 excel_dict[web_key].datum_gbgs = date.today().strftime('%Y_%m_%d')
                 # To send email notification: the address does not exist in the excel at all!
                 new_addresses_as_notifications.append(excel_dict[web_key].address.get_one_line_address())
@@ -346,15 +346,17 @@ class MontageExcelParser:
                 excel_address.phase = ibt_addresses_dict[excel_address_key].phase
                 excel_address.beauftrag_id = ibt_addresses_dict[excel_address_key].beauftrag_id
 
-    def update_from_bulk_addresses(self, nvt_number: str, bulk_addresses_dict: "List of Address"):
+    def update_from_bulk_addresses(self, nvt_number: str, bulk_addresses_dict: dict) -> None:
         bulk_auftrag_str = "BULK Auftrag"
         new_bulk_addresses_as_notifications = []
         for excel_address in self.excel_addresses:
             excel_address_key = excel_address.address.create_unique_key()
-            if excel_address_key in bulk_addresses_dict.keys():
+
+            # the normal case: we have a new comming bulk address which is not in proberty search
+            if excel_address_key in bulk_addresses_dict.keys() and str(excel_address.htn) != "ja":
                 
-                if bulk_auftrag_str.lower() not in str(excel_address.Kommentare).lower():
-                    logging_string = "Discovering a bulk address at NVT {}. The address: {}".format(nvt_number, excel_address.address.get_one_line_address())
+                if bulk_auftrag_str.lower() not in str(excel_address.Kommentare).lower() and "bulk" not in str(excel_address.Kommentare).lower():
+                    logging_string = "BULK: Discovering a bulk address at NVT {}. The address: {}".format(nvt_number, excel_address.address.get_one_line_address())
                     log(logging_string)
                     print("The key: ", excel_address_key)
                     new_bulk_addresses_as_notifications.append(excel_address.address.get_one_line_address())
@@ -378,6 +380,29 @@ class MontageExcelParser:
                 log("Removing bulk address after matching one in excel")
                 # we do that just to know which addresses did not match :)
                 del bulk_addresses_dict[excel_address_key]
+
+            
+                """moved from proberty search to bulk. We know that it was in proberty search if htn == "ja" and also if its status is not bulk, because we also set ja when the address is bulk.
+                Therefore, we need to test the status if it's bulk or not in order to distinguish that htn == ja came from proberty_search not from bulk
+                """
+            elif excel_address_key in bulk_addresses_dict.keys() and excel_address.htn == "ja" and excel_address.address.status != bulk_auftrag_str:
+                log(f"BULK: {excel_address.address.get_one_line_address()}, Moved to bulk")
+                excel_address.address.status = bulk_auftrag_str
+                excel_address.phase = "Moved to Bulk"
+                new_bulk_addresses_as_notifications.append(excel_address.address.get_one_line_address() + ", Moved to Bulk")
+                del bulk_addresses_dict[excel_address_key]
+
+
+                # not in bulk anymore ==> installed
+            elif excel_address_key not in bulk_addresses_dict.keys() and excel_address.address.status == bulk_auftrag_str:
+                # then we set it as installed
+                log(f"BULK: {excel_address.address.get_one_line_address()}, Installed address removed from Bulk")
+                excel_address.set_address_as_installed()
+                new_bulk_addresses_as_notifications.append(excel_address.address.get_one_line_address() + ", Installed address removed from Bulk")
+                # no del bulk_addresses_dict[excel_address_key], because it's removed from bulk and it will give us an error
+
+
+
         if len(new_bulk_addresses_as_notifications) > 0:
             new_bulk_addresses_as_notifications = [self.path_to_excel.name] + new_bulk_addresses_as_notifications
             new_bulk_addresses_as_notifications.append("_" * 40)

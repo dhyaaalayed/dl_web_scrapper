@@ -119,6 +119,11 @@ class ExcelAddress:
 
         # No need to import nummer_ansprechpartner from excel, beause we already have it from gbgs
 
+    def set_address_as_installed(self):
+        self.address.gfap_inst_status = "Installed"
+        self.address.status = "Complete GfAP-Installation"
+        self.phase = "Inventory installed"
+        
 
     def export_to_df_dict(self):
         """
