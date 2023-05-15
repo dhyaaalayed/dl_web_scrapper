@@ -279,7 +279,7 @@ class NVT:
         creation_time = nvt_json["creation_time"]
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
-        return time_difference.seconds + time_difference.days * 24*3600  < 15000
+        return time_difference.seconds + time_difference.days * 24*3600  < 75000
 
 
     def is_ibt_json_recently_updated(self):
@@ -294,7 +294,7 @@ class NVT:
         creation_time = nvt_json["creation_time"]
         creation_time = datetime.strptime(creation_time, "%Y-%m-%d %H:%M:%S.%f")
         time_difference = datetime.now() - creation_time
-        return time_difference.seconds + time_difference.days * 24*3600  < 15000
+        return time_difference.seconds + time_difference.days * 24*3600  < 75000
 
 
 
