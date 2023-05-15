@@ -37,7 +37,7 @@ class NVT:
         already_download_exploration_protocols = self.get_already_download_exploration_protocols()
         self.kls_list = self.navigator.get_all_nvt_data(self.nvt_number, self.path, already_download_exploration_protocols)
         if self.kls_list == None:
-            return
+            return []
         log("Finishing reading the whole KLS")
         log("Printing kls details..........")
         self.print()
@@ -48,7 +48,7 @@ class NVT:
     def initialize_ibt_using_web_scrapper(self):
         addresses = self.navigator.get_all_nvt_data(self.nvt_number, "", [])
         if addresses == None:
-            return
+            return []
         return addresses
 
     def filter_in_ibt_addresses_according_to_bvh_cities(self, ibt_addresses, cities_filters):
