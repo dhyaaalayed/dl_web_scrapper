@@ -352,6 +352,13 @@ class MontageExcelParser:
         for excel_address in self.excel_addresses:
             excel_address_key = excel_address.address.create_unique_key()
 
+
+            # tmp:
+            if excel_address.status == bulk_auftrag_str:
+                log("We discoverd an already stored bulk in excel: " + excel_address_key)
+                log(f"We change it's phase from {excel_address.phase} to empty string")
+                excel_address.phase = ""
+
             # the normal case: we have a new comming bulk address which is not in proberty search
             if excel_address_key in bulk_addresses_dict.keys() and str(excel_address.htn) != "ja":
                 
