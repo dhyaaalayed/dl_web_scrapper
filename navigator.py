@@ -156,7 +156,7 @@ class Navigator:
         """
         self.filter_in_nvt(nvt_number)
         kls_list = self.visit_eyes_pages(nvt_number, nvt_path, already_downloaded_exploration_protocols)
-        if kls_list == None:
+        if kls_list == []:
             self.refresh_page()
         return kls_list
 
@@ -166,7 +166,7 @@ class Navigator:
         for i in range(1, 1000):
             number_of_rows = self.log_number_of_eyes_of_current_page(i)
             if number_of_rows == 0:
-                return None
+                return []
 
             kls_list += self.get_eyes_data(nvt_number, nvt_path, already_downloaded_exploration_protocols)
 
