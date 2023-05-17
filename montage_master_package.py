@@ -354,7 +354,7 @@ class MontageExcelParser:
 
 
             # tmp:
-            if excel_address.status == bulk_auftrag_str:
+            if excel_address.address.status == bulk_auftrag_str:
                 log("We discoverd an already stored bulk in excel: " + excel_address_key)
                 log(f"We change it's phase from {excel_address.phase} to empty string")
                 excel_address.phase = ""
