@@ -13,7 +13,7 @@ BULK_ADDRESSES_JSON_FILE_NAME = "gbgs_bulk_addresses.json"
 
 class BulkManager:
     # navigator: Navigator = Navigator("markus.lora@dl-projects.de", "Markus1234!")
-    navigator = Navigator("markus.lora@dl-projects.de", "Markus1234!")
+    navigator = Navigator("dieaa.aled@dl-projects.de", "KXfv*u4wWGT9n#8")
     # Navigator.login("markus.lora@dl-projects.de", "Markus1234!")
     graph_manager: GraphManager = None
     store_path = BULK_ADDRESSES_STORE_PATH
