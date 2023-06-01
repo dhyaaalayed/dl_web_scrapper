@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from openpyxl.reader.excel import load_workbook
 from openpyxl.styles import PatternFill, Alignment
-
+from openpyxl.styles import Protection
 
 
 def get_template_columns(template_path, number_of_columns):
@@ -48,7 +48,7 @@ def write_bvh_dfs_to_excel(path, bvh_city_name, df, bvh_installed_addresses_leng
     alignment = Alignment(horizontal='center', vertical='center')
     sheet["AF4"].alignment = alignment
 
-    sheet.row_dimensions[7].protection = sheet.protection
+    sheet.row_dimensions[7].protection = Protection(locked=True)
 
 
     df.to_excel(writer, index=False, startrow=7, startcol=0, sheet_name='HA_Auswertung', header=False)

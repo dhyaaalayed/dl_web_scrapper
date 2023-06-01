@@ -9,6 +9,7 @@ from my_functions import log
 import os
 
 from notifier import NOTIFIER
+from openpyxl.styles import Protection
 
 
 
@@ -218,8 +219,8 @@ class MontageExcelParser:
         sheet = book["HA_Auswertung"]
         sheet["A1"] = "NVT {}".format(nvt_number)
 
-        sheet.row_dimensions[7].protection = sheet.protection
-        
+        sheet.row_dimensions[7].protection = Protection(locked=True)
+
         df.to_excel(writer, index=False, startrow=7, startcol=0, sheet_name='HA_Auswertung', header=False)
         # self.write_df_to_excel_manually(address_list=self.excel_addresses, start_row=8, sheet=sheet)
         writer.save()
@@ -405,9 +406,9 @@ class MontageExcelParser:
                 # not in bulk anymore ==> installed
             elif excel_address_key not in bulk_addresses_dict.keys() and excel_address.address.status == bulk_auftrag_str:
                 # then we set it as installed
-                log(f"BULK: {excel_address.address.get_one_line_address()}, Installed address removed from Bulk")
-                excel_address.set_address_as_installed()
-                new_bulk_addresses_as_notifications.append(excel_address.address.get_one_line_address() + ", Installed address removed from Bulk")
+                log(f"BULK: {excel_address.address.get_one_line_address()}, Removed from Bulk")
+                # excel_address.set_address_as_installed()
+                # new_bulk_addresses_as_notifications.append(excel_address.address.get_one_line_address() + ", Installed address removed from Bulk")
                 # no del bulk_addresses_dict[excel_address_key], because it's removed from bulk and it will give us an error
 
 
