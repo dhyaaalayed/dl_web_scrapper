@@ -48,6 +48,7 @@ def write_bvh_dfs_to_excel(path, bvh_city_name, df, bvh_installed_addresses_leng
     alignment = Alignment(horizontal='center', vertical='center')
     sheet["AF4"].alignment = alignment
 
+    sheet.row_dimensions[7].protection = sheet.protection
 
 
     df.to_excel(writer, index=False, startrow=7, startcol=0, sheet_name='HA_Auswertung', header=False)

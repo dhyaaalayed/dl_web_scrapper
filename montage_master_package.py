@@ -218,7 +218,8 @@ class MontageExcelParser:
         sheet = book["HA_Auswertung"]
         sheet["A1"] = "NVT {}".format(nvt_number)
 
-
+        sheet.row_dimensions[7].protection = sheet.protection
+        
         df.to_excel(writer, index=False, startrow=7, startcol=0, sheet_name='HA_Auswertung', header=False)
         # self.write_df_to_excel_manually(address_list=self.excel_addresses, start_row=8, sheet=sheet)
         writer.save()
