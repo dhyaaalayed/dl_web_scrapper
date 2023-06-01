@@ -164,10 +164,18 @@ class BulkManager:
                 mobile = row.find_element("xpath", './/div[@data-cy="contactMedium_phoneNumberMobile"]').get_attribute('innerHTML')
                 log("Mobile element after catching the exception: " + mobile)
             
-            company_name = row.find_element("xpath", './/div[@data-cy="organizationDetails_organizationName"]').get_attribute('innerHTML')
+            try:
+                company_name = row.find_element("xpath", './/div[@data-cy="organizationDetails_organizationName"]').get_attribute('innerHTML')
+            except:
+                company_name = row.find_element("xpath", './/div[@data-cy="primaryContact_nameName"]').get_attribute('innerHTML')
+                print("hihihi: ", company_name)
             person_name = row.find_elements("xpath", './/div[@class="common-column"]//div[@class="content-text ng-star-inserted"]')[1].get_attribute('innerHTML')
-            mail = row.find_element("xpath", ".//a[contains(@href, 'mailto')]").get_attribute('href')
-            mail = mail.replace("mailto:", "")
+
+            try:
+                mail = row.find_element("xpath", ".//a[contains(@href, 'mailto')]").get_attribute('href')
+                mail = mail.replace("mailto:", "")
+            except:
+                mail="No Mail"
 
 
             kls_id_fold_id_spans = row.find_elements("xpath", './/div[@class="common-column"]//span')

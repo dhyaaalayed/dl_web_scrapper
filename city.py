@@ -219,7 +219,7 @@ class City:
         writer.save()
 
     def export_every_nvt_montage_telekom_excel_from_city_montage_telekom_excel(self):
-        city_df = pd.read_csv(Path(self.root_path).parent / "telekom_list" / "telekom_addresses.csv", sep=";", dtype={'postal': str})
+        city_df = pd.read_csv(Path(self.root_path).parent / "Baupläne (HK+NVT)" / "telekom_list" / "telekom_addresses.csv", sep=";", dtype={'postal': str})
 
         print(city_df)
 
@@ -234,13 +234,13 @@ class City:
 
         for nvt in self.nvt_list:
             if nvt.nvt_number in nvt_dict.keys():
-                print("one series: ", nvt_dict[nvt.nvt_number][0])
-
-                nvt_df = pd.DataFrame(nvt_dict[nvt.nvt_number])
-                nvt_df.to_excel(nvt.path / "automated_data" / "telekom_addresses.xlsx", index=False)
-                nvt.nvt_mgm.upload_nvt_telekom_addresses_excel()
-            else:
-                log("NVT {} is not existed in the city Telekom montage file!".format(nvt.nvt_number))
+                # print("one series: ", nvt_dict[nvt.nvt_number][0])
+                if nvt_dict[nvt.nvt_number]: # not empty list
+                    nvt_df = pd.DataFrame(nvt_dict[nvt.nvt_number])
+                    nvt_df.to_excel(nvt.path / "automated_data" / "telekom_addresses.xlsx", index=False)
+                    nvt.nvt_mgm.upload_nvt_telekom_addresses_excel()
+                else:
+                    log("NVT {} is not existed in the city Telekom montage file!".format(nvt.nvt_number))
 
 
     def print(self):
