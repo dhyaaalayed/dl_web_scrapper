@@ -247,15 +247,11 @@ class GraphManager:
             Returns a dict of an item.
         """
         response = requests.get(
-            self.GRAPH_API_ENDPOINT + f'/drives/{DRIVE_ID}/items/{parent_id}/children',
+            self.GRAPH_API_ENDPOINT + f"/drives/{DRIVE_ID}/items/{parent_id}/children('{item_name}')",
             headers=self.headers,
         )
-
-        children = response.json()["value"]
-
-        for child in children:
-            if child["name"] == item_name:
-                return child
+        if response.status_code == 200:
+            return response.json()
         return None
 
 
